@@ -1,19 +1,21 @@
 import React from 'react';
-import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
+import { StyleSheet, Text } from 'react-native';
 import * as firebase from 'firebase';
 import { firebaseConfig } from './firebase.config';
+import { createStackNavigator } from '@react-navigation/stack';
+import { NavigationContainer } from '@react-navigation/native';
+import LoginScreen from './screens/LoginScreen';
+import { ResetPasswordScreen } from './screens/ResetPasswordScreen';
+import { RegisterScreen } from './screens/RegisterScreen';
+import { HomeScreen } from './screens/HomeScreen';
+
+const RootStack = createStackNavigator();
 
 export default class App extends React.Component<any, any> {
     state: any = {
         loading: true,
         user: null
-    }
-
-    storeHighScore(userId: string, score: number) {
-        firebase.database().ref('users/' + userId).set({
-            highscore: score
-        });
-    }
+    };
 
     componentDidMount(): void {
         firebase.initializeApp(firebaseConfig);
@@ -37,40 +39,45 @@ export default class App extends React.Component<any, any> {
 
         firebase.auth().onAuthStateChanged(user => {
             this.setState({
-                user,
+                user: null,
                 loading: false
-            })
+            });
         });
     }
 
-    componentWillUnmount(): void {
-
-    }
-
     render(): React.ReactNode {
+        const { user, loading } = this.state;
+
+        if (loading) {
+            return <Text>Loading...</Text>;
+        }
+
         return (
-            <View style={{ padding: 40 }}>
-                {this.state.loading && <Text>Loading</Text>}
-
-                {
-                    this.state.user
-                        ? <Text>{this?.state?.user?.email}</Text>
-                        : <Text>You are not authorized</Text>
-                }
-
-                <TouchableOpacity onPress={() => this.storeHighScore('n', 100)}>
-                    <Text>Hello</Text>
-                </TouchableOpacity>
-            </View>
-        )
+            <NavigationContainer>
+                <RootStack.Navigator>
+                    {
+                        user ? (
+                                <RootStack.Screen name="Home" component={HomeScreen}/>
+                            )
+                            : (
+                                <>
+                                    <RootStack.Screen name='Login' component={LoginScreen}/>
+                                    <RootStack.Screen name='Register' component={RegisterScreen}/>
+                                    <RootStack.Screen name='Reset Password' component={ResetPasswordScreen}/>
+                                </>
+                            )
+                    }
+                </RootStack.Navigator>
+            </NavigationContainer>
+        );
     }
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
+    container: {
+        flex: 1,
+        backgroundColor: '#fff',
+        alignItems: 'center',
+        justifyContent: 'center'
+    }
 });
