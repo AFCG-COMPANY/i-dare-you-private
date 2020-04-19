@@ -1,15 +1,14 @@
 import React from 'react';
-import { Text } from 'react-native';
 import * as firebase from 'firebase';
 import { firebaseConfig } from './firebase.config';
+import { Text } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
-import { MainTabsScreen } from './screens/Main/Tabs';
-import { AuthStackScreen } from './screens/Auth/Navigator';
-
+import { AuthNavigator } from './src/auth/AuthNavigator';
+import { MainNavigator } from './src/main/MainNavigator';
 
 export default function App() {
+    const [ user, setUser ] = React.useState(null);
     const [ loading, setLoading ] = React.useState(true);
-    const [ user, setUser ] = React.useState();
 
     React.useEffect(() => {
         firebase.initializeApp(firebaseConfig);
@@ -21,15 +20,13 @@ export default function App() {
         return subscriber; // unsubscribe on unmount
     }, []);
 
+    if (loading) {
+        return <Text>Loading...</Text>;
+    }
+
     return (
         <NavigationContainer>
-            {loading ? (
-                <Text>Loading...</Text>
-            ) : user ? (
-                <MainTabsScreen />
-            ) : (
-                <AuthStackScreen />
-            )}
+            { user ? <MainNavigator /> : <AuthNavigator /> }
         </NavigationContainer>
     )
-}
+};

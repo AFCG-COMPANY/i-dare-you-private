@@ -5,7 +5,7 @@ import Profile from './Profile';
 
 const Tabs = createBottomTabNavigator();
 
-export const MainTabsScreen = () => (
+export const MainNavigator = () => (
     <Tabs.Navigator>
         <Tabs.Screen name='Feed' component={Feed} />
         <Tabs.Screen name='Profile' component={Profile} />
