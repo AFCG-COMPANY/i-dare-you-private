@@ -13,7 +13,6 @@ export default function Register({ navigation }: Props) {
             .createUserWithEmailAndPassword(email, password)
             .then(() => {
                 console.log('User account created & signed in!');
-                navigation.navigate('Feed');
             })
             .catch(error => {
                 if (error.code === 'auth/email-already-in-use') {
