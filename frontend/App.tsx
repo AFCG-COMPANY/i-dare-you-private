@@ -1,7 +1,7 @@
 import React from 'react';
 import * as firebase from 'firebase';
 import { firebaseConfig } from './firebase.config';
-import { Text } from 'react-native';
+import { ActivityIndicator, SafeAreaView, Text } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { AuthNavigator } from './src/auth/AuthNavigator';
 import { MainNavigator } from './src/main/MainNavigator';
@@ -21,7 +21,12 @@ export default function App() {
     }, []);
 
     if (loading) {
-        return <Text>Loading...</Text>;
+        return (
+            <SafeAreaView>
+                <Text>Loading...</Text>
+                <ActivityIndicator size='large' />
+            </SafeAreaView>
+        )
     }
 
     return (
