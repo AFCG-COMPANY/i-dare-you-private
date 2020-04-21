@@ -11,19 +11,19 @@ export function AuthNavigator() {
     return (
         <Stack.Navigator>
             <Stack.Screen
-                name="Login"
+                name='Login'
                 options={{ headerTitle: 'Sign In' }}
                 component={Login}
             />
 
             <Stack.Screen
-                name="ResetPassword"
+                name='ResetPassword'
                 options={{ headerTitle: 'Reset Password' }}
                 component={ResetPassword}
             />
 
             <Stack.Screen
-                name="Register"
+                name='Register'
                 options={{ headerTitle: 'Sign Up', headerLeft: () => null }}
                 component={Register}
             />

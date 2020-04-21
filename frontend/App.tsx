@@ -24,7 +24,7 @@ export default function App() {
         return (
             <SafeAreaView>
                 <Text>Loading...</Text>
-                <ActivityIndicator size="large" />
+                <ActivityIndicator size='large' />
             </SafeAreaView>
         );
     }

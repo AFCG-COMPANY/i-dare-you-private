@@ -35,9 +35,9 @@ export function ResetPassword({
             <View style={styles.form}>
                 <Input
                     containerStyle={styles.inputContainer}
-                    label="Email Address"
+                    label='Email Address'
                     labelStyle={styles.inputLabel}
-                    autoCapitalize="none"
+                    autoCapitalize='none'
                     value={email}
                     onChangeText={(email: string) => setEmail(email)}
                 />
@@ -45,22 +45,22 @@ export function ResetPassword({
 
             <Button
                 style={styles.button}
-                title="Reset password"
+                title='Reset password'
                 onPress={() => resetEmail(email)}
             />
 
             <View style={styles.signUpContainer}>
                 <Text style={styles.signUpText}>Don't have an account?</Text>
                 <Button
-                    type="clear"
-                    title="Sign Up"
+                    type='clear'
+                    title='Sign Up'
                     onPress={() => navigation.navigate('Register')}
                 />
             </View>
 
             <Button
-                type="clear"
-                title="Login"
+                type='clear'
+                title='Login'
                 onPress={() => navigation.navigate('Login')}
             />
         </View>

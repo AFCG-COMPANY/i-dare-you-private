@@ -11,7 +11,7 @@ export const Profile: React.FC<ProfileProps> = ({}) => {
             <Text>Profile</Text>
 
             <Button
-                title="Sign Out"
+                title='Sign Out'
                 onPress={() => {
                     firebase.auth().signOut();
                 }}

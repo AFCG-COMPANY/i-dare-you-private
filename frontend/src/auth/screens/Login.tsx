@@ -57,9 +57,9 @@ export function Login({ navigation }: AuthNavProps<'Login'>) {
             <View style={styles.form}>
                 <Input
                     containerStyle={styles.inputContainer}
-                    label="Email Address"
+                    label='Email Address'
                     labelStyle={styles.inputLabel}
-                    autoCapitalize="none"
+                    autoCapitalize='none'
                     value={email}
                     onChangeText={(email) =>
                         dispatch({
@@ -71,9 +71,9 @@ export function Login({ navigation }: AuthNavProps<'Login'>) {
 
                 <Input
                     containerStyle={styles.inputContainer}
-                    label="Password"
+                    label='Password'
                     labelStyle={styles.inputLabel}
-                    autoCapitalize="none"
+                    autoCapitalize='none'
                     secureTextEntry
                     value={password}
                     onChangeText={(password) =>
@@ -87,7 +87,7 @@ export function Login({ navigation }: AuthNavProps<'Login'>) {
 
             <Button
                 style={styles.button}
-                title="Sign In"
+                title='Sign In'
                 onPress={() => {
                     firebase
                         .auth()
@@ -110,15 +110,15 @@ export function Login({ navigation }: AuthNavProps<'Login'>) {
             <View style={styles.signUpContainer}>
                 <Text style={styles.signUpText}>Don't have an account?</Text>
                 <Button
-                    type="clear"
-                    title="Sign Up"
+                    type='clear'
+                    title='Sign Up'
                     onPress={() => navigation.navigate('Register')}
                 />
             </View>
 
             <Button
-                type="clear"
-                title="Forgot password?"
+                type='clear'
+                title='Forgot password?'
                 onPress={() => navigation.navigate('ResetPassword')}
             />
         </View>
