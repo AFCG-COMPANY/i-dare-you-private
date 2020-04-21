@@ -6,5 +6,5 @@ export default function Feed() {
         <SafeAreaView>
             <Text>Feed</Text>
         </SafeAreaView>
-    )
+    );
 }

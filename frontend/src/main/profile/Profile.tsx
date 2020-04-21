@@ -3,8 +3,7 @@ import { SafeAreaView, Text } from 'react-native';
 import { Button } from 'react-native-elements';
 import * as firebase from 'firebase';
 
-interface ProfileProps {
-}
+interface ProfileProps {}
 
 export const Profile: React.FC<ProfileProps> = ({}) => {
     return (
@@ -12,11 +11,11 @@ export const Profile: React.FC<ProfileProps> = ({}) => {
             <Text>Profile</Text>
 
             <Button
-                title='Sign Out'
+                title="Sign Out"
                 onPress={() => {
                     firebase.auth().signOut();
                 }}
             />
         </SafeAreaView>
-    )
-}
+    );
+};

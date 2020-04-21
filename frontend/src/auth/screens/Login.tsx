@@ -1,12 +1,12 @@
 import React from 'react';
-import { Text, View, StyleSheet } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 import { Button, Input } from 'react-native-elements';
 import * as firebase from 'firebase';
 import { AuthNavProps } from '../models/AuthParamList';
 
 interface LoginState {
-    email: string | null,
-    password: string | null,
+    email: string | null;
+    password: string | null;
     error: string | null;
 }
 
@@ -23,78 +23,102 @@ enum ActionTypes {
     Success
 }
 
-function loginReducer(state: LoginState, action: {type: ActionTypes, payload: any}) {
+function loginReducer(
+    state: LoginState,
+    action: { type: ActionTypes; payload: any }
+) {
     switch (action.type) {
         case ActionTypes.EmailChange:
-            return {...state, email: action.payload};
+            return { ...state, email: action.payload };
         case ActionTypes.PasswordChange:
-            return {...state, password: action.payload};
+            return { ...state, password: action.payload };
         case ActionTypes.Success:
-            return {...initialState}
+            return { ...initialState };
         case ActionTypes.Error:
             return {
                 ...state,
                 error: action.payload,
                 password: null
-            }
+            };
         default:
             return state;
     }
 }
 
 export function Login({ navigation }: AuthNavProps<'Login'>) {
-    const [ state, dispatch ] = React.useReducer(loginReducer, initialState);
+    const [state, dispatch] = React.useReducer(loginReducer, initialState);
 
     const { email, password, error } = state;
 
     return (
         <View style={styles.container}>
-            { error && <Text style={styles.errorMessage}>{error}</Text> }
+            {error && <Text style={styles.errorMessage}>{error}</Text>}
 
             <View style={styles.form}>
                 <Input
                     containerStyle={styles.inputContainer}
-                    label='Email Address'
+                    label="Email Address"
                     labelStyle={styles.inputLabel}
-                    autoCapitalize='none'
+                    autoCapitalize="none"
                     value={email}
-                    onChangeText={email => dispatch({type: ActionTypes.EmailChange, payload: email})}
+                    onChangeText={(email) =>
+                        dispatch({
+                            type: ActionTypes.EmailChange,
+                            payload: email
+                        })
+                    }
                 />
 
                 <Input
                     containerStyle={styles.inputContainer}
-                    label='Password'
+                    label="Password"
                     labelStyle={styles.inputLabel}
-                    autoCapitalize='none'
+                    autoCapitalize="none"
                     secureTextEntry
                     value={password}
-                    onChangeText={password => dispatch({type: ActionTypes.PasswordChange, payload: password})}
+                    onChangeText={(password) =>
+                        dispatch({
+                            type: ActionTypes.PasswordChange,
+                            payload: password
+                        })
+                    }
                 />
             </View>
 
             <Button
                 style={styles.button}
-                title='Sign In'
+                title="Sign In"
                 onPress={() => {
-                    firebase.auth()
+                    firebase
+                        .auth()
                         .signInWithEmailAndPassword(email, password)
-                        .then(() => dispatch({type: ActionTypes.Success, payload: null}))
-                        .catch(error => dispatch({type: ActionTypes.Error, payload: error.message}))
+                        .then(() =>
+                            dispatch({
+                                type: ActionTypes.Success,
+                                payload: null
+                            })
+                        )
+                        .catch((error) =>
+                            dispatch({
+                                type: ActionTypes.Error,
+                                payload: error.message
+                            })
+                        );
                 }}
             />
 
             <View style={styles.signUpContainer}>
                 <Text style={styles.signUpText}>Don't have an account?</Text>
                 <Button
-                    type='clear'
-                    title='Sign Up'
+                    type="clear"
+                    title="Sign Up"
                     onPress={() => navigation.navigate('Register')}
                 />
             </View>
 
             <Button
-                type='clear'
-                title='Forgot password?'
+                type="clear"
+                title="Forgot password?"
                 onPress={() => navigation.navigate('ResetPassword')}
             />
         </View>
@@ -123,17 +147,13 @@ const styles = StyleSheet.create({
     inputLabel: {
         textTransform: 'uppercase'
     },
-    button: {
-
-    },
+    button: {},
     signUpContainer: {
         display: 'flex',
         flexDirection: 'row'
     },
     signUpText: {
-        fontSize: 16,
+        fontSize: 16
     },
-    signUpButton: {
-
-    }
+    signUpButton: {}
 });
