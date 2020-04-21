@@ -83,12 +83,17 @@ export function Login({ navigation }: AuthNavProps<'Login'>) {
                 }}
             />
 
-            <Button
-                title='Sign Up'
-                onPress={() => navigation.navigate('Register')}
-            />
+            <View style={styles.signUpContainer}>
+                <Text style={styles.signUpText}>Don't have an account?</Text>
+                <Button
+                    type='clear'
+                    title='Sign Up'
+                    onPress={() => navigation.navigate('Register')}
+                />
+            </View>
 
             <Button
+                type='clear'
                 title='Forgot password?'
                 onPress={() => navigation.navigate('ResetPassword')}
             />
@@ -110,7 +115,7 @@ const styles = StyleSheet.create({
         fontSize: 16
     },
     form: {
-
+        marginVertical: 20
     },
     inputContainer: {
         marginBottom: 20
@@ -119,6 +124,16 @@ const styles = StyleSheet.create({
         textTransform: 'uppercase'
     },
     button: {
+
+    },
+    signUpContainer: {
+        display: 'flex',
+        flexDirection: 'row'
+    },
+    signUpText: {
+        fontSize: 16,
+    },
+    signUpButton: {
 
     }
 });
