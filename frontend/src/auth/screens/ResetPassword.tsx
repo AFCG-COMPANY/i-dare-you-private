@@ -3,36 +3,33 @@ import { Text, View, StyleSheet } from 'react-native';
 import { Button, Input } from 'react-native-elements';
 import { AuthNavProps } from '../models/AuthParamList';
 import * as firebase from 'firebase';
+import { DismissKeyboardView } from '../../components';
 
 export function ResetPassword({
     navigation,
     route
 }: AuthNavProps<'ResetPassword'>) {
     const [email, setEmail] = React.useState('');
-    const [error, setError] = React.useState(null);
+    const [error, setError] = React.useState<string | null>(null);
 
     const resetEmail: (email: string) => void = (email: string) => {
         firebase
             .auth()
             .sendPasswordResetEmail(email)
             .then(function () {
-                alert(
-                    'Мы отправили письмо вам на почту, можете поменять пароль.'
-                );
+                alert('Check your email to reset password.');
                 navigation.navigate('Login');
             })
-            .catch(function () {
-                alert(
-                    'Проверьте интернет, введенные данные и попробуйте еще раз.'
-                );
+            .catch(() => {
+                setError('Invalid credentials.');
             });
     };
 
     return (
-        <View style={styles.container}>
-            {error && <Text style={styles.errorMessage}>{error}</Text>}
-
+        <DismissKeyboardView style={styles.container}>
             <View style={styles.form}>
+                {error && <Text style={styles.errorMessage}>{error}</Text>}
+
                 <Input
                     containerStyle={styles.inputContainer}
                     label='Email Address'
@@ -41,29 +38,21 @@ export function ResetPassword({
                     value={email}
                     onChangeText={(email: string) => setEmail(email)}
                 />
-            </View>
 
-            <Button
-                style={styles.button}
-                title='Reset password'
-                onPress={() => resetEmail(email)}
-            />
-
-            <View style={styles.signUpContainer}>
-                <Text style={styles.signUpText}>Don't have an account?</Text>
                 <Button
-                    type='clear'
-                    title='Sign Up'
-                    onPress={() => navigation.navigate('Register')}
+                    style={styles.button}
+                    title='Reset password'
+                    onPress={() => resetEmail(email)}
                 />
             </View>
 
             <Button
                 type='clear'
-                title='Login'
+                title='Back to Login'
+                titleStyle={{ fontSize: 16 }}
                 onPress={() => navigation.navigate('Login')}
             />
-        </View>
+        </DismissKeyboardView>
     );
 }
 
@@ -81,21 +70,16 @@ const styles = StyleSheet.create({
         fontSize: 16
     },
     form: {
-        marginVertical: 20
+        marginVertical: 20,
+        flex: 1,
+        justifyContent: 'center'
     },
     inputContainer: {
-        marginBottom: 20
+        marginBottom: 20,
+        paddingHorizontal: 0
     },
     inputLabel: {
         textTransform: 'uppercase'
     },
-    button: {},
-    signUpContainer: {
-        display: 'flex',
-        flexDirection: 'row'
-    },
-    signUpText: {
-        fontSize: 16
-    },
-    signUpButton: {}
+    button: {}
 });

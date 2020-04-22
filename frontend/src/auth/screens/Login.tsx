@@ -53,9 +53,10 @@ export function Login({ navigation }: AuthNavProps<'Login'>) {
 
     return (
         <DismissKeyboardView style={styles.container}>
-            {error && <Text style={styles.errorMessage}>{error}</Text>}
 
             <View style={styles.form}>
+                {error && <Text style={styles.errorMessage}>{error}</Text>}
+
                 <Input
                     containerStyle={styles.inputContainer}
                     label='Email Address'

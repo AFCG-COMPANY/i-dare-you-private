@@ -3,6 +3,7 @@ import { StyleSheet, Text, View } from 'react-native';
 import { Button, Input } from 'react-native-elements';
 import { AuthNavProps } from '../models/AuthParamList';
 import * as firebase from 'firebase';
+import { DismissKeyboardView } from '../../components';
 
 interface LoginState {
     email: string | null;
@@ -84,10 +85,11 @@ export function Register({ navigation, route }: AuthNavProps<'Register'>) {
     };
 
     return (
-        <View style={styles.container}>
-            {error && <Text style={styles.errorMessage}>{error}</Text>}
+        <DismissKeyboardView style={styles.container}>
 
             <View style={styles.form}>
+                {error && <Text style={styles.errorMessage}>{error}</Text>}
+
                 <Input
                     containerStyle={styles.inputContainer}
                     label='Email Address'
@@ -116,29 +118,23 @@ export function Register({ navigation, route }: AuthNavProps<'Register'>) {
                         })
                     }
                 />
-            </View>
 
-            <Button
-                style={styles.button}
-                title='Sign In'
-                onPress={() => registerWithEmail(email, password)}
-            />
-
-            <View style={styles.signUpContainer}>
-                <Text style={styles.signUpText}>Don't have an account?</Text>
                 <Button
-                    type='clear'
                     title='Sign Up'
-                    onPress={() => navigation.navigate('Register')}
+                    onPress={() => registerWithEmail(email, password)}
                 />
             </View>
 
-            <Button
-                type='clear'
-                title='Forgot password?'
-                onPress={() => navigation.navigate('ResetPassword')}
-            />
-        </View>
+            <View style={styles.signUpContainer}>
+                <Text style={styles.signUpText}>Already have an account?</Text>
+                <Button
+                    type='clear'
+                    title='Sign In'
+                    titleStyle={{ fontSize: 16 }}
+                    onPress={() => navigation.navigate('Login')}
+                />
+            </View>
+        </DismissKeyboardView>
     );
 }
 
@@ -156,21 +152,28 @@ const styles = StyleSheet.create({
         fontSize: 16
     },
     form: {
-        marginVertical: 20
+        marginVertical: 20,
+        flex: 1,
+        justifyContent: 'center'
     },
     inputContainer: {
-        marginBottom: 20
+        marginBottom: 20,
+        paddingHorizontal: 0
     },
     inputLabel: {
         textTransform: 'uppercase'
     },
-    button: {},
+    signInButtonContainer: {},
     signUpContainer: {
+        paddingTop: 20,
+        marginTop: 'auto',
+        alignSelf: 'center',
         display: 'flex',
-        flexDirection: 'row'
+        flexDirection: 'row',
+        alignItems: 'center',
     },
     signUpText: {
+        color: 'gray',
         fontSize: 16
-    },
-    signUpButton: {}
+    }
 });
