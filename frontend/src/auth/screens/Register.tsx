@@ -5,13 +5,13 @@ import { AuthNavProps } from '../models/AuthParamList';
 import * as firebase from 'firebase';
 import { DismissKeyboardView } from '../../components';
 
-interface LoginState {
+interface RegisterState {
     email: string | null;
     password: string | null;
     error: string | null;
 }
 
-const initialState: LoginState = {
+const initialState: RegisterState = {
     email: null,
     password: null,
     error: null
@@ -25,7 +25,7 @@ enum ActionTypes {
 }
 
 function loginReducer(
-    state: LoginState,
+    state: RegisterState,
     action: { type: ActionTypes; payload: any }
 ) {
     switch (action.type) {
@@ -46,7 +46,7 @@ function loginReducer(
     }
 }
 
-export function Register({ navigation, route }: AuthNavProps<'Register'>) {
+export function Register({ navigation }: AuthNavProps<'Register'>) {
     const [state, dispatch] = React.useReducer(loginReducer, initialState);
 
     const { email, password, error } = state;
@@ -65,7 +65,6 @@ export function Register({ navigation, route }: AuthNavProps<'Register'>) {
             })
             .catch((error) => {
                 if (error.code === 'auth/email-already-in-use') {
-                    console.log('That email address is already in use!');
                     dispatch({
                         type: ActionTypes.Error,
                         payload: 'That email address is already in use!'
@@ -73,7 +72,6 @@ export function Register({ navigation, route }: AuthNavProps<'Register'>) {
                 }
 
                 if (error.code === 'auth/invalid-email') {
-                    console.log('That email address is invalid!');
                     dispatch({
                         type: ActionTypes.Error,
                         payload: 'That email address is invalid!'
@@ -125,8 +123,8 @@ export function Register({ navigation, route }: AuthNavProps<'Register'>) {
                 />
             </View>
 
-            <View style={styles.signUpContainer}>
-                <Text style={styles.signUpText}>Already have an account?</Text>
+            <View style={styles.signInContainer}>
+                <Text style={styles.signInText}>Already have an account?</Text>
                 <Button
                     type='clear'
                     title='Sign In'
@@ -163,8 +161,7 @@ const styles = StyleSheet.create({
     inputLabel: {
         textTransform: 'uppercase'
     },
-    signInButtonContainer: {},
-    signUpContainer: {
+    signInContainer: {
         paddingTop: 20,
         marginTop: 'auto',
         alignSelf: 'center',
@@ -172,7 +169,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
     },
-    signUpText: {
+    signInText: {
         color: 'gray',
         fontSize: 16
     }

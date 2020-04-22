@@ -5,11 +5,8 @@ import { AuthNavProps } from '../models/AuthParamList';
 import * as firebase from 'firebase';
 import { DismissKeyboardView } from '../../components';
 
-export function ResetPassword({
-    navigation,
-    route
-}: AuthNavProps<'ResetPassword'>) {
-    const [email, setEmail] = React.useState('');
+export function ResetPassword({ navigation }: AuthNavProps<'ResetPassword'>) {
+    const [email, setEmail] = React.useState<string>('');
     const [error, setError] = React.useState<string | null>(null);
 
     const resetEmail: (email: string) => void = (email: string) => {
@@ -36,11 +33,10 @@ export function ResetPassword({
                     labelStyle={styles.inputLabel}
                     autoCapitalize='none'
                     value={email}
-                    onChangeText={(email: string) => setEmail(email)}
+                    onChangeText={email => setEmail(email)}
                 />
 
                 <Button
-                    style={styles.button}
                     title='Reset password'
                     onPress={() => resetEmail(email)}
                 />
@@ -80,6 +76,5 @@ const styles = StyleSheet.create({
     },
     inputLabel: {
         textTransform: 'uppercase'
-    },
-    button: {}
+    }
 });

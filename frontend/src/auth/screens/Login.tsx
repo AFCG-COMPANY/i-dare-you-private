@@ -117,8 +117,8 @@ export function Login({ navigation }: AuthNavProps<'Login'>) {
                 />
             </View>
 
-            <View style={styles.signUpContainer}>
-                <Text style={styles.signUpText}>New to I Dare You?</Text>
+            <View style={styles.signInContainer}>
+                <Text style={styles.signInText}>New to I Dare You?</Text>
                 <Button
                     type='clear'
                     title='Sign Up'
@@ -156,7 +156,7 @@ const styles = StyleSheet.create({
         textTransform: 'uppercase'
     },
     signInButtonContainer: {},
-    signUpContainer: {
+    signInContainer: {
         paddingTop: 20,
         marginTop: 'auto',
         alignSelf: 'center',
@@ -164,7 +164,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
     },
-    signUpText: {
+    signInText: {
         color: 'gray',
         fontSize: 16
     }
