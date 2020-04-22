@@ -3,6 +3,7 @@ import { StyleSheet, Text, View } from 'react-native';
 import { Button, Input } from 'react-native-elements';
 import * as firebase from 'firebase';
 import { AuthNavProps } from '../models/AuthParamList';
+import { DismissKeyboardView } from '../../components';
 
 interface LoginState {
     email: string | null;
@@ -51,7 +52,7 @@ export function Login({ navigation }: AuthNavProps<'Login'>) {
     const { email, password, error } = state;
 
     return (
-        <View style={styles.container}>
+        <DismissKeyboardView style={styles.container}>
             {error && <Text style={styles.errorMessage}>{error}</Text>}
 
             <View style={styles.form}>
@@ -83,45 +84,48 @@ export function Login({ navigation }: AuthNavProps<'Login'>) {
                         })
                     }
                 />
-            </View>
 
-            <Button
-                style={styles.button}
-                title='Sign In'
-                onPress={() => {
-                    firebase
-                        .auth()
-                        .signInWithEmailAndPassword(email, password)
-                        .then(() =>
-                            dispatch({
-                                type: ActionTypes.Success,
-                                payload: null
-                            })
-                        )
-                        .catch((error) =>
-                            dispatch({
-                                type: ActionTypes.Error,
-                                payload: error.message
-                            })
-                        );
-                }}
-            />
-
-            <View style={styles.signUpContainer}>
-                <Text style={styles.signUpText}>Don't have an account?</Text>
                 <Button
+                    containerStyle={styles.signInButtonContainer}
+                    title='Sign In'
+                    onPress={() => {
+                        firebase
+                            .auth()
+                            .signInWithEmailAndPassword(email, password)
+                            .then(() =>
+                                dispatch({
+                                    type: ActionTypes.Success,
+                                    payload: null
+                                })
+                            )
+                            .catch((error) =>
+                                dispatch({
+                                    type: ActionTypes.Error,
+                                    payload: error.message
+                                })
+                            );
+                    }}
+                />
+
+                <Button
+                    containerStyle={{ alignSelf: 'flex-end' }}
                     type='clear'
-                    title='Sign Up'
-                    onPress={() => navigation.navigate('Register')}
+                    title='Forgot password?'
+                    titleStyle={{ fontSize: 16 }}
+                    onPress={() => navigation.navigate('ResetPassword')}
                 />
             </View>
 
-            <Button
-                type='clear'
-                title='Forgot password?'
-                onPress={() => navigation.navigate('ResetPassword')}
-            />
-        </View>
+            <View style={styles.signUpContainer}>
+                <Text style={styles.signUpText}>New to I Dare You?</Text>
+                <Button
+                    type='clear'
+                    title='Sign Up'
+                    titleStyle={{ fontSize: 16 }}
+                    onPress={() => navigation.navigate('Register')}
+                />
+            </View>
+        </DismissKeyboardView>
     );
 }
 
@@ -139,21 +143,28 @@ const styles = StyleSheet.create({
         fontSize: 16
     },
     form: {
-        marginVertical: 20
+        marginVertical: 20,
+        flex: 1,
+        justifyContent: 'center'
     },
     inputContainer: {
-        marginBottom: 20
+        marginBottom: 20,
+        paddingHorizontal: 0
     },
     inputLabel: {
         textTransform: 'uppercase'
     },
-    button: {},
+    signInButtonContainer: {},
     signUpContainer: {
+        paddingTop: 20,
+        marginTop: 'auto',
+        alignSelf: 'center',
         display: 'flex',
-        flexDirection: 'row'
+        flexDirection: 'row',
+        alignItems: 'center',
     },
     signUpText: {
+        color: 'gray',
         fontSize: 16
-    },
-    signUpButton: {}
+    }
 });
