@@ -7,8 +7,8 @@ import { AuthNavigator } from './src/auth/AuthNavigator';
 import { MainNavigator } from './src/main/MainNavigator';
 
 export default function App() {
-    const [ user, setUser ] = React.useState(null);
-    const [ loading, setLoading ] = React.useState(true);
+    const [user, setUser] = React.useState(null);
+    const [loading, setLoading] = React.useState(true);
 
     React.useEffect(() => {
         firebase.initializeApp(firebaseConfig);
@@ -26,12 +26,12 @@ export default function App() {
                 <Text>Loading...</Text>
                 <ActivityIndicator size='large' />
             </SafeAreaView>
-        )
+        );
     }
 
     return (
         <NavigationContainer>
-            { user ? <MainNavigator /> : <AuthNavigator /> }
+            {user ? <MainNavigator /> : <AuthNavigator />}
         </NavigationContainer>
-    )
-};
+    );
+}

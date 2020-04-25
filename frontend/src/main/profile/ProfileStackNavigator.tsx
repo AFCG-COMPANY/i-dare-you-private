@@ -6,8 +6,7 @@ export type ProfileParamList = {
     Profile: undefined;
 };
 
-interface ProfileStackProps {
-}
+interface ProfileStackProps {}
 
 const ProfileStack = createStackNavigator<ProfileParamList>();
 
