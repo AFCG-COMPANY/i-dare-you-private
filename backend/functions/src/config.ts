@@ -21,4 +21,4 @@ admin.initializeApp(
     }
 );
 
-export default admin.firestore();
+export default admin;
