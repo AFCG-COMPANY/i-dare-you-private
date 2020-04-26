@@ -13,7 +13,7 @@ import { ProfileStackNavigator } from './profile/ProfileStackNavigator';
 type MainNavigatorParamList = {
     Feed: undefined;
     Users: undefined;
-    NewChallenge: undefined;
+    Challenge: undefined;
     Favorite: undefined;
     Profile: undefined;
 };
@@ -24,6 +24,7 @@ const Tabs = createBottomTabNavigator<MainNavigatorParamList>();
 
 export const MainNavigator: React.FC<MainNavigatorProps> = () => (
     <Tabs.Navigator
+        initialRouteName='Profile'
         screenOptions={({ route }) => ({
             tabBarIcon: ({ color, size }) => {
                 switch (route.name) {
@@ -61,7 +62,7 @@ export const MainNavigator: React.FC<MainNavigatorProps> = () => (
                                 />
                             )
                         });
-                    case 'NewChallenge':
+                    case 'Challenge':
                         return (
                             <FontAwesome
                                 name='plus-square-o'
@@ -113,7 +114,7 @@ export const MainNavigator: React.FC<MainNavigatorProps> = () => (
     >
         <Tabs.Screen name='Feed' component={Feed} />
         <Tabs.Screen name='Users' component={ProfileStackNavigator} />
-        <Tabs.Screen name='NewChallenge' component={ProfileStackNavigator} />
+        <Tabs.Screen name='Challenge' component={Feed} />
         <Tabs.Screen name='Favorite' component={Feed} />
         <Tabs.Screen name='Profile' component={ProfileStackNavigator} />
     </Tabs.Navigator>

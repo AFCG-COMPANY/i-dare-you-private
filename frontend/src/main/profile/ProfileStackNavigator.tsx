@@ -6,13 +6,14 @@ import { Ionicons } from '@expo/vector-icons';
 import { Platform } from 'react-native';
 import { Button } from 'react-native-elements';
 
-export type ProfileParamList = {
+export type ProfileStackParamList = {
     Profile: undefined;
+    Settings: undefined;
 };
 
 interface ProfileStackProps {}
 
-const ProfileStack = createStackNavigator<ProfileParamList>();
+const ProfileStack = createStackNavigator<ProfileStackParamList>();
 
 export const ProfileStackNavigator: React.FC<ProfileStackProps> = ({}) => {
     return (
