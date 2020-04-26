@@ -40,7 +40,10 @@ export const Profile: React.FC<ProfileProps> = ({ navigation }) => {
                     setUser(userData);
                     setChallenges(challenges);
                 })
-                .catch(() => Alert.alert('Failed to load profile. Check Internet connection and try again.'))
+                .catch(e => {
+                    Alert.alert('Failed to load profile. Check Internet connection and try again.');
+                    console.log(e);
+                })
                 .finally(() => setLoading(false));
         }
     }, []);

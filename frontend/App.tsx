@@ -7,13 +7,13 @@ import { AuthNavigator } from './src/auth/AuthNavigator';
 import { MainNavigator } from './src/main/MainNavigator';
 
 export default function App() {
-    const [user, setUser] = React.useState(null);
-    const [loading, setLoading] = React.useState(true);
+    const [user, setUser] = React.useState<firebase.User | null>(null);
+    const [loading, setLoading] = React.useState<boolean>(true);
 
     React.useEffect(() => {
         firebase.initializeApp(firebaseConfig);
 
-        const subscriber = firebase.auth().onAuthStateChanged((user: any) => {
+        const subscriber = firebase.auth().onAuthStateChanged(user => {
             setUser(user);
             setLoading(false);
         });
@@ -22,9 +22,8 @@ export default function App() {
 
     if (loading) {
         return (
-            <SafeAreaView>
-                <Text>Loading...</Text>
-                <ActivityIndicator size='large' />
+            <SafeAreaView style={{flex: 1}}>
+                <ActivityIndicator style={{flex: 1}} size='large' />
             </SafeAreaView>
         );
     }
