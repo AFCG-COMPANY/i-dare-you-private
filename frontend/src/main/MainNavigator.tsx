@@ -1,16 +1,10 @@
 import React from 'react';
 import { ActivityIndicator, Platform } from 'react-native';
-import {
-    Feather,
-    FontAwesome,
-    FontAwesome5,
-    Ionicons
-} from '@expo/vector-icons';
+import { Feather, FontAwesome, FontAwesome5, Ionicons } from '@expo/vector-icons';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import Feed from './feed/Feed';
 import { ProfileStackNavigator } from './profile/ProfileStackNavigator';
-import { getUserInfo } from '../api';
-import * as firebase from 'firebase';
+import { User } from '../models';
 
 export type MainNavigatorParamList = {
     Feed: undefined;
@@ -20,26 +14,15 @@ export type MainNavigatorParamList = {
     Profile: undefined;
 };
 
-interface MainNavigatorProps {}
+interface MainNavigatorProps {
+    user: User | null
+}
 
 const Tabs = createBottomTabNavigator<MainNavigatorParamList>();
 
-export const MainNavigator: React.FC<MainNavigatorProps> = () => {
-    const [ initialRoute, setInitialRoute ] = React.useState<'Feed' | 'Profile' | null>(null)
-
-    React.useEffect(() => {
-        const userId = firebase.auth().currentUser?.uid;
-
-        if (userId) {
-            getUserInfo(userId)
-                // If user has not specified his username, open Profile
-                .then(user => setInitialRoute(user?.username ? 'Feed' : 'Profile'))
-                .catch(e => {
-                    setInitialRoute('Feed');
-                    console.log(e);
-                });
-        }
-    }, []);
+export const MainNavigator: React.FC<MainNavigatorProps> = ({ user }) => {
+    // If username is not set, redirect to Profile tab
+    const initialRoute = user?.username ? 'Feed' : 'Profile';
 
     return initialRoute
         ?

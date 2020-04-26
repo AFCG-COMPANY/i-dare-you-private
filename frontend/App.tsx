@@ -1,23 +1,31 @@
 import React from 'react';
 import * as firebase from 'firebase';
 import { firebaseConfig } from './firebase.config';
-import { ActivityIndicator, SafeAreaView, Text } from 'react-native';
+import { ActivityIndicator, SafeAreaView } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { AuthNavigator } from './src/auth/AuthNavigator';
 import { MainNavigator } from './src/main/MainNavigator';
+import { getUserInfo } from './src/api';
+import { User } from './src/models';
 
 export default function App() {
-    const [user, setUser] = React.useState<firebase.User | null>(null);
+    const [user, setUser] = React.useState<User | null>(null);
     const [loading, setLoading] = React.useState<boolean>(true);
 
     React.useEffect(() => {
         firebase.initializeApp(firebaseConfig);
 
-        const subscriber = firebase.auth().onAuthStateChanged(user => {
-            setUser(user);
-            setLoading(false);
+        // Unsubscribe on unmount
+        return firebase.auth().onAuthStateChanged(user => {
+            setLoading(true);
+
+            if (user?.uid) {
+                getUserInfo(user.uid)
+                    .then(userInfo => setUser(userInfo))
+                    .catch(() => setUser(null))
+                    .finally(() => setLoading(false))
+            }
         });
-        return subscriber; // unsubscribe on unmount
     }, []);
 
     if (loading) {
@@ -30,7 +38,7 @@ export default function App() {
 
     return (
         <NavigationContainer>
-            {user ? <MainNavigator /> : <AuthNavigator />}
+            {user ? <MainNavigator user={user} /> : <AuthNavigator />}
         </NavigationContainer>
     );
 }
