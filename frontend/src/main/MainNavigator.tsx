@@ -33,7 +33,7 @@ export const MainNavigator: React.FC<MainNavigatorProps> = () => {
         if (userId) {
             getUserInfo(userId)
                 // If user has not specified his username, open Profile
-                .then(user => setInitialRoute(user.username ? 'Feed' : 'Profile'))
+                .then(user => setInitialRoute(user?.username ? 'Feed' : 'Profile'))
                 .catch(e => {
                     setInitialRoute('Feed');
                     console.log(e);
