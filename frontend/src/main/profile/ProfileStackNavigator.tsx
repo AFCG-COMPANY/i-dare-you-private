@@ -13,7 +13,10 @@ const ProfileStack = createStackNavigator<ProfileParamList>();
 export const ProfileStackNavigator: React.FC<ProfileStackProps> = ({}) => {
     return (
         <ProfileStack.Navigator>
-            <ProfileStack.Screen name='Profile' component={Profile} />
+            <ProfileStack.Screen
+                name='Profile'
+                component={Profile}
+            />
         </ProfileStack.Navigator>
     );
 };
