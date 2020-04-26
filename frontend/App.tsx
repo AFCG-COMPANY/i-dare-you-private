@@ -17,13 +17,14 @@ export default function App() {
 
         // Unsubscribe on unmount
         return firebase.auth().onAuthStateChanged(user => {
-            setLoading(true);
-
             if (user?.uid) {
                 getUserInfo(user.uid)
                     .then(userInfo => setUser(userInfo))
                     .catch(() => setUser(null))
                     .finally(() => setLoading(false))
+            } else {
+                setUser(null);
+                setLoading(false);
             }
         });
     }, []);
