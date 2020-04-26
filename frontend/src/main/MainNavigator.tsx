@@ -10,7 +10,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import Feed from './feed/Feed';
 import { ProfileStackNavigator } from './profile/ProfileStackNavigator';
 
-type MainNavigatorParamList = {
+export type MainNavigatorParamList = {
     Feed: undefined;
     Users: undefined;
     Challenge: undefined;

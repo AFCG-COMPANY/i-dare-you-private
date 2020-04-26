@@ -7,11 +7,19 @@ import { Challenge, User } from '../../models';
 import { ChallengeCard } from '../../components';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { ProfileStackParamList } from './ProfileStackNavigator';
+import { CompositeNavigationProp } from '@react-navigation/native';
+import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
+import { MainNavigatorParamList } from '../MainNavigator';
 
 const CHALLENGES_AMOUNT_PER_FETCH: number = 20;
 
+type ProfileNavigation = CompositeNavigationProp<
+    StackNavigationProp<ProfileStackParamList, 'Profile'>,
+    BottomTabNavigationProp<MainNavigatorParamList>
+>
+
 interface ProfileProps {
-    navigation: StackNavigationProp<ProfileStackParamList, 'Profile'>
+    navigation: ProfileNavigation
 }
 
 export const Profile: React.FC<ProfileProps> = ({ navigation }) => {
@@ -100,25 +108,23 @@ export const Profile: React.FC<ProfileProps> = ({ navigation }) => {
                     ListHeaderComponent={() => <Text>{user?.bio}</Text>}
                     ListEmptyComponent={() => (
                         <View style={styles.challengesEmptyContainer}>
-                            <Text style={{marginRight: 2}}>No challenges yet.</Text>
+                            <Text>No challenges yet. </Text>
                             <Button
-                                style={{marginRight: 2}}
                                 buttonStyle={styles.challengesEmptyButton}
                                 type='clear'
                                 title='Browse'
                                 titleStyle={styles.text}
-                                onPress={() => navigation.navigate('Settings')}
+                                onPress={() => navigation.navigate('Feed')}
                             />
-                            <Text style={{marginRight: 2}}>challenges or</Text>
+                            <Text> or </Text>
                             <Button
-                                containerStyle={{marginRight: 2}}
                                 buttonStyle={styles.challengesEmptyButton}
                                 type='clear'
                                 title='create'
                                 titleStyle={styles.text}
-                                onPress={() => {}}
+                                onPress={() => navigation.navigate('Challenge')}
                             />
-                            <Text>one</Text>
+                            <Text> new one</Text>
                         </View>
                     )}
                 />
