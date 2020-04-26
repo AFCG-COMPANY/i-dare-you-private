@@ -1,6 +1,6 @@
 import React from 'react';
-import { ActivityIndicator, Alert, SafeAreaView, Text } from 'react-native';
-import { Avatar, Button } from 'react-native-elements';
+import { ActivityIndicator, Alert, Text, View } from 'react-native';
+import { Avatar } from 'react-native-elements';
 import * as firebase from 'firebase';
 import { getUserInfo } from '../../api';
 import { User } from '../../models/user';
@@ -25,7 +25,7 @@ export const Profile: React.FC<ProfileProps> = ({}) => {
         const { avatar, bio, username } = user;
 
         return (
-            <SafeAreaView>
+            <View>
                 <Avatar
                     rounded
                     size='large'
@@ -35,12 +35,7 @@ export const Profile: React.FC<ProfileProps> = ({}) => {
                 <Text>{username}</Text>
 
                 <Text>{bio}</Text>
-
-                <Button
-                    title='Sign Out'
-                    onPress={() => firebase.auth().signOut()}
-                />
-            </SafeAreaView>
+            </View>
         );
     } else {
         return <ActivityIndicator size='large' />
