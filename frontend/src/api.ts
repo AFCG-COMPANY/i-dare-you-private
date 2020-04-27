@@ -13,6 +13,6 @@ export async function getUserInfo(id: string): Promise<AxiosResponse<User>> {
     return res.data;
 }
 
-export function setUserInfo(userInfo: User): Promise<void> {
-    return axios.post(`${HOST}profile-setUserInfo`, userInfo);
+export function setUserInfo(id: string, avatar: string, bio: string, username: string): Promise<void> {
+    return axios.post(`${HOST}profile-setUserInfo?id=${id}`, {avatar, bio, username});
 }
