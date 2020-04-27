@@ -19,8 +19,14 @@ export default function App() {
         return firebase.auth().onAuthStateChanged(user => {
             if (user?.uid) {
                 getUserInfo(user.uid)
-                    .then(userInfo => setUser(userInfo))
-                    .catch(() => setUser(null))
+                    .then(userInfo => {
+                        setUser(userInfo)
+                        console.log(userInfo)
+                    })
+                    .catch((e) => {
+                        console.log(e)
+                        setUser(null)
+                    })
                     .finally(() => setLoading(false))
             } else {
                 setUser(null);

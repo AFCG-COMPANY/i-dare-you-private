@@ -59,7 +59,7 @@ export function Register({ navigation }: AuthNavProps<'Register'>) {
             .auth()
             .createUserWithEmailAndPassword(email, password)
             .then((data) => {
-                data.user?.sendEmailVerification().then(function () {
+                data.user?.sendEmailVerification().then(() => {
                     alert('send email');
                 });
             })
@@ -69,16 +69,17 @@ export function Register({ navigation }: AuthNavProps<'Register'>) {
                         type: ActionTypes.Error,
                         payload: 'That email address is already in use!'
                     });
-                }
-
-                if (error.code === 'auth/invalid-email') {
+                } else if (error.code === 'auth/invalid-email') {
                     dispatch({
                         type: ActionTypes.Error,
                         payload: 'That email address is invalid!'
                     });
+                } else {
+                    dispatch({
+                        type: ActionTypes.Error,
+                        payload: error.message
+                    })
                 }
-
-                console.error(error);
             });
     };
 
@@ -145,7 +146,7 @@ const styles = StyleSheet.create({
     },
     errorMessage: {
         marginBottom: 20,
-        alignSelf: 'center',
+        alignSelf: 'stretch',
         color: 'tomato',
         fontSize: 16
     },

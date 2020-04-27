@@ -5,21 +5,12 @@ import * as firebase from 'firebase';
 import { getChallenges, getUserInfo } from '../../api';
 import { Challenge, User } from '../../models';
 import { ChallengeCard } from '../../components';
-import { StackNavigationProp } from '@react-navigation/stack';
-import { ProfileStackParamList } from './ProfileStackNavigator';
-import { CompositeNavigationProp } from '@react-navigation/native';
-import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
-import { MainNavigatorParamList } from '../MainNavigator';
+import { ProfileNavigationProp } from './ProfileStackNavigator';
 
 const CHALLENGES_AMOUNT_PER_FETCH: number = 20;
 
-type ProfileNavigation = CompositeNavigationProp<
-    StackNavigationProp<ProfileStackParamList, 'Profile'>,
-    BottomTabNavigationProp<MainNavigatorParamList>
->
-
 interface ProfileProps {
-    navigation: ProfileNavigation
+    navigation: ProfileNavigationProp
 }
 
 export const Profile: React.FC<ProfileProps> = ({ navigation }) => {

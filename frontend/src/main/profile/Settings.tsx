@@ -1,30 +1,21 @@
 import React from 'react';
-import {
-    View,
-    Text,
-    Alert,
-    Image,
-    StyleSheet,
-    ActivityIndicator
-} from 'react-native';
+import { ActivityIndicator, Alert, StyleSheet, View } from 'react-native';
 
 import * as ImagePicker from 'expo-image-picker';
 import Constants from 'expo-constants';
 import * as Permissions from 'expo-permissions';
 
 import * as firebase from 'firebase';
-import { Button, Input, Avatar } from 'react-native-elements';
+import { Avatar, Button, Input } from 'react-native-elements';
 
 import { DismissKeyboardView } from '../../components';
 import { getUserInfo, setUserInfo } from '../../api';
-import { User } from '../../models/user';
+import { User } from '../../models';
 
 interface SettingsProps {}
 
 export const Settings: React.FC<SettingsProps> = ({}) => {
-    const [user, setUser] = React.useState<
-        User | { avatar: string } | { bio: string } | { username: string }
-    >();
+    const [user, setUser] = React.useState<User>({});
 
     React.useEffect(() => {
         getPermissionAsync();
@@ -92,37 +83,53 @@ export const Settings: React.FC<SettingsProps> = ({}) => {
     };
 
     const savePhoto = async () => {
-        const { avatar, bio, username } = user;
+        const { avatar } = user;
+
+        if (!avatar) {
+            return;
+        }
+
         const splitedPhotoPath = avatar.split('.')
         const photoExtension = splitedPhotoPath[splitedPhotoPath.length - 1]
         const blob = await uriToBlob(avatar);
-        let storageRef = firebase.storage().ref();
-        storageRef
-            .child(`avatars/${firebase.auth().currentUser?.uid}.${photoExtension}`)
-            .delete()
-            .then(() => {
-                console.log('delete photo');
-            });
-        storageRef
-            .child(`avatars/${firebase.auth().currentUser?.uid}.${photoExtension}`)
-            .put(blob, {
-                contentType: `image/${photoExtension}`
-            })
-            .then((snapshot) => {
-                console.log('success');
-            })
-            .catch((error) => {
-                console.log('err');
-            });
+        const storageRef = firebase.storage().ref();
+
+        try {
+            const path: string = `avatars/${firebase.auth().currentUser?.uid}.${photoExtension}`
+
+            await storageRef
+                .child(path)
+                .delete()
+
+            await storageRef
+                .child(path)
+                .put(blob, { contentType: `image/${photoExtension}` })
+            console.log('success');
+        } catch (e) {
+            Alert.alert('Failed to upload info. Please try again.')
+            console.log(e);
+        }
     };
 
     const saveInfo = async () => {
         const { avatar, bio, username } = user;
-        if (avatar.startsWith('file')) {
+
+        if (!avatar) {
+            return ;
+        }
+
+        if (avatar?.startsWith('file')) {
             await savePhoto();
         }
-        const avatarPath = `avatars/${firebase.auth().currentUser?.uid}`;
-        await setUserInfo(firebase.auth().currentUser?.uid, avatarPath, bio, username);
+
+        const splitedPhotoPath = avatar.split('.');
+        const photoExtension = splitedPhotoPath[splitedPhotoPath.length - 1]
+        await setUserInfo({
+            id: firebase.auth().currentUser?.uid,
+            avatar: `avatars/${firebase.auth().currentUser?.uid}.${photoExtension}`,
+            bio,
+            username
+        });
         console.log(username, bio, avatar);
     };
     if (user) {

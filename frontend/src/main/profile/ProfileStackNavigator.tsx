@@ -1,27 +1,37 @@
 import React from 'react';
-import { createStackNavigator } from '@react-navigation/stack';
+import { createStackNavigator, StackNavigationProp } from '@react-navigation/stack';
 import { Profile } from './Profile';
 import { Settings } from './Settings';
 import { Ionicons } from '@expo/vector-icons';
 import { Platform } from 'react-native';
 import { Button } from 'react-native-elements';
+import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
+import { MainNavigatorParamList } from '../MainNavigator';
+import { CompositeNavigationProp } from '@react-navigation/native';
 
 export type ProfileStackParamList = {
     Profile: undefined;
     Settings: undefined;
 };
 
-interface ProfileStackProps {}
+export type ProfileNavigationProp = CompositeNavigationProp<
+    StackNavigationProp<ProfileStackParamList, 'Profile'>,
+    BottomTabNavigationProp<MainNavigatorParamList>
+>;
+
+interface ProfileStackProps {
+    navigation: ProfileNavigationProp
+}
 
 const ProfileStack = createStackNavigator<ProfileStackParamList>();
 
-export const ProfileStackNavigator: React.FC<ProfileStackProps> = ({}) => {
+export const ProfileStackNavigator: React.FC<ProfileStackProps> = ({ navigation }) => {
     return (
         <ProfileStack.Navigator>
             <ProfileStack.Screen
                 name='Profile'
                 component={Profile}
-                options={({ navigation, route }) => ({
+                options={() => ({
                     headerRight: () => (
                         <Button
                             type='clear'

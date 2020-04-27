@@ -1,7 +1,6 @@
 import axios from 'axios';
-import { User } from './models/user';
+import { User, Challenge } from './models';
 import * as firebase from 'firebase';
-import { Challenge } from './models/challenge';
 
 const HOST = 'https://us-central1-i-dare-you-142ea.cloudfunctions.net/';
 
@@ -9,12 +8,17 @@ export async function getUserInfo(id: string): Promise<User> {
     const res = await axios.get<User>(`${HOST}profile-getUserInfo?id=${id}`);
 
     // Need to get download url because we can't do it from backend
-    res.data.avatar = await firebase.storage().ref(res.data.avatar).getDownloadURL();
+    try {
+        res.data.avatar = await firebase.storage().ref(res.data.avatar).getDownloadURL();
+    } catch (e) {
+        console.log(e);
+    }
 
     return res.data;
 }
 
-export function setUserInfo(id: string, avatar: string, bio: string, username: string): Promise<void> {
+export function setUserInfo(user: User): Promise<void> {
+    const { avatar, username, bio, id } = user;
     return axios.post(`${HOST}profile-setUserInfo?id=${id}`, {avatar, bio, username});
 }
 

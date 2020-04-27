@@ -93,12 +93,12 @@ export function Login({ navigation }: AuthNavProps<'Login'>) {
                         firebase
                             .auth()
                             .signInWithEmailAndPassword(email, password)
-                            .then(() =>
+                            .then((res) => {
                                 dispatch({
                                     type: ActionTypes.Success,
                                     payload: null
                                 })
-                            )
+                            })
                             .catch((error) =>
                                 dispatch({
                                     type: ActionTypes.Error,
