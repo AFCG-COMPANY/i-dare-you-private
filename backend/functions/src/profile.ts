@@ -6,13 +6,19 @@ export const getUserInfo = functions.https.onRequest((request, response) => {
     admin.firestore().collection('users').doc(request.query.id.toString()).get()
         .then(doc => {
             if (doc.exists) {
-                const userInfo = doc.data() || {};
-                if (!userInfo.avatar) {
-                    userInfo.avatar = 'avatars/default.jpeg'
-                }
-                response.send(userInfo);
+                response.send(doc.data());
             } else {
-                response.status(404).send()
+                admin.firestore().collection('users').doc(request.query.id.toString()).set({
+                    avatar: 'avatars/default.jpeg',
+                    username: '',
+                    bio: ''
+                })
+                .then(() => {
+                    response.status(200).send()
+                })
+                .catch(() => {
+                    response.status(500).send()
+                });
             }
         })
         .catch(err => {
