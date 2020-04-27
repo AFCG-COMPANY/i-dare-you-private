@@ -34,7 +34,7 @@ function loginReducer(
         case ActionTypes.PasswordChange:
             return { ...state, password: action.payload };
         case ActionTypes.Success:
-            return { ...initialState };
+            return { ...state };
         case ActionTypes.Error:
             return {
                 ...state,
