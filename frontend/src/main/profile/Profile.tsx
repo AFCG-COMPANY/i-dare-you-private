@@ -2,10 +2,11 @@ import React from 'react';
 import { ActivityIndicator, Alert, FlatList, StyleSheet, View } from 'react-native';
 import { Avatar, Badge, Button, Text } from 'react-native-elements';
 import * as firebase from 'firebase';
-import { getChallenges, getUserInfo } from '../../api';
-import { Challenge, User } from '../../models';
+import { getChallenges } from '../../api';
+import { Challenge } from '../../models';
 import { ChallengeCard } from '../../components';
 import { ProfileNavigationProp } from './ProfileStackNavigator';
+import { AppContext } from '../../contexts/AppContext';
 
 const CHALLENGES_AMOUNT_PER_FETCH: number = 20;
 
@@ -14,25 +15,20 @@ interface ProfileProps {
 }
 
 export const Profile: React.FC<ProfileProps> = ({ navigation }) => {
+    const { state } = React.useContext(AppContext);
+    const { user } = state;
+
     const [ loading, setLoading ] = React.useState<boolean>(true);
-    const [ user, setUser ] = React.useState<User>()
     const [ challenges, setChallenges ] = React.useState<Challenge[]>([]);
 
     React.useEffect(() => {
         const userId = firebase.auth().currentUser?.uid;
 
         if (userId) {
-            Promise.all([
-                getUserInfo(userId),
-                getChallenges(userId, 0, CHALLENGES_AMOUNT_PER_FETCH)
-            ])
-                .then(results => {
-                    const [ userData, challenges ] = results;
-                    setUser(userData);
-                    setChallenges(challenges);
-                })
+            getChallenges(userId, 0, CHALLENGES_AMOUNT_PER_FETCH)
+                .then(res => setChallenges(res))
                 .catch(e => {
-                    Alert.alert('Failed to load profile. Check Internet connection and try again.');
+                    Alert.alert('Failed to load your challenges. Check Internet connection and try again.');
                     console.log(e);
                 })
                 .finally(() => setLoading(false));

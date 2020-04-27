@@ -2,15 +2,25 @@ import React from 'react';
 import * as firebase from 'firebase';
 import { firebaseConfig } from './firebase.config';
 import { ActivityIndicator, SafeAreaView } from 'react-native';
-import { NavigationContainer } from '@react-navigation/native';
+import { getUserInfo } from './src/api';
 import { AuthNavigator } from './src/auth/AuthNavigator';
 import { MainNavigator } from './src/main/MainNavigator';
-import { getUserInfo } from './src/api';
-import { User } from './src/models';
+import { NavigationContainer } from '@react-navigation/native';
+import { AppActionTypes, AppState, INITIAL_STATE, AppContext } from './src/contexts/AppContext';
+
+
+function reducer(state: AppState, action: { type: AppActionTypes; payload: any }): AppState {
+    switch (action.type) {
+        case AppActionTypes.SetUser:
+            return { ...state, user: action.payload };
+        default:
+            return state;
+    }
+}
 
 export default function App() {
-    const [user, setUser] = React.useState<User | null>(null);
-    const [loading, setLoading] = React.useState<boolean>(true);
+    const [ state, dispatch ] = React.useReducer(reducer, INITIAL_STATE);
+    const [ loading, setLoading ] = React.useState<boolean>(true);
 
     React.useEffect(() => {
         firebase.initializeApp(firebaseConfig);
@@ -20,16 +30,16 @@ export default function App() {
             if (user?.uid) {
                 getUserInfo(user.uid)
                     .then(userInfo => {
-                        setUser(userInfo)
-                        console.log(userInfo)
+                        dispatch({ type: AppActionTypes.SetUser, payload: { ...userInfo, id: user.uid } })
+                        console.log('USER INFO\n', userInfo)
                     })
                     .catch((e) => {
+                        dispatch({ type: AppActionTypes.SetUser, payload: null })
                         console.log(e)
-                        setUser(null)
                     })
                     .finally(() => setLoading(false))
             } else {
-                setUser(null);
+                dispatch({ type: AppActionTypes.SetUser, payload: null })
                 setLoading(false);
             }
         });
@@ -44,8 +54,12 @@ export default function App() {
     }
 
     return (
-        <NavigationContainer>
-            {user ? <MainNavigator user={user} /> : <AuthNavigator />}
-        </NavigationContainer>
+        <AppContext.Provider
+            value={{ state, dispatch }}
+        >
+            <NavigationContainer>
+                {state.user ? <MainNavigator user={state.user} /> : <AuthNavigator />}
+            </NavigationContainer>
+        </AppContext.Provider>
     );
 }

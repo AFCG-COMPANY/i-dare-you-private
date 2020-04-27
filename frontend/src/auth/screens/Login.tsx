@@ -20,8 +20,7 @@ const initialState: LoginState = {
 enum ActionTypes {
     EmailChange,
     PasswordChange,
-    Error,
-    Success
+    Error
 }
 
 function loginReducer(
@@ -33,8 +32,6 @@ function loginReducer(
             return { ...state, email: action.payload };
         case ActionTypes.PasswordChange:
             return { ...state, password: action.payload };
-        case ActionTypes.Success:
-            return { ...state };
         case ActionTypes.Error:
             return {
                 ...state,
@@ -93,12 +90,6 @@ export function Login({ navigation }: AuthNavProps<'Login'>) {
                         firebase
                             .auth()
                             .signInWithEmailAndPassword(email, password)
-                            .then((res) => {
-                                dispatch({
-                                    type: ActionTypes.Success,
-                                    payload: null
-                                })
-                            })
                             .catch((error) =>
                                 dispatch({
                                     type: ActionTypes.Error,
