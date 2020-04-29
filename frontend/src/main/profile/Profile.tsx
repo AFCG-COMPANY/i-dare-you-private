@@ -1,10 +1,10 @@
 import React from 'react';
 import { ActivityIndicator, Alert, FlatList, StyleSheet, View } from 'react-native';
-import { Avatar, Badge, Button, Text } from 'react-native-elements';
+import { Badge, Button, Text } from 'react-native-elements';
 import * as firebase from 'firebase';
 import { getChallenges } from '../../api';
 import { Challenge } from '../../models';
-import { ChallengeCard } from '../../components';
+import { Avatar, ChallengeCard } from '../../components';
 import { ProfileNavigationProp } from './ProfileStackNavigator';
 import { AppContext } from '../../contexts/AppContext';
 
@@ -45,12 +45,10 @@ export const Profile: React.FC<ProfileProps> = ({ navigation }) => {
         return (
             <View style={styles.container}>
                 <View style={styles.header}>
-                    {/*<Avatar*/}
-                    {/*    containerStyle={styles.avatarContainer}*/}
-                    {/*    rounded*/}
-                    {/*    size='large'*/}
-                    {/*    source={{ uri: user?.avatar }}*/}
-                    {/*/>*/}
+                    <Avatar
+                        containerStyle={styles.avatarContainer}
+                        source={{ uri: user?.avatar }}
+                    />
 
                     <View style={styles.stats}>
                         <View style={styles.statsItem}>
@@ -140,6 +138,7 @@ const styles = StyleSheet.create({
         marginRight: 20
     },
     username: {
+        fontSize: 16,
         marginVertical: 8,
         fontWeight: '700'
     },

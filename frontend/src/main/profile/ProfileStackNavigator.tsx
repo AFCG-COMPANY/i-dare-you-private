@@ -8,6 +8,7 @@ import { Button } from 'react-native-elements';
 import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
 import { MainNavigatorParamList } from '../MainNavigator';
 import { CompositeNavigationProp } from '@react-navigation/native';
+import * as firebase from 'firebase';
 
 export type ProfileStackParamList = {
     Profile: undefined;
@@ -45,6 +46,16 @@ export const ProfileStackNavigator: React.FC<ProfileStackProps> = ({ navigation 
             <ProfileStack.Screen
                 name='Settings'
                 component={Settings}
+                options={() => ({
+                    headerRight: () => (
+                        <Button
+                            type='clear'
+                            containerStyle={{marginRight: 20}}
+                            icon={<Ionicons name={Platform.OS === 'ios' ? 'ios-exit' : 'md-exit'} size={30} />}
+                            onPress={() => firebase.auth().signOut()}
+                        />
+                    )
+                })}
             />
         </ProfileStack.Navigator>
     );

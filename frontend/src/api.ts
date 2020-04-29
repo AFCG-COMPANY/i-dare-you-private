@@ -6,15 +6,32 @@ const HOST = 'https://us-central1-i-dare-you-142ea.cloudfunctions.net/';
 
 export async function getUserInfo(id: string): Promise<User> {
     const res = await axios.get<User>(`${HOST}profile-getUserInfo?id=${id}`);
-
-    // Need to get download url because we can't do it from backend
-    try {
-        res.data.avatar = await firebase.storage().ref(res.data.avatar).getDownloadURL();
-    } catch (e) {
-        console.log(e);
-    }
-
     return res.data;
+}
+
+export async function getUserAvatar(id: string): Promise<string> {
+    try {
+        return await getBase64FileFromStorage('avatars/' + id);
+    } catch (error) {
+        // If file does not exist, use get avatar
+        return await getBase64FileFromStorage('avatars/default.jpeg');
+    }
+}
+
+
+export async function getBase64FileFromStorage(path: string): Promise<string> {
+    const url = await firebase.storage().ref(path).getDownloadURL();
+    const file = await fetch(url);
+    const blob = await file.blob();
+
+    return new Promise<string>((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(blob);
+        reader.onload = () => {
+            const base64Str = reader.result;
+            resolve(base64Str as string);
+        };
+    });
 }
 
 export function updateUserInfo(user: User): Promise<void> {

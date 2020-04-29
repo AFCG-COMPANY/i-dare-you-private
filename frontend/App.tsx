@@ -2,11 +2,12 @@ import React from 'react';
 import * as firebase from 'firebase';
 import { firebaseConfig } from './firebase.config';
 import { ActivityIndicator, SafeAreaView } from 'react-native';
-import { getUserInfo } from './src/api';
+import { getUserAvatar, getUserInfo } from './src/api';
 import { AuthNavigator } from './src/auth/AuthNavigator';
 import { MainNavigator } from './src/main/MainNavigator';
 import { NavigationContainer } from '@react-navigation/native';
 import { AppActionTypes, AppState, INITIAL_STATE, AppContext } from './src/contexts/AppContext';
+import { User } from './src/models';
 
 
 function reducer(state: AppState, action: { type: AppActionTypes; payload: any }): AppState {
@@ -28,16 +29,22 @@ export default function App() {
         // Unsubscribe on unmount
         return firebase.auth().onAuthStateChanged(user => {
             if (user?.uid) {
-                getUserInfo(user.uid)
-                    .then(userInfo => {
-                        dispatch({ type: AppActionTypes.SetUser, payload: { ...userInfo, id: user.uid } })
-                        console.log('USER INFO\n', userInfo)
+                Promise.all([
+                    getUserInfo(user.uid),
+                    getUserAvatar(user.uid)
+                ]).then(([ userInfo, avatar ]) => {
+                    dispatch({
+                        type: AppActionTypes.SetUser,
+                        payload: {
+                            ...userInfo,
+                            id: user.uid,
+                            avatar
+                        } as User
                     })
-                    .catch((e) => {
-                        dispatch({ type: AppActionTypes.SetUser, payload: null })
-                        console.log(e)
-                    })
-                    .finally(() => setLoading(false))
+                }).catch(e => {
+                    dispatch({ type: AppActionTypes.SetUser, payload: null })
+                    console.log(e);
+                }).finally(() => setLoading(false));
             } else {
                 dispatch({ type: AppActionTypes.SetUser, payload: null })
                 setLoading(false);
@@ -58,7 +65,7 @@ export default function App() {
             value={{ state, dispatch }}
         >
             <NavigationContainer>
-                {state.user ? <MainNavigator user={state.user} /> : <AuthNavigator />}
+                {state.user ? <MainNavigator /> : <AuthNavigator />}
             </NavigationContainer>
         </AppContext.Provider>
     );

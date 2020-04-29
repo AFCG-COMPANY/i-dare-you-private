@@ -8,7 +8,7 @@ import * as Permissions from 'expo-permissions';
 import * as firebase from 'firebase';
 import { Button, Input, Text } from 'react-native-elements';
 
-import { DismissKeyboardView } from '../../components';
+import { Avatar, DismissKeyboardView } from '../../components';
 import { updateUserInfo } from '../../api';
 import { AppActionTypes, AppContext } from '../../contexts/AppContext';
 import { User } from '../../models';
@@ -26,17 +26,8 @@ export const Settings: React.FC<SettingsProps> = ({}) => {
     const [ error, setError ] = React.useState<string | null>(null);
     const [ usernameValue, setUsernameValue ] = React.useState(user.username);
     const [ bioValue, setBioValue ] = React.useState(user.bio);
-    const [ avatarUri, setAvatarUri ] = React.useState<string>();
-
-    React.useEffect(() => {
-        // Fetch initial user avatar from storage
-        firebase.storage().ref('avatars/default.jpeg').getDownloadURL()
-            .then(avatarUrl => setAvatarUri(avatarUrl))
-            .catch(e => {
-                setAvatarUri('avatars/default.jpeg');
-                console.log(e);
-            });
-    }, []);
+    const [ avatarValue, setAvatarValue ] = React.useState<string>();
+    const [ updateInProgress, setUpdateInProgress ] = React.useState<boolean>(false);
 
     const onAvatarEditPress = async () => {
         // Get permission to access photos
@@ -54,93 +45,66 @@ export const Settings: React.FC<SettingsProps> = ({}) => {
                 mediaTypes: ImagePicker.MediaTypeOptions.Images,
                 allowsEditing: true,
                 aspect: [4, 3],
-                quality: .7
+                quality: 0,
+                base64: true
             });
 
             if (!result.cancelled) {
-                setAvatarUri(result.uri);
+                setAvatarValue('data:image/png;base64,' + result.base64);
             }
         } catch (e) {
             Alert.alert('Failed to upload photo. Please try again.');
+            console.log(e);
         }
     };
-
-    const uploadAvatar = async (userId: string, photoUri: string) => {
-        console.log('UPLOAD', userId, photoUri)
-
-        try {
-            // Get file blob
-            const result = await fetch(photoUri);
-            const blob = await result.blob();
-
-            const storageRef = firebase.storage().ref();
-
-            // TODO
-            const path = `avatars${userId}`
-        } catch (e) {
-            Alert.alert('Failed to update profile.');
-        }
-    };
-
-    // const savePhoto = async () => {
-    //     if (avatar) {
-    //         const splitedPhotoPath = avatar.split('.');
-    //         const photoExtension = splitedPhotoPath[splitedPhotoPath.length - 1];
-    //         const result = await fetch(avatar);
-    //         const blob = await result.blob();
-    //         const storageRef = firebase.storage().ref();
-    //
-    //         try {
-    //             const path: string = `avatars/${user.id}.${photoExtension}`
-    //
-    //             await storageRef
-    //                 .child(path)
-    //                 .delete()
-    //
-    //             await storageRef
-    //                 .child(path)
-    //                 .put(blob, { contentType: `image/${photoExtension}` })
-    //         } catch (e) {
-    //             Alert.alert('Failed to upload info. Please try again.')
-    //             console.log(e);
-    //         }
-    //     }
-    // };
 
     const updateProfile = async () => {
-        // TODO Add validation
-
         if (!usernameValue) {
             setError('Display name is required.')
             return;
         }
 
-        const updatedUser: User = {
-            id: user.id,
-            username: usernameValue,
-            bio: bioValue
-        };
+        setUpdateInProgress(true);
+
+        const storageRef = firebase.storage().ref();
+        const avatarPath = 'avatars/' + user.id;
 
         try {
+            if (avatarValue) {
+                // User selected new avatar, need to upload it
+                const res = await fetch(avatarValue);
+                const blob = await res.blob();
+
+                // await storageRef.child(avatarPath).delete();
+                await storageRef.child(avatarPath).put(blob);
+            }
+
+            const updatedUser: User = {
+                id: user.id,
+                username: usernameValue,
+                bio: bioValue
+            };
+
             await updateUserInfo(updatedUser);
-            dispatch({type: AppActionTypes.SetUser, payload: updatedUser})
+
+            updatedUser.avatar = avatarValue || user.avatar;
+            dispatch({type: AppActionTypes.SetUser, payload: updatedUser })
         } catch (e) {
             Alert.alert('Failed to update profile. Try again.')
+        } finally {
+            setUpdateInProgress(false);
         }
     };
 
     return (
         <DismissKeyboardView style={styles.container}>
-            <View style={styles.form}>
-                {/*<Avatar*/}
-                {/*    containerStyle={styles.avatar}*/}
-                {/*    showEditButton={true}*/}
-                {/*    onEditPress={onAvatarEditPress}*/}
-                {/*    rounded*/}
-                {/*    size='large'*/}
-                {/*    source={{ uri: avatarUri }}*/}
-                {/*/>*/}
+            <Avatar
+                containerStyle={styles.avatar}
+                source={{ uri: avatarValue || user.avatar }}
+                onEditPress={onAvatarEditPress}
+            />
 
+            <View style={styles.form}>
                 <Input
                     containerStyle={styles.inputContainer}
                     label='Display Name'
@@ -161,18 +125,12 @@ export const Settings: React.FC<SettingsProps> = ({}) => {
                 />
 
                 <Button
-                    title='Update Profile'
                     containerStyle={styles.button}
+                    title='Update Profile'
+                    loading={updateInProgress}
                     onPress={updateProfile}
                 />
                 {error && <Text style={styles.error}>{error}</Text>}
-
-                <Button
-                    type='clear'
-                    containerStyle={styles.signOutButton}
-                    title='Sign Out'
-                    onPress={() => firebase.auth().signOut()}
-                />
             </View>
         </DismissKeyboardView>
     );
@@ -193,9 +151,8 @@ const styles = StyleSheet.create({
         marginTop: 20
     },
     form: {
-        marginVertical: 20,
-        flex: 1,
-        justifyContent: 'center'
+        marginBottom: 20,
+        flex: 1
     },
     inputContainer: {
         marginBottom: 20,
@@ -203,10 +160,6 @@ const styles = StyleSheet.create({
     },
     inputLabel: {
         textTransform: 'uppercase'
-    },
-    signOutButton: {
-        marginTop: 'auto',
-        paddingTop: 20
     },
     error: {
         alignSelf: 'center',

@@ -1,33 +1,26 @@
 import React from 'react';
-import { ActivityIndicator, Platform } from 'react-native';
+import { Platform } from 'react-native';
 import { Feather, FontAwesome, FontAwesome5, Ionicons } from '@expo/vector-icons';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import Feed from './feed/Feed';
 import { ProfileStackNavigator } from './profile/ProfileStackNavigator';
-import { User } from '../models';
+import { FeedStackNavigator } from './feed/FeedStackNavigator';
 
 export type MainNavigatorParamList = {
-    Feed: undefined;
-    Users: undefined;
-    Challenge: undefined;
-    Favorite: undefined;
-    Profile: undefined;
+    Feed: any;
+    Users: any;
+    Challenge: any;
+    Favorite: any;
+    Profile: any;
 };
 
-interface MainNavigatorProps {
-    user: User | null
-}
+interface MainNavigatorProps {}
 
 const Tabs = createBottomTabNavigator<MainNavigatorParamList>();
 
-export const MainNavigator: React.FC<MainNavigatorProps> = ({ user }) => {
-    // If username is not set, redirect to Profile tab
-    const initialRoute = user?.username ? 'Feed' : 'Profile';
-
-    return initialRoute
-        ?
-        (<Tabs.Navigator
-            initialRouteName={initialRoute}
+export const MainNavigator: React.FC<MainNavigatorProps> = () => {
+    return (
+        <Tabs.Navigator
+            initialRouteName='Feed'
             screenOptions={({ route }) => ({
                 tabBarIcon: ({ color, size }) => {
                     switch (route.name) {
@@ -115,12 +108,10 @@ export const MainNavigator: React.FC<MainNavigatorProps> = ({ user }) => {
                 inactiveTintColor: 'gray'
             }}
         >
-            <Tabs.Screen name='Feed' component={Feed} />
+            <Tabs.Screen name='Feed' component={FeedStackNavigator} />
             <Tabs.Screen name='Users' component={ProfileStackNavigator} />
-            <Tabs.Screen name='Challenge' component={Feed} />
-            <Tabs.Screen name='Favorite' component={Feed} />
-            <Tabs.Screen name='Profile' component={ProfileStackNavigator} />
-        </Tabs.Navigator>)
-        :
-        <ActivityIndicator style={{flex: 1}} size='large' />
+            <Tabs.Screen name='Challenge' component={FeedStackNavigator}/>
+            <Tabs.Screen name='Favorite' component={FeedStackNavigator}/>
+            <Tabs.Screen name='Profile' component={ProfileStackNavigator}/>
+        </Tabs.Navigator>);
 };

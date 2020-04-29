@@ -60,7 +60,7 @@ export function Register({ navigation }: AuthNavProps<'Register'>) {
             .createUserWithEmailAndPassword(email, password)
             .then((data) => {
                 data.user?.sendEmailVerification().then(() => {
-                    alert('send email');
+                    console.log('send email');
                 });
             })
             .catch((error) => {

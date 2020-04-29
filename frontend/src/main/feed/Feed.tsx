@@ -1,10 +1,22 @@
 import React from 'react';
-import { SafeAreaView, Text } from 'react-native';
+import { Text, View } from 'react-native';
+import { FeedNavigationProp } from './FeedStackNavigator';
+import { AppContext } from '../../contexts/AppContext';
 
-export default function Feed() {
+interface FeedProps {
+    navigation: FeedNavigationProp
+}
+
+export const Feed: React.FC<FeedProps> = ({ navigation }) => {
+    const { state } = React.useContext(AppContext);
+
+    if (!state.user?.username) {
+        navigation.navigate('Profile', { screen: 'Settings' });
+    }
+
     return (
-        <SafeAreaView>
+        <View>
             <Text>Feed</Text>
-        </SafeAreaView>
+        </View>
     );
 }
