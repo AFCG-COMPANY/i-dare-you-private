@@ -6,11 +6,12 @@ import Constants from 'expo-constants';
 import * as Permissions from 'expo-permissions';
 
 import * as firebase from 'firebase';
-import { Avatar, Button, Input } from 'react-native-elements';
+import { Button, Input, Text } from 'react-native-elements';
 
 import { DismissKeyboardView } from '../../components';
-import { setUserInfo } from '../../api';
+import { updateUserInfo } from '../../api';
 import { AppActionTypes, AppContext } from '../../contexts/AppContext';
+import { User } from '../../models';
 
 interface SettingsProps {}
 
@@ -22,99 +23,123 @@ export const Settings: React.FC<SettingsProps> = ({}) => {
         return <ActivityIndicator size='large' />;
     }
 
+    const [ error, setError ] = React.useState<string | null>(null);
     const [ usernameValue, setUsernameValue ] = React.useState(user.username);
     const [ bioValue, setBioValue ] = React.useState(user.bio);
-    const { avatar } = user;
+    const [ avatarUri, setAvatarUri ] = React.useState<string>();
 
     React.useEffect(() => {
-        getPermissionAsync();
+        // Fetch initial user avatar from storage
+        firebase.storage().ref('avatars/default.jpeg').getDownloadURL()
+            .then(avatarUrl => setAvatarUri(avatarUrl))
+            .catch(e => {
+                setAvatarUri('avatars/default.jpeg');
+                console.log(e);
+            });
     }, []);
 
-    const getPermissionAsync = async () => {
+    const onAvatarEditPress = async () => {
+        // Get permission to access photos
         if (Constants.platform?.ios) {
             const { status } = await Permissions.askAsync(Permissions.CAMERA_ROLL);
+
             if (status !== 'granted') {
                 Alert.alert('Sorry, we need camera roll permissions to make this work!');
+                return;
             }
         }
-    };
 
-    const uriToBlob: (uri: string) => Promise<Blob | Uint8Array | ArrayBuffer> = uri => {
-        return new Promise((resolve, reject) => {
-            const xhr = new XMLHttpRequest();
-            xhr.onload = () => resolve(xhr.response);
-            xhr.onerror = () => reject(new Error('uriToBlob failed'));
-            xhr.responseType = 'blob';
-            xhr.open('GET', uri, true);
-            xhr.send(null);
-        });
-    };
-
-    const selectPhoto = async () => {
         try {
             const result = await ImagePicker.launchImageLibraryAsync({
-                mediaTypes: ImagePicker.MediaTypeOptions.All,
+                mediaTypes: ImagePicker.MediaTypeOptions.Images,
                 allowsEditing: true,
                 aspect: [4, 3],
-                quality: 1
+                quality: .7
             });
 
             if (!result.cancelled) {
-                const updateUserAction = { type: AppActionTypes.SetUser, payload: {...user, avatar: result.uri} };
-                dispatch(updateUserAction);
+                setAvatarUri(result.uri);
             }
         } catch (e) {
             Alert.alert('Failed to upload photo. Please try again.');
         }
     };
 
-    const savePhoto = async () => {
-        if (avatar) {
-            const splitedPhotoPath = avatar.split('.')
-            const photoExtension = splitedPhotoPath[splitedPhotoPath.length - 1]
-            const blob = await uriToBlob(avatar);
+    const uploadAvatar = async (userId: string, photoUri: string) => {
+        console.log('UPLOAD', userId, photoUri)
+
+        try {
+            // Get file blob
+            const result = await fetch(photoUri);
+            const blob = await result.blob();
+
             const storageRef = firebase.storage().ref();
 
-            try {
-                const path: string = `avatars/${user.id}.${photoExtension}`
-
-                await storageRef
-                    .child(path)
-                    .delete()
-
-                await storageRef
-                    .child(path)
-                    .put(blob, { contentType: `image/${photoExtension}` })
-            } catch (e) {
-                Alert.alert('Failed to upload info. Please try again.')
-                console.log(e);
-            }
+            // TODO
+            const path = `avatars${userId}`
+        } catch (e) {
+            Alert.alert('Failed to update profile.');
         }
     };
 
-    const saveInfo = async () => {
-        if (avatar) {
-            if (avatar.startsWith('file')) {
-                await savePhoto();
-            }
+    // const savePhoto = async () => {
+    //     if (avatar) {
+    //         const splitedPhotoPath = avatar.split('.');
+    //         const photoExtension = splitedPhotoPath[splitedPhotoPath.length - 1];
+    //         const result = await fetch(avatar);
+    //         const blob = await result.blob();
+    //         const storageRef = firebase.storage().ref();
+    //
+    //         try {
+    //             const path: string = `avatars/${user.id}.${photoExtension}`
+    //
+    //             await storageRef
+    //                 .child(path)
+    //                 .delete()
+    //
+    //             await storageRef
+    //                 .child(path)
+    //                 .put(blob, { contentType: `image/${photoExtension}` })
+    //         } catch (e) {
+    //             Alert.alert('Failed to upload info. Please try again.')
+    //             console.log(e);
+    //         }
+    //     }
+    // };
 
-            const splitPhotoPath = avatar.split('.');
-            const photoExtension = splitPhotoPath[splitPhotoPath.length - 1]
-            await setUserInfo({ ...user, avatar: `avatars/${user.id}.${photoExtension}` });
+    const updateProfile = async () => {
+        // TODO Add validation
+
+        if (!usernameValue) {
+            setError('Display name is required.')
+            return;
+        }
+
+        const updatedUser: User = {
+            id: user.id,
+            username: usernameValue,
+            bio: bioValue
+        };
+
+        try {
+            await updateUserInfo(updatedUser);
+            dispatch({type: AppActionTypes.SetUser, payload: updatedUser})
+        } catch (e) {
+            Alert.alert('Failed to update profile. Try again.')
         }
     };
 
     return (
         <DismissKeyboardView style={styles.container}>
             <View style={styles.form}>
-                <Avatar
-                    containerStyle={styles.avatar}
-                    showEditButton={true}
-                    onEditPress={selectPhoto}
-                    rounded
-                    size='large'
-                    source={{ uri: avatar }}
-                />
+                {/*<Avatar*/}
+                {/*    containerStyle={styles.avatar}*/}
+                {/*    showEditButton={true}*/}
+                {/*    onEditPress={onAvatarEditPress}*/}
+                {/*    rounded*/}
+                {/*    size='large'*/}
+                {/*    source={{ uri: avatarUri }}*/}
+                {/*/>*/}
 
                 <Input
                     containerStyle={styles.inputContainer}
@@ -122,6 +147,7 @@ export const Settings: React.FC<SettingsProps> = ({}) => {
                     labelStyle={styles.inputLabel}
                     autoCapitalize='none'
                     value={usernameValue}
+                    onFocus={() => setError(null)}
                     onChangeText={value => setUsernameValue(value) }
                 />
 
@@ -137,8 +163,9 @@ export const Settings: React.FC<SettingsProps> = ({}) => {
                 <Button
                     title='Update Profile'
                     containerStyle={styles.button}
-                    onPress={saveInfo}
+                    onPress={updateProfile}
                 />
+                {error && <Text style={styles.error}>{error}</Text>}
 
                 <Button
                     type='clear'
@@ -163,7 +190,7 @@ const styles = StyleSheet.create({
         alignSelf: 'center'
     },
     button: {
-        marginBottom: 20
+        marginTop: 20
     },
     form: {
         marginVertical: 20,
@@ -180,5 +207,9 @@ const styles = StyleSheet.create({
     signOutButton: {
         marginTop: 'auto',
         paddingTop: 20
+    },
+    error: {
+        alignSelf: 'center',
+        color: 'tomato'
     }
 });

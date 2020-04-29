@@ -45,12 +45,12 @@ export const Profile: React.FC<ProfileProps> = ({ navigation }) => {
         return (
             <View style={styles.container}>
                 <View style={styles.header}>
-                    <Avatar
-                        containerStyle={styles.avatarContainer}
-                        rounded
-                        size='large'
-                        source={{ uri: user?.avatar }}
-                    />
+                    {/*<Avatar*/}
+                    {/*    containerStyle={styles.avatarContainer}*/}
+                    {/*    rounded*/}
+                    {/*    size='large'*/}
+                    {/*    source={{ uri: user?.avatar }}*/}
+                    {/*/>*/}
 
                     <View style={styles.stats}>
                         <View style={styles.statsItem}>

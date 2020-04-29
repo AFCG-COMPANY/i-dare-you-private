@@ -17,9 +17,9 @@ export async function getUserInfo(id: string): Promise<User> {
     return res.data;
 }
 
-export function setUserInfo(user: User): Promise<void> {
-    const { avatar, username, bio, id } = user;
-    return axios.post(`${HOST}profile-setUserInfo?id=${id}`, {avatar, bio, username});
+export function updateUserInfo(user: User): Promise<void> {
+    const { username, bio, id } = user;
+    return axios.post(`${HOST}profile-setUserInfo?id=${id}`, {avatar: '', bio, username});
 }
 
 
