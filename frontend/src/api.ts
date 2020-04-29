@@ -13,7 +13,7 @@ export async function getUserAvatar(id: string): Promise<string> {
     try {
         return await getBase64FileFromStorage('avatars/' + id);
     } catch (error) {
-        // If file does not exist, use get avatar
+        // If file does not exist, use default avatar
         return await getBase64FileFromStorage('avatars/default.jpeg');
     }
 }
