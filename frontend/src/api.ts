@@ -23,7 +23,10 @@ export async function getBase64FileFromStorage(path: string): Promise<string> {
     const url = await firebase.storage().ref(path).getDownloadURL();
     const file = await fetch(url);
     const blob = await file.blob();
+    return blobToBase64(blob);
+}
 
+export async function blobToBase64(blob: Blob) : Promise<string> {
     return new Promise<string>((resolve, reject) => {
         const reader = new FileReader();
         reader.readAsDataURL(blob);
@@ -36,7 +39,7 @@ export async function getBase64FileFromStorage(path: string): Promise<string> {
 
 export function updateUserInfo(user: User): Promise<void> {
     const { username, bio, id } = user;
-    return axios.post(`${HOST}profile-setUserInfo?id=${id}`, {avatar: '', bio, username});
+    return axios.post(`${HOST}profile-setUserInfo?id=${id}`, {bio, username});
 }
 
 

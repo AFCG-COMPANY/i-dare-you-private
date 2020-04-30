@@ -9,7 +9,7 @@ import * as firebase from 'firebase';
 import { Button, Input, Text } from 'react-native-elements';
 
 import { Avatar, DismissKeyboardView } from '../../components';
-import { updateUserInfo } from '../../api';
+import { updateUserInfo, blobToBase64 } from '../../api';
 import { AppActionTypes, AppContext } from '../../contexts/AppContext';
 import { User } from '../../models';
 
@@ -45,12 +45,11 @@ export const Settings: React.FC<SettingsProps> = ({}) => {
                 mediaTypes: ImagePicker.MediaTypeOptions.Images,
                 allowsEditing: true,
                 aspect: [4, 3],
-                quality: 0,
-                base64: true
+                quality: 0
             });
 
             if (!result.cancelled) {
-                setAvatarValue('data:image/png;base64,' + result.base64);
+                setAvatarValue(result.uri);
             }
         } catch (e) {
             Alert.alert('Failed to upload photo. Please try again.');
@@ -70,26 +69,27 @@ export const Settings: React.FC<SettingsProps> = ({}) => {
         const avatarPath = 'avatars/' + user.id;
 
         try {
-            if (avatarValue) {
-                // User selected new avatar, need to upload it
-                const res = await fetch(avatarValue);
-                const blob = await res.blob();
-
-                // await storageRef.child(avatarPath).delete();
-                await storageRef.child(avatarPath).put(blob);
-            }
-
             const updatedUser: User = {
                 id: user.id,
                 username: usernameValue,
                 bio: bioValue
             };
-
+            
+            if (avatarValue) {
+                // User selected new avatar, need to upload it
+                const res = await fetch(avatarValue);
+                const blob = await res.blob();
+                // await storageRef.child(avatarPath).delete();
+                await storageRef.child(avatarPath).put(blob);
+                updatedUser.avatar = await blobToBase64(blob);
+            }
+            else {
+                updatedUser.avatar = user.avatar;    
+            }
             await updateUserInfo(updatedUser);
-
-            updatedUser.avatar = avatarValue || user.avatar;
             dispatch({type: AppActionTypes.SetUser, payload: updatedUser })
         } catch (e) {
+            console.log(e)
             Alert.alert('Failed to update profile. Try again.')
         } finally {
             setUpdateInProgress(false);

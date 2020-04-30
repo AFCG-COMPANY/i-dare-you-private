@@ -9,7 +9,6 @@ export const getUserInfo = functions.https.onRequest((request, response) => {
                 response.send(doc.data());
             } else {
                 admin.firestore().collection('users').doc(request.query.id.toString()).set({
-                    avatar: 'avatars/default.jpeg',
                     username: '',
                     bio: ''
                 })
@@ -28,7 +27,6 @@ export const getUserInfo = functions.https.onRequest((request, response) => {
 
 export const setUserInfo = functions.https.onRequest((request, response) => {
     admin.firestore().collection('users').doc(request.query.id.toString()).set({
-        avatar: request.body.avatar,
         username: request.body.username,
         bio: request.body.bio
     })
