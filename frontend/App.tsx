@@ -24,7 +24,9 @@ export default function App() {
     const [ loading, setLoading ] = React.useState<boolean>(true);
 
     React.useEffect(() => {
-        firebase.initializeApp(firebaseConfig);
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+        }
 
         // Unsubscribe on unmount
         return firebase.auth().onAuthStateChanged(user => {
