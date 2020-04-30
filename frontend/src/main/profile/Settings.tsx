@@ -1,5 +1,6 @@
 import React from 'react';
-import { ActivityIndicator, Alert, KeyboardAvoidingView, ScrollView, StyleSheet } from 'react-native';
+import { ActivityIndicator, Alert, StyleSheet } from 'react-native';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
 import * as ImagePicker from 'expo-image-picker';
 import Constants from 'expo-constants';
@@ -21,7 +22,7 @@ export const Settings: React.FC<SettingsProps> = ({}) => {
     const { user } = state;
 
     if (!user) {
-        return <ActivityIndicator size='large'/>;
+        return <ActivityIndicator size='large' />;
     }
 
     const [error, setError] = React.useState<string | null>(null);
@@ -97,48 +98,44 @@ export const Settings: React.FC<SettingsProps> = ({}) => {
     };
 
     return (
-        <KeyboardAvoidingView
-            style={styles.form}
-            behavior='padding'
+        <KeyboardAwareScrollView
+            style={styles.container}
+            bounces={false}
+            enableOnAndroid={true}
         >
-            <ScrollView
-                style={styles.container}
-                keyboardShouldPersistTaps='handled'
-                bounces={false}
-            >
-                <Avatar
-                    containerStyle={styles.avatar}
-                    source={{ uri: avatarValue || user.avatar }}
-                    onEditPress={onAvatarEditPress}
-                />
-                <Input
-                    containerStyle={styles.inputContainer}
-                    label='Display Name'
-                    labelStyle={styles.inputLabel}
-                    autoCapitalize='none'
-                    value={usernameValue}
-                    onFocus={() => setError(null)}
-                    onChangeText={value => setUsernameValue(value)}
-                />
+            <Avatar
+                containerStyle={styles.avatar}
+                source={{ uri: avatarValue || user.avatar }}
+                onEditPress={onAvatarEditPress}
+            />
 
-                <Input
-                    containerStyle={styles.inputContainer}
-                    label='Bio'
-                    labelStyle={styles.inputLabel}
-                    autoCapitalize='none'
-                    value={bioValue}
-                    onChangeText={value => setBioValue(value)}
-                />
+            <Input
+                containerStyle={styles.inputContainer}
+                label='Display Name'
+                labelStyle={styles.inputLabel}
+                autoCapitalize='none'
+                value={usernameValue}
+                onFocus={() => setError(null)}
+                onChangeText={value => setUsernameValue(value)}
+            />
 
-                <Button
-                    containerStyle={styles.button}
-                    title='Update Profile'
-                    loading={updateInProgress}
-                    onPress={updateProfile}
-                />
-                {error && <Text style={styles.error}>{error}</Text>}
-            </ScrollView>
-        </KeyboardAvoidingView>
+            <Input
+                containerStyle={styles.inputContainer}
+                label='Bio'
+                labelStyle={styles.inputLabel}
+                autoCapitalize='none'
+                value={bioValue}
+                onChangeText={value => setBioValue(value)}
+            />
+
+            <Button
+                containerStyle={styles.button}
+                title='Update Profile'
+                loading={updateInProgress}
+                onPress={updateProfile}
+            />
+            {error && <Text style={styles.error}>{error}</Text>}
+        </KeyboardAwareScrollView>
     );
 };
 
@@ -150,14 +147,11 @@ const styles = StyleSheet.create({
         backgroundColor: '#fff'
     },
     avatar: {
-        marginBottom: 40,
-        alignSelf: 'center'
+        alignSelf: 'center',
+        marginBottom: 32,
     },
     button: {
         marginTop: 20
-    },
-    form: {
-        flex: 1
     },
     inputContainer: {
         marginBottom: 20,
