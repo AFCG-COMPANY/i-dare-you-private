@@ -1,5 +1,5 @@
 import React from 'react';
-import { ActivityIndicator, Alert, StyleSheet, View } from 'react-native';
+import { ActivityIndicator, Alert, KeyboardAvoidingView, ScrollView, StyleSheet } from 'react-native';
 
 import * as ImagePicker from 'expo-image-picker';
 import Constants from 'expo-constants';
@@ -8,26 +8,27 @@ import * as Permissions from 'expo-permissions';
 import * as firebase from 'firebase';
 import { Button, Input, Text } from 'react-native-elements';
 
-import { Avatar, DismissKeyboardView } from '../../components';
-import { updateUserInfo, blobToBase64 } from '../../api';
+import { Avatar } from '../../components';
+import { blobToBase64, updateUserInfo } from '../../api';
 import { AppActionTypes, AppContext } from '../../contexts/AppContext';
 import { User } from '../../models';
 
-interface SettingsProps {}
+interface SettingsProps {
+}
 
 export const Settings: React.FC<SettingsProps> = ({}) => {
     const { state, dispatch } = React.useContext(AppContext);
     const { user } = state;
 
     if (!user) {
-        return <ActivityIndicator size='large' />;
+        return <ActivityIndicator size='large'/>;
     }
 
-    const [ error, setError ] = React.useState<string | null>(null);
-    const [ usernameValue, setUsernameValue ] = React.useState(user.username);
-    const [ bioValue, setBioValue ] = React.useState(user.bio);
-    const [ avatarValue, setAvatarValue ] = React.useState<string>();
-    const [ updateInProgress, setUpdateInProgress ] = React.useState<boolean>(false);
+    const [error, setError] = React.useState<string | null>(null);
+    const [usernameValue, setUsernameValue] = React.useState(user.username);
+    const [bioValue, setBioValue] = React.useState(user.bio);
+    const [avatarValue, setAvatarValue] = React.useState<string>();
+    const [updateInProgress, setUpdateInProgress] = React.useState<boolean>(false);
 
     const onAvatarEditPress = async () => {
         // Get permission to access photos
@@ -59,7 +60,7 @@ export const Settings: React.FC<SettingsProps> = ({}) => {
 
     const updateProfile = async () => {
         if (!usernameValue) {
-            setError('Display name is required.')
+            setError('Display name is required.');
             return;
         }
 
@@ -74,7 +75,7 @@ export const Settings: React.FC<SettingsProps> = ({}) => {
                 username: usernameValue,
                 bio: bioValue
             };
-            
+
             if (avatarValue) {
                 // User selected new avatar, need to upload it
                 const res = await fetch(avatarValue);
@@ -82,29 +83,34 @@ export const Settings: React.FC<SettingsProps> = ({}) => {
                 // await storageRef.child(avatarPath).delete();
                 await storageRef.child(avatarPath).put(blob);
                 updatedUser.avatar = await blobToBase64(blob);
-            }
-            else {
-                updatedUser.avatar = user.avatar;    
+            } else {
+                updatedUser.avatar = user.avatar;
             }
             await updateUserInfo(updatedUser);
-            dispatch({type: AppActionTypes.SetUser, payload: updatedUser })
+            dispatch({ type: AppActionTypes.SetUser, payload: updatedUser });
         } catch (e) {
-            console.log(e)
-            Alert.alert('Failed to update profile. Try again.')
+            console.log(e);
+            Alert.alert('Failed to update profile. Try again.');
         } finally {
             setUpdateInProgress(false);
         }
     };
 
     return (
-        <DismissKeyboardView style={styles.container}>
-            <Avatar
-                containerStyle={styles.avatar}
-                source={{ uri: avatarValue || user.avatar }}
-                onEditPress={onAvatarEditPress}
-            />
-
-            <View style={styles.form}>
+        <KeyboardAvoidingView
+            style={styles.form}
+            behavior='padding'
+        >
+            <ScrollView
+                style={styles.container}
+                keyboardShouldPersistTaps='handled'
+                bounces={false}
+            >
+                <Avatar
+                    containerStyle={styles.avatar}
+                    source={{ uri: avatarValue || user.avatar }}
+                    onEditPress={onAvatarEditPress}
+                />
                 <Input
                     containerStyle={styles.inputContainer}
                     label='Display Name'
@@ -112,7 +118,7 @@ export const Settings: React.FC<SettingsProps> = ({}) => {
                     autoCapitalize='none'
                     value={usernameValue}
                     onFocus={() => setError(null)}
-                    onChangeText={value => setUsernameValue(value) }
+                    onChangeText={value => setUsernameValue(value)}
                 />
 
                 <Input
@@ -131,8 +137,8 @@ export const Settings: React.FC<SettingsProps> = ({}) => {
                     onPress={updateProfile}
                 />
                 {error && <Text style={styles.error}>{error}</Text>}
-            </View>
-        </DismissKeyboardView>
+            </ScrollView>
+        </KeyboardAvoidingView>
     );
 };
 
@@ -151,7 +157,6 @@ const styles = StyleSheet.create({
         marginTop: 20
     },
     form: {
-        marginBottom: 20,
         flex: 1
     },
     inputContainer: {
