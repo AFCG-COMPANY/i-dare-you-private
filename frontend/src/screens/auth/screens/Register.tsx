@@ -3,7 +3,7 @@ import { StyleSheet, Text, View } from 'react-native';
 import { Button, Input } from 'react-native-elements';
 import { AuthNavProps } from '../models/AuthParamList';
 import * as firebase from 'firebase';
-import { DismissKeyboardView } from '../../components';
+import { DismissKeyboardView } from '../../../components';
 
 interface RegisterState {
     email: string | null;

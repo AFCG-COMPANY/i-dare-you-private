@@ -7,11 +7,11 @@ import {
     Ionicons
 } from '@expo/vector-icons';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { Text } from 'react-native-elements';
 import { ProfileStackNavigator } from './profile/ProfileStackNavigator';
 import { FeedStackNavigator } from './feed/FeedStackNavigator';
-import { Text } from 'react-native-elements';
-import { User } from '../models';
-import { UserProfileEdit } from '../components';
+import { User } from '../../models';
+import { UserProfileEdit } from '../../components';
 
 export type MainNavigatorParamList = {
     Feed: any;

@@ -4,7 +4,6 @@ import {
     StackNavigationProp
 } from '@react-navigation/stack';
 import { Profile } from './Profile';
-import { UserProfileEdit } from '../../components';
 import { Ionicons } from '@expo/vector-icons';
 import { Platform } from 'react-native';
 import { Button } from 'react-native-elements';
@@ -12,6 +11,7 @@ import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
 import { MainNavigatorParamList } from '../MainNavigator';
 import { CompositeNavigationProp } from '@react-navigation/native';
 import * as firebase from 'firebase';
+import { UserProfileEdit } from '../../../components';
 
 export type ProfileStackParamList = {
     Profile: undefined;

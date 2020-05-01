@@ -1,11 +1,11 @@
 import React from 'react';
 import { ActivityIndicator, FlatList, StyleSheet, View } from 'react-native';
 import { Badge, Button, Text } from 'react-native-elements';
-import { getChallenges } from '../../api';
-import { Challenge } from '../../models';
-import { Avatar, ChallengeCard } from '../../components';
+import { Challenge } from '../../../models';
+import { getChallenges } from '../../../api/api';
+import { Avatar, ChallengeCard } from '../../../components';
 import { ProfileNavigationProp } from './ProfileStackNavigator';
-import { AppContext } from '../../contexts/AppContext';
+import { AppContext } from '../../../contexts/AppContext';
 
 const CHALLENGES_AMOUNT_PER_FETCH: number = 20;
 
@@ -17,9 +17,7 @@ export const Profile: React.FC<ProfileProps> = ({ navigation }) => {
     const { state } = React.useContext(AppContext);
     const { user } = state;
 
-    const [challenges, setChallenges] = React.useState<
-        Challenge[] | undefined
-    >();
+    const [challenges, setChallenges] = React.useState<Challenge[] | undefined>();
 
     React.useEffect(() => {
         let mounted = true;

@@ -1,6 +1,6 @@
 import axios from 'axios';
-import { User, Challenge } from './models';
 import * as firebase from 'firebase';
+import { Challenge, User } from '../models';
 
 const HOST = 'https://us-central1-i-dare-you-142ea.cloudfunctions.net/';
 
