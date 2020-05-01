@@ -1,5 +1,8 @@
 import React from 'react';
-import { createStackNavigator, StackNavigationProp } from '@react-navigation/stack';
+import {
+    createStackNavigator,
+    StackNavigationProp
+} from '@react-navigation/stack';
 import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
 import { MainNavigatorParamList } from '../MainNavigator';
 import { CompositeNavigationProp } from '@react-navigation/native';
@@ -15,7 +18,7 @@ export type FeedNavigationProp = CompositeNavigationProp<
 >;
 
 interface FeedStackProps {
-    navigation: FeedNavigationProp
+    navigation: FeedNavigationProp;
 }
 
 const FeedStack = createStackNavigator<FeedStackParamList>();
@@ -23,10 +26,7 @@ const FeedStack = createStackNavigator<FeedStackParamList>();
 export const FeedStackNavigator: React.FC<FeedStackProps> = ({ navigation }) => {
     return (
         <FeedStack.Navigator>
-            <FeedStack.Screen
-                name='Feed'
-                component={Feed}
-            />
+            <FeedStack.Screen name='Feed' component={Feed} />
         </FeedStack.Navigator>
     );
 };

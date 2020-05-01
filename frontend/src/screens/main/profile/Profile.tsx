@@ -1,23 +1,23 @@
 import React from 'react';
-import { ActivityIndicator, Alert, FlatList, StyleSheet, View } from 'react-native';
+import { ActivityIndicator, FlatList, StyleSheet, View } from 'react-native';
 import { Badge, Button, Text } from 'react-native-elements';
-import { getChallenges } from '../../api';
-import { Challenge } from '../../models';
-import { Avatar, ChallengeCard } from '../../components';
+import { Challenge } from '../../../models';
+import { getChallenges } from '../../../api/api';
+import { Avatar, ChallengeCard } from '../../../components';
 import { ProfileNavigationProp } from './ProfileStackNavigator';
-import { AppContext } from '../../contexts/AppContext';
+import { AppContext } from '../../../contexts/AppContext';
 
 const CHALLENGES_AMOUNT_PER_FETCH: number = 20;
 
 interface ProfileProps {
-    navigation: ProfileNavigationProp
+    navigation: ProfileNavigationProp;
 }
 
 export const Profile: React.FC<ProfileProps> = ({ navigation }) => {
     const { state } = React.useContext(AppContext);
     const { user } = state;
 
-    const [ challenges, setChallenges ] = React.useState<Challenge[] | undefined>();
+    const [challenges, setChallenges] = React.useState<Challenge[] | undefined>();
 
     React.useEffect(() => {
         let mounted = true;
@@ -25,8 +25,8 @@ export const Profile: React.FC<ProfileProps> = ({ navigation }) => {
 
         if (userId) {
             getChallenges(userId, 0, CHALLENGES_AMOUNT_PER_FETCH)
-                .then(res => mounted && setChallenges(res))
-                .catch(e => {
+                .then((res) => mounted && setChallenges(res))
+                .catch((e) => {
                     if (mounted) {
                         setChallenges([]);
                         console.log(e);
@@ -36,7 +36,7 @@ export const Profile: React.FC<ProfileProps> = ({ navigation }) => {
 
         return () => {
             mounted = false;
-        }
+        };
     }, []);
 
     return (
@@ -81,17 +81,12 @@ export const Profile: React.FC<ProfileProps> = ({ navigation }) => {
 
             <Text style={styles.username}>{user?.username}</Text>
 
-            {
-                challenges
-                ?
+            {challenges ? (
                 <FlatList
                     bounces={false}
                     data={challenges}
                     renderItem={({ item }) => (
-                        <ChallengeCard
-                            key={item.id}
-                            challenge={item}
-                        />
+                        <ChallengeCard key={item.id} challenge={item} />
                     )}
                     ListHeaderComponent={() => <Text>{user?.bio}</Text>}
                     ListEmptyComponent={() => (
@@ -116,12 +111,15 @@ export const Profile: React.FC<ProfileProps> = ({ navigation }) => {
                         </View>
                     )}
                 />
-                :
+            ) : (
                 <>
                     <Text>{user?.bio}</Text>
-                    <ActivityIndicator style={{alignSelf: 'center', flex: 1}} size='large' />
+                    <ActivityIndicator
+                        style={{ alignSelf: 'center', flex: 1 }}
+                        size='large'
+                    />
                 </>
-            }
+            )}
         </View>
     );
 };

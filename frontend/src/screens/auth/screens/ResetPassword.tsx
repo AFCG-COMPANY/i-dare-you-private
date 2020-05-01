@@ -3,7 +3,7 @@ import { Text, View, StyleSheet } from 'react-native';
 import { Button, Input } from 'react-native-elements';
 import { AuthNavProps } from '../models/AuthParamList';
 import * as firebase from 'firebase';
-import { DismissKeyboardView } from '../../components';
+import { DismissKeyboardView } from '../../../components';
 
 export function ResetPassword({ navigation }: AuthNavProps<'ResetPassword'>) {
     const [email, setEmail] = React.useState<string>('');

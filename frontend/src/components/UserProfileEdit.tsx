@@ -11,7 +11,7 @@ import * as firebase from 'firebase';
 
 import { AppActionTypes, AppContext } from '../contexts/AppContext';
 import { User } from '../models';
-import { blobToBase64, updateUserInfo } from '../api';
+import { blobToBase64, updateUserInfo } from '../api/api';
 import { Avatar } from './Avatar';
 
 interface UserProfileEditProps {
@@ -30,15 +30,21 @@ export const UserProfileEdit: React.FC<UserProfileEditProps> = (props) => {
     const [usernameValue, setUsernameValue] = React.useState(user.username);
     const [bioValue, setBioValue] = React.useState(user.bio);
     const [avatarValue, setAvatarValue] = React.useState<string>();
-    const [updateInProgress, setUpdateInProgress] = React.useState<boolean>(false);
+    const [updateInProgress, setUpdateInProgress] = React.useState<boolean>(
+        false
+    );
 
     const onAvatarEditPress = async () => {
         // Get permission to access photos
         if (Constants.platform?.ios) {
-            const { status } = await Permissions.askAsync(Permissions.CAMERA_ROLL);
+            const { status } = await Permissions.askAsync(
+                Permissions.CAMERA_ROLL
+            );
 
             if (status !== 'granted') {
-                Alert.alert('Sorry, we need camera roll permissions to make this work!');
+                Alert.alert(
+                    'Sorry, we need camera roll permissions to make this work!'
+                );
                 return;
             }
         }
@@ -117,7 +123,7 @@ export const UserProfileEdit: React.FC<UserProfileEditProps> = (props) => {
                 autoCapitalize='none'
                 value={usernameValue}
                 onFocus={() => setError(null)}
-                onChangeText={value => setUsernameValue(value)}
+                onChangeText={(value) => setUsernameValue(value)}
             />
 
             <Input
@@ -126,7 +132,7 @@ export const UserProfileEdit: React.FC<UserProfileEditProps> = (props) => {
                 labelStyle={styles.inputLabel}
                 autoCapitalize='none'
                 value={bioValue}
-                onChangeText={value => setBioValue(value)}
+                onChangeText={(value) => setBioValue(value)}
             />
 
             <Button
@@ -149,7 +155,7 @@ const styles = StyleSheet.create({
     },
     avatar: {
         alignSelf: 'center',
-        marginBottom: 32,
+        marginBottom: 32
     },
     button: {
         marginTop: 20
