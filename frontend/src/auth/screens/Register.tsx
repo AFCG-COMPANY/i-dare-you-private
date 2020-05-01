@@ -46,7 +46,7 @@ function loginReducer(
             return {
                 ...state,
                 loading: true
-            }
+            };
         case ActionTypes.Success:
             return {
                 ...state,
@@ -95,14 +95,13 @@ export function Register({ navigation }: AuthNavProps<'Register'>) {
                     dispatch({
                         type: ActionTypes.Error,
                         payload: error.message
-                    })
+                    });
                 }
             });
     };
 
     return (
         <DismissKeyboardView style={styles.container}>
-
             <View style={styles.form}>
                 {error && <Text style={styles.errorMessage}>{error}</Text>}
 
@@ -186,7 +185,7 @@ const styles = StyleSheet.create({
         alignSelf: 'center',
         display: 'flex',
         flexDirection: 'row',
-        alignItems: 'center',
+        alignItems: 'center'
     },
     signInText: {
         color: 'gray',

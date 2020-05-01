@@ -14,17 +14,16 @@ import { MaterialIcons } from '@expo/vector-icons';
 interface AvatarProps {
     source: ImageSourcePropType;
     onEditPress?: () => void;
-    containerStyle?: StyleProp<ViewStyle>,
+    containerStyle?: StyleProp<ViewStyle>;
     imageProps?: ImageProps;
 }
 
-export const Avatar: React.FC<AvatarProps> = (
-    {
-        onEditPress,
-        source,
-        imageProps,
-        containerStyle
-    }) => {
+export const Avatar: React.FC<AvatarProps> = ({
+    onEditPress,
+    source,
+    imageProps,
+    containerStyle
+}) => {
     return (
         <View style={[styles.container, containerStyle]}>
             <Image
@@ -34,25 +33,20 @@ export const Avatar: React.FC<AvatarProps> = (
             >
             </Image>
 
-            {
-                onEditPress
-                &&
-                <TouchableHighlight
-                    style={styles.edit}
-                    onPress={onEditPress}
-                >
+            {onEditPress && (
+                <TouchableHighlight style={styles.edit} onPress={onEditPress}>
                     <MaterialIcons name='edit' size={20} color='white' />
                 </TouchableHighlight>
-            }
+            )}
         </View>
-    )
+    );
 };
 
 const styles = StyleSheet.create({
     container: {
         width: 100,
         height: 100,
-        position: 'relative',
+        position: 'relative'
     },
     image: {
         width: 100,

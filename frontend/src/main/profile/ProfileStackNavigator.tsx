@@ -1,5 +1,8 @@
 import React from 'react';
-import { createStackNavigator, StackNavigationProp } from '@react-navigation/stack';
+import {
+    createStackNavigator,
+    StackNavigationProp
+} from '@react-navigation/stack';
 import { Profile } from './Profile';
 import { UserProfileEdit } from '../../components';
 import { Ionicons } from '@expo/vector-icons';
@@ -21,7 +24,7 @@ export type ProfileNavigationProp = CompositeNavigationProp<
 >;
 
 interface ProfileStackProps {
-    navigation: ProfileNavigationProp
+    navigation: ProfileNavigationProp;
 }
 
 const ProfileStack = createStackNavigator<ProfileStackParamList>();

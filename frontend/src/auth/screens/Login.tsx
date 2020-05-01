@@ -36,7 +36,7 @@ function loginReducer(
         case ActionTypes.PasswordChange:
             return { ...state, password: action.payload };
         case ActionTypes.Login:
-            return { ...state, loading: true }
+            return { ...state, loading: true };
         case ActionTypes.Error:
             return {
                 ...state,
@@ -56,7 +56,6 @@ export function Login({ navigation }: AuthNavProps<'Login'>) {
 
     return (
         <DismissKeyboardView style={styles.container}>
-
             <View style={styles.form}>
                 {error && <Text style={styles.errorMessage}>{error}</Text>}
 
@@ -94,7 +93,7 @@ export function Login({ navigation }: AuthNavProps<'Login'>) {
                     title='Sign In'
                     loading={loading}
                     onPress={() => {
-                        dispatch({ type: ActionTypes.Login, payload: null })
+                        dispatch({ type: ActionTypes.Login, payload: null });
 
                         firebase
                             .auth()
@@ -162,7 +161,7 @@ const styles = StyleSheet.create({
         alignSelf: 'center',
         display: 'flex',
         flexDirection: 'row',
-        alignItems: 'center',
+        alignItems: 'center'
     },
     signInText: {
         color: 'gray',

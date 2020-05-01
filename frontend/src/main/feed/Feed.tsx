@@ -3,7 +3,7 @@ import { Text, View } from 'react-native';
 import { FeedNavigationProp } from './FeedStackNavigator';
 
 interface FeedProps {
-    navigation: FeedNavigationProp
+    navigation: FeedNavigationProp;
 }
 
 export const Feed: React.FC<FeedProps> = ({ navigation }) => {
@@ -12,4 +12,4 @@ export const Feed: React.FC<FeedProps> = ({ navigation }) => {
             <Text>Feed</Text>
         </View>
     );
-}
+};

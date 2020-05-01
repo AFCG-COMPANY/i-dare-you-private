@@ -3,7 +3,7 @@ import { Card, Text } from 'react-native-elements';
 import { Challenge } from '../models';
 
 interface ChallengeCardProps {
-    challenge: Challenge
+    challenge: Challenge;
 }
 
 export const ChallengeCard: React.FC<ChallengeCardProps> = ({ challenge }) => {

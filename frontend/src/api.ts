@@ -18,7 +18,6 @@ export async function getUserAvatar(id: string): Promise<string> {
     }
 }
 
-
 export async function getBase64FileFromStorage(path: string): Promise<string> {
     const url = await firebase.storage().ref(path).getDownloadURL();
     const file = await fetch(url);
@@ -26,7 +25,7 @@ export async function getBase64FileFromStorage(path: string): Promise<string> {
     return blobToBase64(blob);
 }
 
-export async function blobToBase64(blob: Blob) : Promise<string> {
+export async function blobToBase64(blob: Blob): Promise<string> {
     return new Promise<string>((resolve, reject) => {
         const reader = new FileReader();
         reader.readAsDataURL(blob);
@@ -39,21 +38,23 @@ export async function blobToBase64(blob: Blob) : Promise<string> {
 
 export function updateUserInfo(user: User): Promise<void> {
     const { username, bio, id } = user;
-    return axios.post(`${HOST}profile-setUserInfo?id=${id}`, {bio, username});
+    return axios.post(`${HOST}profile-setUserInfo?id=${id}`, { bio, username });
 }
 
-
-export function getChallenges(userId: string, start: number, length: number): Promise<Challenge[]> {
+export function getChallenges(
+    userId: string,
+    start: number,
+    length: number
+): Promise<Challenge[]> {
     // TODO call real backend endpoint
     return new Promise<Challenge[]>((resolve, reject) => {
-
         // TODO This is mock data. Need to use real backend
         const challenges: Challenge[] = [];
         for (let i = start; i < length; i++) {
             challenges.push({
                 id: i.toString(),
                 title: 'Challenge #' + i
-            })
+            });
         }
 
         setTimeout(() => resolve(challenges), 500);

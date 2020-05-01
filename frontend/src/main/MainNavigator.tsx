@@ -1,6 +1,11 @@
 import React from 'react';
 import { Platform, SafeAreaView } from 'react-native';
-import { Feather, FontAwesome, FontAwesome5, Ionicons } from '@expo/vector-icons';
+import {
+    Feather,
+    FontAwesome,
+    FontAwesome5,
+    Ionicons
+} from '@expo/vector-icons';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { ProfileStackNavigator } from './profile/ProfileStackNavigator';
 import { FeedStackNavigator } from './feed/FeedStackNavigator';
@@ -116,21 +121,26 @@ export const MainNavigator: React.FC<MainNavigatorProps> = ({ user }) => {
             >
                 <Tabs.Screen name='Feed' component={FeedStackNavigator} />
                 <Tabs.Screen name='Users' component={ProfileStackNavigator} />
-                <Tabs.Screen name='Challenge' component={FeedStackNavigator}/>
-                <Tabs.Screen name='Favorite' component={FeedStackNavigator}/>
-                <Tabs.Screen name='Profile' component={ProfileStackNavigator}/>
+                <Tabs.Screen name='Challenge' component={FeedStackNavigator} />
+                <Tabs.Screen name='Favorite' component={FeedStackNavigator} />
+                <Tabs.Screen name='Profile' component={ProfileStackNavigator} />
             </Tabs.Navigator>
         );
     }
 
     return (
         <SafeAreaView style={{ flex: 1, padding: 40 }}>
-            <Text style={{ marginTop: 20, fontSize: 20, fontWeight: '500', alignSelf: 'center' }}>
+            <Text
+                style={{
+                    marginTop: 20,
+                    fontSize: 20,
+                    fontWeight: '500',
+                    alignSelf: 'center'
+                }}
+            >
                 Fill in Profile Info
             </Text>
-            <UserProfileEdit
-                updateButtonTitle='Save'
-            />
+            <UserProfileEdit updateButtonTitle='Save' />
         </SafeAreaView>
-    )
+    );
 };
