@@ -12,6 +12,7 @@ import { ProfileStackNavigator } from './profile/ProfileStackNavigator';
 import { FeedStackNavigator } from './feed/FeedStackNavigator';
 import { User } from '../../models';
 import { UserProfileEdit } from '../../components';
+import { UsersStackNavigator } from './users/UsersStackNavigator';
 
 export type MainNavigatorParamList = {
     Feed: any;
@@ -31,7 +32,7 @@ export const MainNavigator: React.FC<MainNavigatorProps> = ({ user }) => {
     if (user?.username) {
         return (
             <Tabs.Navigator
-                initialRouteName='Feed'
+                initialRouteName='Users'
                 screenOptions={({ route }) => ({
                     tabBarIcon: ({ color, size }) => {
                         switch (route.name) {
@@ -120,7 +121,7 @@ export const MainNavigator: React.FC<MainNavigatorProps> = ({ user }) => {
                 }}
             >
                 <Tabs.Screen name='Feed' component={FeedStackNavigator} />
-                <Tabs.Screen name='Users' component={ProfileStackNavigator} />
+                <Tabs.Screen name='Users' component={UsersStackNavigator} />
                 <Tabs.Screen name='Challenge' component={FeedStackNavigator} />
                 <Tabs.Screen name='Favorite' component={FeedStackNavigator} />
                 <Tabs.Screen name='Profile' component={ProfileStackNavigator} />
