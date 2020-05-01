@@ -9,18 +9,21 @@ interface LoginState {
     email: string | null;
     password: string | null;
     error: string | null;
+    loading: boolean;
 }
 
 const initialState: LoginState = {
     email: null,
     password: null,
-    error: null
+    error: null,
+    loading: false
 };
 
 enum ActionTypes {
     EmailChange,
     PasswordChange,
-    Error
+    Error,
+    Login
 }
 
 function loginReducer(
@@ -32,10 +35,13 @@ function loginReducer(
             return { ...state, email: action.payload };
         case ActionTypes.PasswordChange:
             return { ...state, password: action.payload };
+        case ActionTypes.Login:
+            return { ...state, loading: true }
         case ActionTypes.Error:
             return {
                 ...state,
                 error: action.payload,
+                loading: false,
                 password: null
             };
         default:
@@ -46,7 +52,7 @@ function loginReducer(
 export function Login({ navigation }: AuthNavProps<'Login'>) {
     const [state, dispatch] = React.useReducer(loginReducer, initialState);
 
-    const { email, password, error } = state;
+    const { email, password, error, loading } = state;
 
     return (
         <DismissKeyboardView style={styles.container}>
@@ -86,7 +92,10 @@ export function Login({ navigation }: AuthNavProps<'Login'>) {
                 <Button
                     containerStyle={styles.signInButtonContainer}
                     title='Sign In'
+                    loading={loading}
                     onPress={() => {
+                        dispatch({ type: ActionTypes.Login, payload: null })
+
                         firebase
                             .auth()
                             .signInWithEmailAndPassword(email, password)

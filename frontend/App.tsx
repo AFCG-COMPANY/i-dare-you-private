@@ -67,7 +67,7 @@ export default function App() {
             value={{ state, dispatch }}
         >
             <NavigationContainer>
-                {state.user ? <MainNavigator /> : <AuthNavigator />}
+                {state.user ? <MainNavigator user={state.user} /> : <AuthNavigator />}
             </NavigationContainer>
         </AppContext.Provider>
     );

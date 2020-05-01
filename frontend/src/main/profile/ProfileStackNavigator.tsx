@@ -1,7 +1,7 @@
 import React from 'react';
 import { createStackNavigator, StackNavigationProp } from '@react-navigation/stack';
 import { Profile } from './Profile';
-import { Settings } from './Settings';
+import { UserProfileEdit } from '../../components';
 import { Ionicons } from '@expo/vector-icons';
 import { Platform } from 'react-native';
 import { Button } from 'react-native-elements';
@@ -45,7 +45,7 @@ export const ProfileStackNavigator: React.FC<ProfileStackProps> = ({ navigation 
             />
             <ProfileStack.Screen
                 name='Settings'
-                component={Settings}
+                component={UserProfileEdit}
                 options={() => ({
                     headerRight: () => (
                         <Button

@@ -1,5 +1,6 @@
 import React from 'react';
 import { ActivityIndicator, Alert, StyleSheet } from 'react-native';
+import { Button, Input, Text } from 'react-native-elements';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
 import * as ImagePicker from 'expo-image-picker';
@@ -7,17 +8,17 @@ import Constants from 'expo-constants';
 import * as Permissions from 'expo-permissions';
 
 import * as firebase from 'firebase';
-import { Button, Input, Text } from 'react-native-elements';
 
-import { Avatar } from '../../components';
-import { blobToBase64, updateUserInfo } from '../../api';
-import { AppActionTypes, AppContext } from '../../contexts/AppContext';
-import { User } from '../../models';
+import { AppActionTypes, AppContext } from '../contexts/AppContext';
+import { User } from '../models';
+import { blobToBase64, updateUserInfo } from '../api';
+import { Avatar } from './Avatar';
 
-interface SettingsProps {
+interface UserProfileEditProps {
+    updateButtonTitle?: string;
 }
 
-export const Settings: React.FC<SettingsProps> = ({}) => {
+export const UserProfileEdit: React.FC<UserProfileEditProps> = (props) => {
     const { state, dispatch } = React.useContext(AppContext);
     const { user } = state;
 
@@ -88,11 +89,11 @@ export const Settings: React.FC<SettingsProps> = ({}) => {
                 updatedUser.avatar = user.avatar;
             }
             await updateUserInfo(updatedUser);
+            setUpdateInProgress(false);
             dispatch({ type: AppActionTypes.SetUser, payload: updatedUser });
         } catch (e) {
             console.log(e);
             Alert.alert('Failed to update profile. Try again.');
-        } finally {
             setUpdateInProgress(false);
         }
     };
@@ -111,7 +112,7 @@ export const Settings: React.FC<SettingsProps> = ({}) => {
 
             <Input
                 containerStyle={styles.inputContainer}
-                label='Display Name'
+                label='User Name'
                 labelStyle={styles.inputLabel}
                 autoCapitalize='none'
                 value={usernameValue}
@@ -130,7 +131,7 @@ export const Settings: React.FC<SettingsProps> = ({}) => {
 
             <Button
                 containerStyle={styles.button}
-                title='Update Profile'
+                title={props.updateButtonTitle || 'Update Profile'}
                 loading={updateInProgress}
                 onPress={updateProfile}
             />
