@@ -9,19 +9,22 @@ interface RegisterState {
     email: string | null;
     password: string | null;
     error: string | null;
+    loading: boolean;
 }
 
 const initialState: RegisterState = {
     email: null,
     password: null,
-    error: null
+    error: null,
+    loading: false
 };
 
 enum ActionTypes {
     EmailChange,
     PasswordChange,
     Error,
-    Success
+    Success,
+    Register
 }
 
 function loginReducer(
@@ -30,16 +33,31 @@ function loginReducer(
 ) {
     switch (action.type) {
         case ActionTypes.EmailChange:
-            return { ...state, email: action.payload };
+            return {
+                ...state,
+                email: action.payload
+            };
         case ActionTypes.PasswordChange:
-            return { ...state, password: action.payload };
+            return {
+                ...state,
+                password: action.payload
+            };
+        case ActionTypes.Register:
+            return {
+                ...state,
+                loading: true
+            }
         case ActionTypes.Success:
-            return { ...state };
+            return {
+                ...state,
+                loading: false
+            };
         case ActionTypes.Error:
             return {
                 ...state,
                 error: action.payload,
-                password: null
+                password: null,
+                loading: false
             };
         default:
             return state;
@@ -49,12 +67,11 @@ function loginReducer(
 export function Register({ navigation }: AuthNavProps<'Register'>) {
     const [state, dispatch] = React.useReducer(loginReducer, initialState);
 
-    const { email, password, error } = state;
+    const { email, password, error, loading } = state;
 
-    const registerWithEmail: (email: string, password: string) => void = (
-        email: string,
-        password: string
-    ) => {
+    const registerWithEmail = () => {
+        dispatch({ type: ActionTypes.Register, payload: null });
+
         firebase
             .auth()
             .createUserWithEmailAndPassword(email, password)
@@ -119,8 +136,9 @@ export function Register({ navigation }: AuthNavProps<'Register'>) {
                 />
 
                 <Button
+                    loading={loading}
                     title='Sign Up'
-                    onPress={() => registerWithEmail(email, password)}
+                    onPress={registerWithEmail}
                 />
             </View>
 
