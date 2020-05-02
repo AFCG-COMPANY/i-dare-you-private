@@ -32,7 +32,7 @@ export const MainNavigator: React.FC<MainNavigatorProps> = ({ user }) => {
     if (user?.username) {
         return (
             <Tabs.Navigator
-                initialRouteName='Users'
+                initialRouteName='Feed'
                 screenOptions={({ route }) => ({
                     tabBarIcon: ({ color, size }) => {
                         switch (route.name) {

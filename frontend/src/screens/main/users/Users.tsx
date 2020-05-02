@@ -1,14 +1,20 @@
 import React from 'react';
-import { ActivityIndicator, View, FlatList } from 'react-native';
+import { ActivityIndicator, FlatList, Platform, View } from 'react-native';
 import { Input, ListItem } from 'react-native-elements';
+import { Ionicons } from '@expo/vector-icons';
 import { User } from '../../../models';
 import useDebounce from '../../../hooks/useDebounce';
 import { getUsers } from '../../../api/api';
+import { UsersNavigationProp } from './UsersStackNavigator';
+import { AppContext } from '../../../contexts/AppContext';
 
 interface UsersProps {
+    navigation: UsersNavigationProp;
 }
 
-export const Users: React.FC<UsersProps> = ({}) => {
+export const Users: React.FC<UsersProps> = ({ navigation }) => {
+    const { state } = React.useContext(AppContext);
+
     // State and setter for search term
     const [searchTerm, setSearchTerm] = React.useState('');
     // State and setter for search results
@@ -21,7 +27,8 @@ export const Users: React.FC<UsersProps> = ({}) => {
     React.useEffect(() => {
         setIsSearching(true);
 
-        getUsers(debouncedSearchTerm)
+        const userId = state.user?.id || '';
+        getUsers(debouncedSearchTerm, userId)
             .then(users => setResults(users))
             .catch(e => {
                 console.log(e);
@@ -33,9 +40,13 @@ export const Users: React.FC<UsersProps> = ({}) => {
     return (
         <View style={{flex: 1, backgroundColor: 'white'}}>
             <Input
+                containerStyle={{paddingHorizontal: 0}}
+                inputContainerStyle={{borderColor: '#e0e0e0'}}
                 placeholder='Search for users'
                 value={searchTerm}
                 clearButtonMode='always'
+                leftIcon={<Ionicons name={Platform.OS === 'ios' ? 'ios-search' : 'md-search'} size={20} color='gray' />}
+                leftIconContainerStyle={{marginRight: 8}}
                 onChangeText={value => setSearchTerm(value)}
             />
 
@@ -61,6 +72,7 @@ const renderUserListItem = ({ item }: { item: User }) => (
     <ListItem
         title={item.username}
         subtitle={item.bio}
+        subtitleProps={{numberOfLines: 1}}
         leftAvatar={{ source: { uri: item.avatar } }}
         bottomDivider
         chevron

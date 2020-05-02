@@ -11,7 +11,7 @@ import * as firebase from 'firebase';
 
 import { AppActionTypes, AppContext } from '../contexts/AppContext';
 import { User } from '../models';
-import { blobToBase64, updateUserInfo } from '../api/api';
+import { blobToBase64, updateUser } from '../api/api';
 import { Avatar } from './Avatar';
 
 interface UserProfileEditProps {
@@ -77,26 +77,38 @@ export const UserProfileEdit: React.FC<UserProfileEditProps> = (props) => {
         const storageRef = firebase.storage().ref();
         const avatarPath = 'avatars/' + user.id;
 
-        try {
-            const updatedUser: User = {
-                id: user.id,
-                username: usernameValue,
-                bio: bioValue
-            };
+        const updatedUser: User = {
+            id: user.id,
+            username: usernameValue,
+            bio: bioValue
+        };
 
+        try {
+            let avatarUrl, avatarBase64;
             if (avatarValue) {
                 // User selected new avatar, need to upload it
                 const res = await fetch(avatarValue);
                 const blob = await res.blob();
+
                 // await storageRef.child(avatarPath).delete();
                 await storageRef.child(avatarPath).put(blob);
-                updatedUser.avatar = await blobToBase64(blob);
+                avatarUrl = await storageRef.child(avatarPath).getDownloadURL();
+                avatarBase64 = await blobToBase64(blob);
             } else {
-                updatedUser.avatar = user.avatar;
+                avatarUrl = user.avatar;
             }
-            await updateUserInfo(updatedUser);
+
+            updatedUser.avatar = avatarUrl;
+            await updateUser(updatedUser);
+
             setUpdateInProgress(false);
-            dispatch({ type: AppActionTypes.SetUser, payload: updatedUser });
+
+            // Update global state with user info & base64 avatar
+            updatedUser.avatar = avatarBase64 || user.avatar;
+            dispatch({
+                type: AppActionTypes.SetUser,
+                payload: updatedUser
+            });
         } catch (e) {
             console.log(e);
             Alert.alert('Failed to update profile. Try again.');
