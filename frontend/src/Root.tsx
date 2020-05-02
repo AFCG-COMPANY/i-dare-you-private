@@ -3,7 +3,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import * as firebase from 'firebase';
 import { firebaseConfig } from './constants/firebase.config';
 import { ActivityIndicator, SafeAreaView } from 'react-native';
-import { getUserAvatar, getUserInfo } from './api/api';
+import { getUserAvatar, getUser } from './api/api';
 import { AuthNavigator } from './screens/auth/AuthNavigator';
 import { MainNavigator } from './screens/main/MainNavigator';
 import {
@@ -39,7 +39,7 @@ export default function Root() {
         return firebase.auth().onAuthStateChanged((user) => {
             if (user?.uid) {
                 Promise.all([
-                    getUserInfo(user.uid),
+                    getUser(user.uid),
                     getUserAvatar(user.uid)
                 ])
                     .then(([userInfo, avatar]) => {
