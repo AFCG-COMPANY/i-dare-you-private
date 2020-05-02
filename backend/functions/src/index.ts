@@ -1,1 +1,1 @@
-exports.profile = require('./profile');
+exports.user = require('./user');
