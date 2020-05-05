@@ -16,6 +16,7 @@ import { Avatar } from './Avatar';
 
 interface UserProfileEditProps {
     updateButtonTitle?: string;
+    onSuccess?: () => void;
 }
 
 export const UserProfileEdit: React.FC<UserProfileEditProps> = (props) => {
@@ -30,9 +31,7 @@ export const UserProfileEdit: React.FC<UserProfileEditProps> = (props) => {
     const [usernameValue, setUsernameValue] = React.useState(user.username);
     const [bioValue, setBioValue] = React.useState(user.bio);
     const [avatarValue, setAvatarValue] = React.useState<string>();
-    const [updateInProgress, setUpdateInProgress] = React.useState<boolean>(
-        false
-    );
+    const [updateInProgress, setUpdateInProgress] = React.useState<boolean>(false);
 
     const onAvatarEditPress = async () => {
         // Get permission to access photos
@@ -109,6 +108,8 @@ export const UserProfileEdit: React.FC<UserProfileEditProps> = (props) => {
                 type: AppActionTypes.SetUser,
                 payload: updatedUser
             });
+
+            props.onSuccess && props.onSuccess();
         } catch (e) {
             console.log(e);
             Alert.alert('Failed to update profile. Try again.');
