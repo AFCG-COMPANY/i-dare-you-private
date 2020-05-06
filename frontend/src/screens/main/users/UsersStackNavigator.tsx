@@ -4,10 +4,12 @@ import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
 import { MainNavigatorParamList } from '../MainNavigator';
 import { CompositeNavigationProp } from '@react-navigation/native';
 import { Users } from './Users';
+import { UserInfo } from './UserInfo';
+import { User } from '../../../models';
 
 export type UsersStackParamList = {
     Users: undefined;
-    Profile: undefined;
+    UserInfo: { user: User };
 };
 
 export type UsersNavigationProp = CompositeNavigationProp<
@@ -21,12 +23,17 @@ interface UsersStackProps {
 
 const UsersStack = createStackNavigator<UsersStackParamList>();
 
-export const UsersStackNavigator: React.FC<UsersStackProps> = ({ navigation }) => {
+export const UsersStackNavigator: React.FC<UsersStackProps> = () => {
     return (
         <UsersStack.Navigator>
             <UsersStack.Screen
                 name='Users'
                 component={Users}
+            />
+            <UsersStack.Screen
+                name='UserInfo'
+                component={UserInfo}
+                options={({ route }) => ({ title: route.params.user.username })}
             />
         </UsersStack.Navigator>
     );

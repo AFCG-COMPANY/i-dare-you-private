@@ -15,11 +15,11 @@ import { UserProfileEdit } from '../../components';
 import { UsersStackNavigator } from './users/UsersStackNavigator';
 
 export type MainNavigatorParamList = {
-    Feed: any;
-    Users: any;
-    Challenge: any;
-    Favorite: any;
-    Profile: any;
+    Feed: undefined;
+    Users: undefined;
+    Challenge: undefined;
+    Favorite: undefined;
+    Profile: undefined;
 };
 
 interface MainNavigatorProps {

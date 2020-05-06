@@ -1,5 +1,5 @@
 import React from 'react';
-import { ActivityIndicator, FlatList, Platform, View } from 'react-native';
+import { ActivityIndicator, FlatList, Platform, StyleSheet, View } from 'react-native';
 import { Input, ListItem } from 'react-native-elements';
 import { Ionicons } from '@expo/vector-icons';
 import { User } from '../../../models';
@@ -38,7 +38,7 @@ export const Users: React.FC<UsersProps> = ({ navigation }) => {
     }, [debouncedSearchTerm]);
 
     return (
-        <View style={{flex: 1, backgroundColor: 'white'}}>
+        <View style={styles.container}>
             <Input
                 containerStyle={{paddingHorizontal: 0}}
                 inputContainerStyle={{borderColor: '#e0e0e0'}}
@@ -54,27 +54,39 @@ export const Users: React.FC<UsersProps> = ({ navigation }) => {
                 isSearching
                 ?
                 <ActivityIndicator
-                    style={{flex: 1, backgroundColor: 'white', alignItems: 'center', justifyContent: 'center'}}
+                    style={styles.loader}
                     size='large'
                 />
                 :
                 <FlatList
                     keyExtractor={(item, index) => index.toString()}
                     data={results}
-                    renderItem={renderUserListItem}
+                    renderItem={({ item }) => (
+                        <ListItem
+                            title={item.username}
+                            subtitle={item.bio}
+                            subtitleProps={{numberOfLines: 1}}
+                            leftAvatar={{ source: { uri: item.avatar } }}
+                            bottomDivider
+                            chevron
+                            onPress={() => navigation.navigate('UserInfo', { user: item })}
+                        />
+                    )}
                 />
             }
         </View>
     );
 };
 
-const renderUserListItem = ({ item }: { item: User }) => (
-    <ListItem
-        title={item.username}
-        subtitle={item.bio}
-        subtitleProps={{numberOfLines: 1}}
-        leftAvatar={{ source: { uri: item.avatar } }}
-        bottomDivider
-        chevron
-    />
-);
+const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        backgroundColor: 'white'
+    },
+    loader: {
+        flex: 1,
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: 'white'
+    }
+});
