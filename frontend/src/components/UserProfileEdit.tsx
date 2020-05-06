@@ -77,33 +77,30 @@ export const UserProfileEdit: React.FC<UserProfileEditProps> = (props) => {
         const avatarPath = 'avatars/' + user.id;
 
         const updatedUser: User = {
-            id: user.id,
+            ...user,
             username: usernameValue,
             bio: bioValue
         };
 
         try {
-            let avatarUrl, avatarBase64;
             if (avatarValue) {
                 // User selected new avatar, need to upload it
                 const res = await fetch(avatarValue);
                 const blob = await res.blob();
-
-                // await storageRef.child(avatarPath).delete();
                 await storageRef.child(avatarPath).put(blob);
-                avatarUrl = await storageRef.child(avatarPath).getDownloadURL();
-                avatarBase64 = await blobToBase64(blob);
-            } else {
-                avatarUrl = user.avatar;
+
+                // Need to send download url to backend
+                updatedUser.avatar = await storageRef.child(avatarPath).getDownloadURL();
+
+                // We also need to store base64 formatted avatar to avoid unnecessary network requests
+                updatedUser.avatarBase64 = await blobToBase64(blob);
             }
 
-            updatedUser.avatar = avatarUrl;
             await updateUser(updatedUser);
 
             setUpdateInProgress(false);
 
-            // Update global state with user info & base64 avatar
-            updatedUser.avatar = avatarBase64 || user.avatar;
+            // Update global state with user info
             dispatch({
                 type: AppActionTypes.SetUser,
                 payload: updatedUser
@@ -125,7 +122,7 @@ export const UserProfileEdit: React.FC<UserProfileEditProps> = (props) => {
         >
             <Avatar
                 containerStyle={styles.avatar}
-                source={{ uri: avatarValue || user.avatar }}
+                source={{ uri: avatarValue || user.avatarBase64 }}
                 onEditPress={onAvatarEditPress}
             />
 

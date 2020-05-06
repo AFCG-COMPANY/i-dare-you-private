@@ -4,7 +4,7 @@ import { Challenge, User } from '../models';
 
 const HOST = 'https://us-central1-i-dare-you-142ea.cloudfunctions.net/';
 
-export async function getUsers(userId: string, queryText: string): Promise<User[]> {
+export async function getUsers(queryText: string, userId: string): Promise<User[]> {
     const res = await axios.get<User[]>(`${HOST}user-getUsers?id=${userId}&queryText=${queryText}`);
     return res.data;
 }

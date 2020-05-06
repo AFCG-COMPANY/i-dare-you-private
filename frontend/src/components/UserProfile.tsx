@@ -45,7 +45,7 @@ export const UserProfile: React.FC<UserProfileProps> = ({ user, isCurrentUser, .
             <View style={styles.header}>
                 <Avatar
                     containerStyle={styles.avatarContainer}
-                    source={{ uri: user?.avatar }}
+                    source={{ uri: user?.avatarBase64 }}
                 />
 
                 <View style={styles.stats}>
