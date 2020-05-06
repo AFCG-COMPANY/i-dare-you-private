@@ -10,17 +10,19 @@ export const getUser = functions.https.onRequest((request, response) => {
             if (doc.exists) {
                 response.send(doc.data());
             } else {
-                admin.firestore().collection('users').doc(request.query.id.toString()).set({
-                    username: '',
-                    avatar: DEFAULT_USER_AVATAR,
-                    bio: ''
-                })
-                    .then(() => {
-                        response.status(200).send()
+                admin.firestore()
+                    .collection('users')
+                    .doc(request.query.id.toString())
+                    .set({
+                        username: '',
+                        avatar: DEFAULT_USER_AVATAR,
+                        bio: '',
+                        wins: 0,
+                        losses: 0,
+                        draws: 0
                     })
-                    .catch(() => {
-                        response.status(500).send()
-                    });
+                    .then(() => response.status(200).send())
+                    .catch(() => response.status(500).send());
             }
         })
         .catch(err => {
@@ -43,30 +45,39 @@ export const setUser = functions.https.onRequest((request, response) => {
 })
 
 export const getUsers = functions.https.onRequest((request, response) => {
-    const { id, queryText } = request.query;
+    const { id, queryText } = request.query as { id: string, queryText: string };
 
-    if (id && queryText != null) {
-        const usersRef = admin.firestore().collection('users');
-        const users = usersRef.orderBy('username').where('username', '>=', queryText);
+    if (!id) {
+        response.status(400).send();
+    }
 
-        users.get().then(snapshot => {
-            const result: {}[] = [];
+    const usersRef = admin.firestore().collection('users');
+    const users = usersRef.orderBy('username');
 
-            snapshot.forEach(userDoc => {
-                const userData = userDoc.data();
+    users.get().then(snapshot => {
+        let result: { id: string, username: string, bio: string, avatar: string }[] = [];
 
+        snapshot.forEach(userDoc => {
+            const userData = userDoc.data() as { id: string, username: string, bio: string, avatar: string };
+
+            if (userDoc.id !== id) {
                 result.push({
                     ...userData,
                     id: userDoc.id
                 });
-            });
-
-            response.status(200).send(result);
-        }).catch(e => {
-            console.log(e);
-            response.status(500).send();
+            }
         });
-    } else {
-        response.status(400).send();
-    }
+
+        let filterFn = (item: { id: string, username: string, bio: string, avatar: string }) => item.id !== id;
+        if (queryText) {
+            filterFn = item => item.id !== id && item.username.toLowerCase().startsWith(queryText);
+        }
+
+        result = result.filter(filterFn);
+
+        response.status(200).send(result);
+    }).catch(e => {
+        console.log(e);
+        response.status(500).send();
+    });
 }) 
