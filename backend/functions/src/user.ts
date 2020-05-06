@@ -43,15 +43,30 @@ export const setUser = functions.https.onRequest((request, response) => {
 })
 
 export const getUsers = functions.https.onRequest((request, response) => {
-    //const userId = request.query.id.toString()
-    //const queryText = request.query.queryText.toString()
-    admin.firestore().collection('users').get().then(snapshot => {
-        let result: any = []
-        snapshot.forEach(async doc => {
-            const item = doc.data();
-            result.push(item)
-        })
-        response.send(result);
-    }).catch((e) => { console.log(e) })
+    const { id, queryText } = request.query;
 
+    if (id && queryText != null) {
+        const usersRef = admin.firestore().collection('users');
+        const users = usersRef.orderBy('username').where('username', '>=', queryText);
+
+        users.get().then(snapshot => {
+            const result: {}[] = [];
+
+            snapshot.forEach(userDoc => {
+                const userData = userDoc.data();
+
+                result.push({
+                    ...userData,
+                    id: userDoc.id
+                });
+            });
+
+            response.status(200).send(result);
+        }).catch(e => {
+            console.log(e);
+            response.status(500).send();
+        });
+    } else {
+        response.status(400).send();
+    }
 }) 
