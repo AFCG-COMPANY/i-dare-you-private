@@ -45,7 +45,7 @@ export const UserProfile: React.FC<UserProfileProps> = ({ user, isCurrentUser, .
             <View style={styles.header}>
                 <Avatar
                     containerStyle={styles.avatarContainer}
-                    source={{ uri: user?.avatarBase64 }}
+                    source={{ uri: isCurrentUser ? user?.avatarBase64 : user?.avatar }}
                 />
 
                 <View style={styles.stats}>
@@ -53,7 +53,7 @@ export const UserProfile: React.FC<UserProfileProps> = ({ user, isCurrentUser, .
                         <Badge
                             badgeStyle={styles.statsBadge}
                             textStyle={styles.text}
-                            value={0}
+                            value={user?.wins || 0}
                             status='success'
                         />
                         <Text style={styles.text}>Wins</Text>
@@ -63,7 +63,7 @@ export const UserProfile: React.FC<UserProfileProps> = ({ user, isCurrentUser, .
                         <Badge
                             badgeStyle={styles.statsBadge}
                             textStyle={styles.text}
-                            value={0}
+                            value={user?.draws || 0}
                         />
                         <Text style={styles.text}>Draws</Text>
                     </View>
@@ -72,7 +72,7 @@ export const UserProfile: React.FC<UserProfileProps> = ({ user, isCurrentUser, .
                         <Badge
                             badgeStyle={styles.statsBadge}
                             textStyle={styles.text}
-                            value={0}
+                            value={user?.losses || 0}
                             status='error'
                         />
                         <Text style={styles.text}>Losses</Text>
@@ -163,7 +163,6 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between'
     },
     statsItem: {
-        marginRight: 8,
         display: 'flex',
         alignItems: 'center'
     },

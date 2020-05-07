@@ -5,12 +5,21 @@ import { Challenge, User } from '../models';
 const HOST = 'https://us-central1-i-dare-you-142ea.cloudfunctions.net/';
 
 export async function getUsers(queryText: string, userId: string): Promise<User[]> {
-    const res = await axios.get<User[]>(`${HOST}user-getUsers?id=${userId}&queryText=${queryText}`);
+    const res = await axios.get<User[]>(`${HOST}user-getUsers`, {
+        params: {
+            id: userId,
+            queryText
+        }
+    });
     return res.data;
 }
 
 export async function getUser(id: string): Promise<User> {
-    const res = await axios.get<User>(`${HOST}user-getUser?id=${id}`);
+    const res = await axios.get<User>(`${HOST}user-getUser`, {
+        params: {
+            id
+        }
+    });
     return res.data;
 }
 
