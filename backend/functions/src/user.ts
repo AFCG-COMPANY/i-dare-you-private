@@ -70,7 +70,8 @@ export const getUsers = functions.https.onRequest((request, response) => {
 
         let filterFn = (item: { id: string, username: string, bio: string, avatar: string }) => item.id !== id;
         if (queryText) {
-            filterFn = item => item.id !== id && item.username.toLowerCase().startsWith(queryText);
+            const lowerCaseQueryText = queryText.toLowerCase();
+            filterFn = item => item.id !== id && item.username.toLowerCase().startsWith(lowerCaseQueryText);
         }
 
         result = result.filter(filterFn);
