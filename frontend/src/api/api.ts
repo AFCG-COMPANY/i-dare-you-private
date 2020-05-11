@@ -55,6 +55,10 @@ export function updateUser(user: User): Promise<void> {
     return axios.post(`${HOST}user-setUser?id=${id}`, { bio, username, avatar });
 }
 
+export function createChallenge(rate: string, date: number, description: string, id: string) {
+    return axios.post(`${HOST}challenge-setChallenge`, {rate, date, description, id});
+}
+
 export function getChallenges(
     userId: string,
     start: number,
