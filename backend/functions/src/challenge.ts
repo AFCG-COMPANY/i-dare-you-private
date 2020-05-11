@@ -15,8 +15,10 @@ export const setChallenge = functions.https.onRequest(async (request, response) 
         .then(doc => {
             response.status(200).send()
         })
-        .catch(err => {
-            response.status(500).send()
+        .then(doc => response.status(200).send())
+        .catch(e => {
+            console.log(e);
+            response.status(500).send();
         });
 })
 
