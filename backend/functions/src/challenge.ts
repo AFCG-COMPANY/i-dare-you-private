@@ -4,16 +4,17 @@ import admin from './config';
 
 
 export const setChallenge = functions.https.onRequest((request, response) => {
-    admin.firestore().collection('challenges').add({
-        rate: request.body.rate,
-        date: admin.firestore.Timestamp.fromMillis(request.body.date),
-        description: request.body.description,
-        creatorId: request.body.id,
-    })
-        .then(doc => {
-            response.status(200).send()
+    admin.firestore()
+        .collection('challenges')
+        .add({
+            rate: request.body.rate,
+            date: admin.firestore.Timestamp.fromMillis(request.body.date),
+            description: request.body.description,
+            creatorId: request.body.id
         })
-        .catch(err => {
-            response.status(500).send()
+        .then(doc => response.status(200).send())
+        .catch(e => {
+            console.log(e);
+            response.status(500).send();
         });
-})
+});

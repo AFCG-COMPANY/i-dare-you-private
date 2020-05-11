@@ -60,12 +60,10 @@ export const getUsers = functions.https.onRequest((request, response) => {
         snapshot.forEach(userDoc => {
             const userData = userDoc.data() as { id: string, username: string, bio: string, avatar: string };
 
-            if (userDoc.id !== id) {
-                result.push({
-                    ...userData,
-                    id: userDoc.id
-                });
-            }
+            result.push({
+                ...userData,
+                id: userDoc.id
+            });
         });
 
         let filterFn = (item: { id: string, username: string, bio: string, avatar: string }) => item.id !== id;
