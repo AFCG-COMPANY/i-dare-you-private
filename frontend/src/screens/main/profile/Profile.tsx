@@ -1,5 +1,4 @@
 import React from 'react';
-import { Challenge } from '../../../models';
 import { UserProfile } from '../../../components';
 import { ProfileNavigationProp } from './ProfileStackNavigator';
 import { AppContext } from '../../../contexts/AppContext';
@@ -17,7 +16,7 @@ export const Profile: React.FC<ProfileProps> = ({ navigation }) => {
             user={user}
             isCurrentUser={true}
             onBrowseChallengesPress={() => navigation.navigate('Feed')}
-            onCreateNewChallengePress={() => navigation.navigate('Challenge')}
+            onCreateNewChallengePress={() => navigation.navigate('CreateChallenge')}
         />
     );
 };

@@ -6,27 +6,31 @@ import {
 import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
 import { MainNavigatorParamList } from '../MainNavigator';
 import { CompositeNavigationProp } from '@react-navigation/native';
-import { Challenge } from './Challenge';
+import { CreateChallenge } from './CreateChallenge';
 
 export type ChallengeStackParamList = {
-    Feed: undefined;
+    CreateChallenge: undefined;
 };
 
 export type ChallengeNavigationProp = CompositeNavigationProp<
-    StackNavigationProp<ChallengeStackParamList, 'Feed'>,
+    StackNavigationProp<ChallengeStackParamList, 'CreateChallenge'>,
     BottomTabNavigationProp<MainNavigatorParamList>
 >;
 
-interface ChallengeStackProps {
+interface CreateChallengeStackProps {
     navigation: ChallengeNavigationProp;
 }
 
 const ChallengeStack = createStackNavigator<ChallengeStackParamList>();
 
-export const ChallengeStackNavigator: React.FC<ChallengeStackProps> = ({ navigation }) => {
+export const CreateChallengeStackNavigator: React.FC<CreateChallengeStackProps> = () => {
     return (
         <ChallengeStack.Navigator>
-            <ChallengeStack.Screen name='Challenge' component={Challenge} />
+            <ChallengeStack.Screen
+                name='CreateChallenge'
+                options={{ title: 'New Challenge' }}
+                component={CreateChallenge}
+            />
         </ChallengeStack.Navigator>
     );
 };

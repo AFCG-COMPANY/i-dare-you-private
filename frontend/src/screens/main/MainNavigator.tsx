@@ -1,11 +1,6 @@
 import React from 'react';
 import { Platform, SafeAreaView } from 'react-native';
-import {
-    Feather,
-    FontAwesome,
-    FontAwesome5,
-    Ionicons
-} from '@expo/vector-icons';
+import { Feather, FontAwesome, FontAwesome5, Ionicons } from '@expo/vector-icons';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Text } from 'react-native-elements';
 import { ProfileStackNavigator } from './profile/ProfileStackNavigator';
@@ -13,12 +8,12 @@ import { FeedStackNavigator } from './feed/FeedStackNavigator';
 import { User } from '../../models';
 import { UserProfileEdit } from '../../components';
 import { UsersStackNavigator } from './users/UsersStackNavigator';
-import { ChallengeStackNavigator } from './challenge/ChallengeStackNavigator';
+import { CreateChallengeStackNavigator } from './challenge/СreateChallengeStackNavigator';
 
 export type MainNavigatorParamList = {
     Feed: undefined;
     Users: undefined;
-    Challenge: undefined;
+    CreateChallenge: undefined;
     Favorite: undefined;
     Profile: undefined;
 };
@@ -33,7 +28,7 @@ export const MainNavigator: React.FC<MainNavigatorProps> = ({ user }) => {
     if (user?.username) {
         return (
             <Tabs.Navigator
-                initialRouteName='Challenge'
+                initialRouteName='Feed'
                 screenOptions={({ route }) => ({
                     tabBarIcon: ({ color, size }) => {
                         switch (route.name) {
@@ -71,7 +66,7 @@ export const MainNavigator: React.FC<MainNavigatorProps> = ({ user }) => {
                                         />
                                     )
                                 });
-                            case 'Challenge':
+                            case 'CreateChallenge':
                                 return (
                                     <FontAwesome
                                         name='plus-square-o'
@@ -123,7 +118,11 @@ export const MainNavigator: React.FC<MainNavigatorProps> = ({ user }) => {
             >
                 <Tabs.Screen name='Feed' component={FeedStackNavigator} />
                 <Tabs.Screen name='Users' component={UsersStackNavigator} />
-                <Tabs.Screen name='Challenge' component={ChallengeStackNavigator} />
+                <Tabs.Screen
+                    name='CreateChallenge'
+                    options={{ title: 'Challenge' }}
+                    component={CreateChallengeStackNavigator}
+                />
                 <Tabs.Screen name='Favorite' component={FeedStackNavigator} />
                 <Tabs.Screen name='Profile' component={ProfileStackNavigator} />
             </Tabs.Navigator>
