@@ -1,13 +1,14 @@
 import React from 'react';
-import { ScrollView, StyleSheet, TouchableWithoutFeedback, View } from 'react-native';
+import { StyleSheet, TouchableWithoutFeedback, View } from 'react-native';
 import { Button, Input, Text } from 'react-native-elements';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { AppContext } from '../../../contexts/AppContext';
 import { Action } from '../../../models/action';
 import { createAction } from '../../../helpers/create-action';
 import { getFormattedDateString } from '../../../helpers/date.helper';
 import { createChallenge } from '../../../api/api';
 import { ChallengeNavigationProp } from './СreateChallengeStackNavigator';
-import { DatePickerModal } from '../../../components';
+import { DatePickerModal, DismissKeyboardView } from '../../../components';
 
 enum Actions {
     BidChange,
@@ -46,7 +47,6 @@ function createChallengeReducer(state: CreateChallengeState, action: Action<Acti
         case Actions.EndDateChange:
             return {...state, endDate: action.payload};
         case Actions.ToggleDatePicker:
-            console.log(action.payload);
             return {...state, datePickerVisible: action.payload};
         case Actions.CreateChallengeStart:
             return {...state, loading: true};
@@ -70,54 +70,52 @@ export const CreateChallenge: React.FC<CreateChallengeProps> = ({ navigation }) 
     const [ localState, localDispatch ] = React.useReducer(createChallengeReducer, initialState);
 
     return (
-        <ScrollView style={styles.container} keyboardShouldPersistTaps='handled'>
-            <Input
-                containerStyle={styles.inputContainer}
-                labelStyle={styles.inputLabel}
-                label='Bid'
-                placeholder='$100, ice hole dipping, etc.'
-                multiline={true}
-                numberOfLines={4}
-                value={localState.bid}
-                onChangeText={bid => localDispatch(createAction(Actions.BidChange, bid))}
-            />
-
-
-            <View style={styles.datePickerField}>
-                <Text style={styles.datePickerFieldLabel}>END DATE</Text>
-                <TouchableWithoutFeedback
-                    onPress={() => {
-                        localDispatch(createAction(Actions.ToggleDatePicker, true))
-                    }}
-                >
-                    {localState.endDate
-                        ?
-                        <Text style={styles.datePickerFieldValue}>{getFormattedDateString(localState.endDate)}</Text>
-                        :
-                        <Text style={styles.datePickerFieldPlaceholder}>Due date of the challenge.</Text>
-                    }
-                </TouchableWithoutFeedback>
-            </View>
-
-            {localState.datePickerVisible && (
-                <DatePickerModal
-                    date={localState.endDate || new Date()}
-                    onChange={(event, date) => localDispatch(createAction(Actions.EndDateChange, date))}
-                    onClose={() => localDispatch(createAction(Actions.ToggleDatePicker, false))}
+        <DismissKeyboardView style={styles.container}>
+            <KeyboardAwareScrollView bounces={false} keyboardShouldPersistTaps='handled'>
+                <Input
+                    containerStyle={styles.inputContainer}
+                    labelStyle={styles.inputLabel}
+                    label='Bid'
+                    placeholder='$100, ice hole dipping, etc.'
+                    multiline={true}
+                    value={localState.bid}
+                    onChangeText={bid => localDispatch(createAction(Actions.BidChange, bid))}
                 />
-            )}
 
-            <Input
-                containerStyle={styles.inputContainer}
-                labelStyle={styles.inputLabel}
-                label='Description'
-                placeholder='Describe the goal of the challenge as clear as possible.'
-                multiline={true}
-                maxLength={140}
-                clearButtonMode='while-editing'
-                onChangeText={description => localDispatch(createAction(Actions.DescriptionChange, description))}
-                value={localState.description}
-            />
+                <View style={styles.datePickerField}>
+                    <Text style={styles.datePickerFieldLabel}>END DATE</Text>
+                    <TouchableWithoutFeedback
+                        onPress={() => localDispatch(createAction(Actions.ToggleDatePicker, true))}
+                    >
+                        {localState.endDate
+                            ?
+                            <Text style={styles.datePickerFieldValue}>{getFormattedDateString(localState.endDate)}</Text>
+                            :
+                            <Text style={styles.datePickerFieldPlaceholder}>Due date of the challenge.</Text>
+                        }
+                    </TouchableWithoutFeedback>
+                </View>
+
+                {localState.datePickerVisible && (
+                    <DatePickerModal
+                        date={localState.endDate || new Date()}
+                        onChange={(event, date) => localDispatch(createAction(Actions.EndDateChange, date))}
+                        onClose={() => localDispatch(createAction(Actions.ToggleDatePicker, false))}
+                    />
+                )}
+
+                <Input
+                    containerStyle={styles.inputContainer}
+                    labelStyle={styles.inputLabel}
+                    label='Description'
+                    placeholder='Describe the goal of the challenge.'
+                    multiline={true}
+                    maxLength={140}
+                    clearButtonMode='while-editing'
+                    onChangeText={description => localDispatch(createAction(Actions.DescriptionChange, description))}
+                    value={localState.description}
+                />
+            </KeyboardAwareScrollView>
 
             <Button
                 containerStyle={styles.button}
@@ -151,7 +149,7 @@ export const CreateChallenge: React.FC<CreateChallengeProps> = ({ navigation }) 
                 }}
             />
             {localState.error && <Text style={styles.error}>{localState.error}</Text>}
-        </ScrollView>
+        </DismissKeyboardView>
     );
 };
 
@@ -171,6 +169,8 @@ const styles = StyleSheet.create({
     },
     datePickerField: {
         marginBottom: 20,
+        borderBottomColor: '#B4BBC1',
+        borderBottomWidth: 1
     },
     datePickerFieldLabel: {
         fontSize: 16,

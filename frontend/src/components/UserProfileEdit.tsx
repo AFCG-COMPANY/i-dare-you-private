@@ -36,14 +36,10 @@ export const UserProfileEdit: React.FC<UserProfileEditProps> = (props) => {
     const onAvatarEditPress = async () => {
         // Get permission to access photos
         if (Constants.platform?.ios) {
-            const { status } = await Permissions.askAsync(
-                Permissions.CAMERA_ROLL
-            );
+            const { status } = await Permissions.askAsync(Permissions.CAMERA_ROLL);
 
             if (status !== 'granted') {
-                Alert.alert(
-                    'Sorry, we need camera roll permissions to make this work!'
-                );
+                Alert.alert('Sorry, we need camera roll permissions to make this work!');
                 return;
             }
         }
@@ -53,7 +49,7 @@ export const UserProfileEdit: React.FC<UserProfileEditProps> = (props) => {
                 mediaTypes: ImagePicker.MediaTypeOptions.Images,
                 allowsEditing: true,
                 aspect: [4, 3],
-                quality: 0
+                quality: 1
             });
 
             if (!result.cancelled) {
