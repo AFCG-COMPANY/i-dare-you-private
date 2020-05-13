@@ -2,7 +2,7 @@ import React from 'react';
 import { ActivityIndicator, FlatList, StyleSheet, View } from 'react-native';
 import { Badge, Button, Text } from 'react-native-elements';
 import { Challenge, User } from '../models';
-import { getChallenges } from '../api/api';
+import { getMockedChallenges } from '../api/challenge';
 import { Avatar } from './Avatar';
 import { ChallengeCard } from './ChallengeCard';
 
@@ -23,7 +23,7 @@ export const UserProfile: React.FC<UserProfileProps> = ({ user, isCurrentUser, .
         const userId = user?.id;
 
         if (userId) {
-            getChallenges(userId, 0, CHALLENGES_AMOUNT_PER_FETCH)
+            getMockedChallenges(userId, 0, CHALLENGES_AMOUNT_PER_FETCH)
                 .then((res) => mounted && setChallenges(res))
                 .catch(e => {
                     if (mounted) {

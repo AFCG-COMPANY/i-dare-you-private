@@ -3,7 +3,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import * as firebase from 'firebase';
 import { firebaseConfig } from './constants/firebase.config';
 import { ActivityIndicator, SafeAreaView } from 'react-native';
-import { getUser, getUserAvatar } from './api/api';
+import { getUser, getUserAvatar } from './api/user';
 import { AuthNavigator } from './screens/auth/AuthNavigator';
 import { MainNavigator } from './screens/main/MainNavigator';
 import { AppActionTypes, AppContext, AppState, INITIAL_STATE } from './contexts/AppContext';

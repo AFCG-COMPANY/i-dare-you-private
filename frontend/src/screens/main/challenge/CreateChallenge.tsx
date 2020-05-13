@@ -6,7 +6,7 @@ import { AppContext } from '../../../contexts/AppContext';
 import { Action } from '../../../models/action';
 import { createAction } from '../../../helpers/create-action';
 import { getFormattedDateString } from '../../../helpers/date.helper';
-import { createChallenge } from '../../../api/api';
+import { createChallenge } from '../../../api/challenge';
 import { ChallengeNavigationProp } from './СreateChallengeStackNavigator';
 import { DatePickerModal, DismissKeyboardView } from '../../../components';
 
