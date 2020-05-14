@@ -4,7 +4,7 @@ import { Input, ListItem } from 'react-native-elements';
 import { Ionicons } from '@expo/vector-icons';
 import { User } from '../../../models';
 import useDebounce from '../../../hooks/useDebounce';
-import { getUsers } from '../../../api/api';
+import { getUsers } from '../../../api/user';
 import { UsersNavigationProp } from './UsersStackNavigator';
 import { AppContext } from '../../../contexts/AppContext';
 

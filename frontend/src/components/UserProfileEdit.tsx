@@ -11,7 +11,7 @@ import * as firebase from 'firebase';
 
 import { AppActionTypes, AppContext } from '../contexts/AppContext';
 import { User } from '../models';
-import { blobToBase64, updateUser } from '../api/api';
+import { blobToBase64, updateUser } from '../api/user';
 import { Avatar } from './Avatar';
 
 interface UserProfileEditProps {

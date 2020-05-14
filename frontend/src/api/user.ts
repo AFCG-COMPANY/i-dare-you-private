@@ -1,8 +1,7 @@
 import axios from 'axios';
 import * as firebase from 'firebase';
-import { Challenge, User } from '../models';
-
-const HOST = 'https://us-central1-i-dare-you-142ea.cloudfunctions.net/';
+import { HOST } from './common';
+import { User } from '../models';
 
 export async function getUsers(queryText: string, userId: string): Promise<User[]> {
     const res = await axios.get<User[]>(`${HOST}user-getUsers`, {
@@ -53,28 +52,4 @@ export async function blobToBase64(blob: Blob): Promise<string> {
 export function updateUser(user: User): Promise<void> {
     const { username, bio, id, avatar } = user;
     return axios.post(`${HOST}user-setUser?id=${id}`, { bio, username, avatar });
-}
-
-export function createChallenge(rate: string, date: number, description: string, id: string) {
-    return axios.post(`${HOST}challenge-setChallenge`, {rate, date, description, id});
-}
-
-export function getChallenges(
-    userId: string,
-    start: number,
-    length: number
-): Promise<Challenge[]> {
-    // TODO call real backend endpoint
-    return new Promise<Challenge[]>((resolve, reject) => {
-        // TODO This is mock data. Need to use real backend
-        const challenges: Challenge[] = [];
-        for (let i = start; i < length; i++) {
-            challenges.push({
-                id: i.toString(),
-                title: 'Challenge #' + i
-            });
-        }
-
-        setTimeout(() => resolve(challenges), 500);
-    });
 }
