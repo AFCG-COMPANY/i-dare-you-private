@@ -52,7 +52,7 @@ interface GetChallengesQuery {
     userId?: string;
 }
 
-const CHALLENGES_PER_PAGE: number = 2;
+const CHALLENGES_PER_PAGE: number = 10;
 
 export const getChallenges = functions.https.onRequest(async (request, response) => {
     const query = <unknown>request.query as GetChallengesQuery;
