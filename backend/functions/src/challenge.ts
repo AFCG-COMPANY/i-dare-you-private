@@ -30,7 +30,7 @@ export const setChallenge = functions.https.onRequest(async (request, response) 
             createdBy: {
                 avatar: user?.avatar,
                 username: user?.username,
-                id: request.body.id as string
+                id: request.body.userId as string
             },
             creationDate: Date.now(),
             opponents: [],

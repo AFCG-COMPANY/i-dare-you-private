@@ -51,7 +51,7 @@ function createChallengeReducer(state: CreateChallengeState, action: Action<Acti
         case Actions.CreateChallengeStart:
             return {...state, loading: true};
         case Actions.CreateChallengeSuccess:
-            return {...state, loading: false};
+            return {...initialState};
         case Actions.CreateChallengeError:
             console.log(action.payload);
             return {...state, error: action.payload, loading: false};
@@ -118,6 +118,7 @@ export const CreateChallenge: React.FC<CreateChallengeProps> = ({ navigation }) 
                 />
             </KeyboardAwareScrollView>
 
+            {localState.error && <Text style={styles.error}>{localState.error}</Text>}
             <Button
                 containerStyle={styles.button}
                 loading={localState.loading}
@@ -134,7 +135,7 @@ export const CreateChallenge: React.FC<CreateChallengeProps> = ({ navigation }) 
                     }
 
                     // Show loading indicator
-                    localDispatch(createAction(Actions.CreateChallengeStart, null));
+                    localDispatch(createAction(Actions.CreateChallengeStart));
 
                     createChallenge(
                         localState.bid,
@@ -142,14 +143,13 @@ export const CreateChallenge: React.FC<CreateChallengeProps> = ({ navigation }) 
                         localState.description,
                         user?.id as string
                     ).then(() => {
-                        localDispatch(createAction(Actions.CreateChallengeSuccess, null));
+                        localDispatch(createAction(Actions.CreateChallengeSuccess));
                         navigation.navigate('Feed');
                     }).catch(e => {
                         localDispatch(createAction(Actions.CreateChallengeError, e));
                     })
                 }}
             />
-            {localState.error && <Text style={styles.error}>{localState.error}</Text>}
         </DismissKeyboardView>
     );
 };
@@ -191,9 +191,9 @@ const styles = StyleSheet.create({
         minHeight: 40
     },
     button: {
-        marginTop: 40
     },
     error: {
+        marginTop: 20,
         alignSelf: 'center',
         color: 'tomato'
     }
