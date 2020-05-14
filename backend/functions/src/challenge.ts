@@ -2,25 +2,36 @@ import * as functions from 'firebase-functions';
 
 import admin from './config';
 
+interface User {
+    id: string;
+    avatar: string;
+    username: string;
+}
+
 interface Challenge {
     bid: string;
     description: string;
     endDate: number;
-    creator: any;
+    createdBy: User;
     creationDate: number;
     opponents: string[]; // Ids of creator's opponents
     likedBy: string[]; // Ids of users who liked the challenge
 }
 
 export const setChallenge = functions.https.onRequest(async (request, response) => {
-    const user = await (await admin.firestore().collection('users').doc(request.body.id.toString()).get()).data();
+    const userDoc = await admin.firestore().collection('users').doc(request.body.userId).get();
+    const user = await userDoc.data();
 
     admin.firestore().collection('challenges')
         .add(<Challenge>{
             bid: request.body.rate,
             endDate: request.body.endDate,
             description: request.body.description,
-            creator: { avatar: user?.avatar, username: user?.username, id: request.body.id.toString() },
+            createdBy: {
+                avatar: user?.avatar,
+                username: user?.username,
+                id: request.body.id as string
+            },
             creationDate: Date.now(),
             opponents: [],
             likedBy: []
@@ -36,20 +47,20 @@ export const setChallenge = functions.https.onRequest(async (request, response) 
 });
 
 interface ChallengesFilterModel {
-    participant?: string;
-    likedBy?: string;
+    filterBy: 'participant' | 'likedBy';
+    userId: string;
 }
 
 interface GetChallengesQuery {
     page: number;
-    filters: ChallengesFilterModel;
+    filter: ChallengesFilterModel;
 }
 
 const CHALLENGES_PER_PAGE: number = 10;
 
 export const getChallenges = functions.https.onRequest(async (request, response) => {
     const query = <unknown>request.query as GetChallengesQuery;
-    const { page, filters } = query;
+    const { page, filter } = query;
 
     if (!page) {
         response.status(400).send('You must specify the page.');
@@ -58,10 +69,10 @@ export const getChallenges = functions.https.onRequest(async (request, response)
     const challengesRef = admin.firestore().collection('challenges');
 
     let challenges;
-    if (filters) {
-        if (filters.participant) {
-            const createdChallenges = await challengesRef.where('creator.id', '==', filters.participant).get();
-            const participatingChallenges = await challengesRef.where('opponents', 'array-contains', filters.participant).get();
+    if (filter) {
+        if (filter.filterBy === 'participant') {
+            const createdChallenges = await challengesRef.where('creator.id', '==', filter.userId).get();
+            const participatingChallenges = await challengesRef.where('opponents', 'array-contains', filter.userId).get();
 
             // Merge matching challenges
             const result = createdChallenges.docs
@@ -72,8 +83,8 @@ export const getChallenges = functions.https.onRequest(async (request, response)
             response.send(result);
             return;
 
-        } else if (filters.likedBy) {
-            challenges = challengesRef.where('likedBy', 'array-contains', filters.likedBy);
+        } else if (filter.filterBy === 'likedBy') {
+            challenges = challengesRef.where('likedBy', 'array-contains', filter.userId);
         }
     }
 

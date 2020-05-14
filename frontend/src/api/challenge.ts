@@ -6,8 +6,8 @@ export function getChallenges(): Challenge[] {
     return [];
 }
 
-export function createChallenge(bid: string, endDate: number, description: string, id: string) {
-    return axios.post(`${HOST}challenge-setChallenge`, {bid, endDate, description, id});
+export function createChallenge(bid: string, endDate: number, description: string, userId: string) {
+    return axios.post(`${HOST}challenge-setChallenge`, {bid, endDate, description, userId});
 }
 
 export function getMockedChallenges(
