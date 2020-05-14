@@ -53,6 +53,7 @@ function createChallengeReducer(state: CreateChallengeState, action: Action<Acti
         case Actions.CreateChallengeSuccess:
             return {...state, loading: false};
         case Actions.CreateChallengeError:
+            console.log(action.payload);
             return {...state, error: action.payload, loading: false};
         default:
             return {...state};

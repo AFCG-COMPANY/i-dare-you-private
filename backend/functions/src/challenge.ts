@@ -24,7 +24,7 @@ export const setChallenge = functions.https.onRequest(async (request, response) 
 
     admin.firestore().collection('challenges')
         .add(<Challenge>{
-            bid: request.body.rate,
+            bid: request.body.bid,
             endDate: request.body.endDate,
             description: request.body.description,
             createdBy: {
