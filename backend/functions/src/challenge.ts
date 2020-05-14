@@ -46,61 +46,59 @@ export const setChallenge = functions.https.onRequest(async (request, response) 
         });
 });
 
-interface ChallengesFilterModel {
-    filterBy: 'participant' | 'likedBy';
-    userId: string;
-}
-
 interface GetChallengesQuery {
     page: number;
-    filter: ChallengesFilterModel;
+    filterBy?: 'participant' | 'likedBy';
+    userId?: string;
 }
 
-const CHALLENGES_PER_PAGE: number = 10;
+const CHALLENGES_PER_PAGE: number = 2;
 
 export const getChallenges = functions.https.onRequest(async (request, response) => {
     const query = <unknown>request.query as GetChallengesQuery;
-    const { page, filter } = query;
+    const { page, filterBy, userId } = query;
 
-    if (!page) {
-        response.status(400).send('You must specify the page.');
-    }
+    if (page) {
+        const offset = page * CHALLENGES_PER_PAGE;
+        const challengesRef = admin.firestore().collection('challenges');
 
-    const challengesRef = admin.firestore().collection('challenges');
+        let challenges;
+        if (filterBy && userId) {
+            if (filterBy === 'participant') {
+                const createdChallenges = await challengesRef.where('createdBy.id', '==', userId).get();
+                const participatingChallenges = await challengesRef.where('opponents', 'array-contains', userId).get();
 
-    let challenges;
-    if (filter) {
-        if (filter.filterBy === 'participant') {
-            const createdChallenges = await challengesRef.where('creator.id', '==', filter.userId).get();
-            const participatingChallenges = await challengesRef.where('opponents', 'array-contains', filter.userId).get();
+                // Merge matching challenges
+                const result = createdChallenges.docs
+                    .concat(participatingChallenges.docs)
+                    // Sort by creation date
+                    .sort((a, b) => (b.createTime.toMillis() - a.createTime.toMillis()))
+                    .slice(offset, offset + CHALLENGES_PER_PAGE);
 
-            // Merge matching challenges
-            const result = createdChallenges.docs
-                .concat(participatingChallenges.docs)
-                // Sort by creation date
-                .sort((a, b) => (b.createTime.toMillis() - a.createTime.toMillis()));
+                response.send(result.map(doc => doc.data()));
+                return;
 
-            response.send(result);
-            return;
-
-        } else if (filter.filterBy === 'likedBy') {
-            challenges = challengesRef.where('likedBy', 'array-contains', filter.userId);
+            } else if (filterBy === 'likedBy') {
+                challenges = challengesRef.where('likedBy', 'array-contains', userId);
+            }
         }
-    }
 
-    challenges = (challenges || challengesRef)
-        // Sort by creation date
-        .orderBy('creationDate', 'desc')
-        // Get challenges for the current page
-        .offset(page * CHALLENGES_PER_PAGE)
-        .limit(CHALLENGES_PER_PAGE);
+        challenges = (challenges || challengesRef)
+            // Sort by creation date
+            .orderBy('creationDate', 'desc')
+            // Get challenges for the current page
+            .offset(page * CHALLENGES_PER_PAGE)
+            .limit(CHALLENGES_PER_PAGE);
 
-    // Send the response
-    try {
-        const result = await challenges.get();
-        response.send(result.docs);
-    } catch (e) {
-        console.log(e);
-        response.status(500).send();
+        // Send the response
+        try {
+            const result = await challenges.get();
+            response.send(result.docs.map(doc => doc.data()));
+        } catch (e) {
+            console.log(e);
+            response.status(500).send();
+        }
+    } else {
+        response.status(400).send('You must specify the page.');
     }
 });
