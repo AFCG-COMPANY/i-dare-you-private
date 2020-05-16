@@ -15,6 +15,7 @@ interface ChallengesListState {
     challenges: Challenge[];
     page: number;
     fetchedAll: boolean;
+    refreshing: boolean;
 }
 
 export class ChallengesList extends React.Component<ChallengesListProps, ChallengesListState> {
@@ -22,12 +23,13 @@ export class ChallengesList extends React.Component<ChallengesListProps, Challen
         loading: false,
         challenges: [],
         page: 0,
-        fetchedAll: false
+        fetchedAll: false,
+        refreshing: false
     };
 
     componentDidMount = () => {
         this.fetchData();
-    }
+    };
 
     fetchData = async () => {
         this.setState({ loading: true });
@@ -36,9 +38,10 @@ export class ChallengesList extends React.Component<ChallengesListProps, Challen
 
         const challenges = await getChallenges(this.state.page, filterBy, userId);
         this.setState(state => ({
-            challenges: [...state.challenges, ...challenges],
+            challenges: state.refreshing ? challenges : [...state.challenges, ...challenges],
             loading: false,
-            fetchedAll: !challenges || !challenges.length
+            fetchedAll: !challenges || !challenges.length,
+            refreshing: false
         }));
     };
 
@@ -51,31 +54,39 @@ export class ChallengesList extends React.Component<ChallengesListProps, Challen
             state => ({ page: state.page + 1 }),
             () => this.fetchData()
         );
-    }
+    };
+
+    handleRefresh = () => {
+        this.setState(
+            { page: 0, refreshing: true },
+            () => this.fetchData()
+        );
+    };
 
     renderListFooter = () => {
         return this.state.loading
-            ? <ActivityIndicator style={{ marginTop: 20 }} size='large' />
-            : null
-    }
+            ? <ActivityIndicator style={{ marginTop: 20 }} size='large'/>
+            : null;
+    };
 
     render() {
-        const { fetchedAll, challenges } = this.state;
         const { ListEmptyComponent, ...flatListProps } = this.props.flatListProps || {};
 
         return (
             // TODO refreshing (refresh on pull to top)
             <FlatList
                 {...flatListProps}
-                data={challenges}
+                data={this.state.challenges}
                 keyExtractor={item => item.id}
-                renderItem={({item}: {item: Challenge}) => (
-                    <ChallengeCard challenge={item} />
+                renderItem={({ item }: { item: Challenge }) => (
+                    <ChallengeCard challenge={item}/>
                 )}
+                ListFooterComponent={this.renderListFooter}
+                ListEmptyComponent={this.state.fetchedAll && ListEmptyComponent}
                 onEndReachedThreshold={0.3}
                 onEndReached={this.onScrollEnd}
-                ListFooterComponent={this.renderListFooter}
-                ListEmptyComponent={fetchedAll && ListEmptyComponent}
+                refreshing={this.state.refreshing}
+                onRefresh={this.handleRefresh}
             />
         );
     }
