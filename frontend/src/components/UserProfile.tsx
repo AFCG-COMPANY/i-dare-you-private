@@ -1,12 +1,9 @@
 import React from 'react';
-import { ActivityIndicator, FlatList, StyleSheet, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { Badge, Button, Text } from 'react-native-elements';
-import { Challenge, User } from '../models';
-import { getMockedChallenges } from '../api/challenge';
+import { User } from '../models';
 import { Avatar } from './Avatar';
-import { ChallengeCard } from './ChallengeCard';
-
-const CHALLENGES_AMOUNT_PER_FETCH: number = 20;
+import { ChallengesList } from './ChallengesList';
 
 interface UserProfileProps {
     user: User | null,
@@ -16,30 +13,6 @@ interface UserProfileProps {
 }
 
 export const UserProfile: React.FC<UserProfileProps> = ({ user, isCurrentUser, ...props }) => {
-    const [challenges, setChallenges] = React.useState<Challenge[] | undefined>();
-
-    React.useEffect(() => {
-        let mounted = true;
-        const userId = user?.id;
-
-        if (userId) {
-            getMockedChallenges(userId, 0, CHALLENGES_AMOUNT_PER_FETCH)
-                .then((res) => mounted && setChallenges(res))
-                .catch(e => {
-                    if (mounted) {
-                        setChallenges([]);
-                        console.log(e);
-                    }
-                });
-        } else {
-            setChallenges([]);
-        }
-
-        return () => {
-            mounted = false;
-        };
-    }, [user]);
-
     return (
         <View style={styles.container}>
             <View style={styles.header}>
@@ -80,27 +53,14 @@ export const UserProfile: React.FC<UserProfileProps> = ({ user, isCurrentUser, .
                 </View>
             </View>
 
-            {challenges ? (
-                <FlatList
-                    bounces={false}
-                    data={challenges}
-                    renderItem={({ item }) => (
-                        <ChallengeCard key={item.id} challenge={item} />
-                    )}
-                    ListHeaderComponent={<Text>{user?.bio}</Text>}
-                    ListEmptyComponent={
-                        <ChallengesEmptyComponent isCurrentUser={isCurrentUser} {...props} />
-                    }
-                />
-            ) : (
-                <>
-                    <Text>{user?.bio}</Text>
-                    <ActivityIndicator
-                        style={{ alignSelf: 'center', flex: 1 }}
-                        size='large'
-                    />
-                </>
-            )}
+            <ChallengesList
+                filterBy='participant'
+                userId={user?.id}
+                flatListProps={{
+                    ListEmptyComponent: <ChallengesEmptyComponent isCurrentUser={isCurrentUser} {...props} />,
+                    ListHeaderComponent: <Text>{user?.bio}</Text>
+                }}
+            />
         </View>
     );
 };

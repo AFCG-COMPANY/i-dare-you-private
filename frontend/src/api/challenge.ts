@@ -2,30 +2,13 @@ import { HOST } from './common';
 import { Challenge } from '../models';
 import axios from 'axios';
 
-export function getChallenges(): Challenge[] {
-    return [];
+export async function getChallenges(page: number, filterBy?: 'participant' | 'likedBy', userId?: string): Promise<Challenge[]> {
+    const params = { page, filterBy, userId };
+    const res = await axios.get(`${HOST}challenge-getChallenges`, { params });
+
+    return res.data;
 }
 
 export function createChallenge(bid: string, endDate: number, description: string, userId: string) {
     return axios.post(`${HOST}challenge-setChallenge`, {bid, endDate, description, userId});
-}
-
-export function getMockedChallenges(
-    userId: string,
-    start: number,
-    length: number
-): Promise<Challenge[]> {
-    // TODO call real backend endpoint
-    return new Promise<Challenge[]>((resolve, reject) => {
-        // TODO This is mock data. Need to use real backend
-        const challenges: Challenge[] = [];
-        for (let i = start; i < length; i++) {
-            challenges.push({
-                id: i.toString(),
-                title: 'Challenge #' + i
-            });
-        }
-
-        setTimeout(() => resolve(challenges), 500);
-    });
 }

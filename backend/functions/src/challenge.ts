@@ -1,5 +1,4 @@
 import * as functions from 'firebase-functions';
-
 import admin from './config';
 
 interface User {
@@ -46,19 +45,20 @@ export const setChallenge = functions.https.onRequest(async (request, response) 
         });
 });
 
-interface GetChallengesQuery {
-    page: number;
-    filterBy?: 'participant' | 'likedBy';
-    userId?: string;
-}
-
 const CHALLENGES_PER_PAGE: number = 10;
 
 export const getChallenges = functions.https.onRequest(async (request, response) => {
-    const query = <unknown>request.query as GetChallengesQuery;
-    const { page, filterBy, userId } = query;
+    const { filterBy, userId } = request.query;
 
-    if (page) {
+    if (!request.query.page) {
+        response.status(400).send('You must specify the page.');
+        return;
+    }
+
+    const page = parseInt(<string>request.query.page, 10);
+
+    // != null is check for undefined or null
+    if (!isNaN(page) && page > -1) {
         const offset = page * CHALLENGES_PER_PAGE;
         const challengesRef = admin.firestore().collection('challenges');
 
@@ -75,7 +75,7 @@ export const getChallenges = functions.https.onRequest(async (request, response)
                     .sort((a, b) => (b.createTime.toMillis() - a.createTime.toMillis()))
                     .slice(offset, offset + CHALLENGES_PER_PAGE);
 
-                response.send(result.map(doc => doc.data()));
+                response.send(result.map(doc => ({...doc.data(), id: doc.id})));
                 return;
 
             } else if (filterBy === 'likedBy') {
@@ -87,18 +87,18 @@ export const getChallenges = functions.https.onRequest(async (request, response)
             // Sort by creation date
             .orderBy('creationDate', 'desc')
             // Get challenges for the current page
-            .offset(page * CHALLENGES_PER_PAGE)
+            .offset(offset)
             .limit(CHALLENGES_PER_PAGE);
 
         // Send the response
         try {
             const result = await challenges.get();
-            response.send(result.docs.map(doc => doc.data()));
+            response.send(result.docs.map(doc => ({ ...doc.data(), id: doc.id })));
         } catch (e) {
             console.log(e);
             response.status(500).send();
         }
     } else {
-        response.status(400).send('You must specify the page.');
+        response.status(400).send('Invalid page format. Page must be an integer value.');
     }
 });
