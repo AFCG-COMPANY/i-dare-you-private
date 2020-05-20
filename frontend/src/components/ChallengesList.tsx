@@ -2,10 +2,10 @@ import React from 'react';
 import { ActivityIndicator, FlatList } from 'react-native';
 import { Challenge } from '../models';
 import { getChallenges } from '../api/challenge';
-import { ChallengeCard } from './ChallengeCard';
+import { ChallengeCard } from './ChallengeCard/ChallengeCard';
 
 export interface ChallengesListProps {
-    flatListProps: any;
+    flatListProps?: any;
     filterBy?: 'participant' | 'likedBy';
     userId?: string;
 }
@@ -73,7 +73,6 @@ export class ChallengesList extends React.Component<ChallengesListProps, Challen
         const { ListEmptyComponent, ...flatListProps } = this.props.flatListProps || {};
 
         return (
-            // TODO refreshing (refresh on pull to top)
             <FlatList
                 {...flatListProps}
                 data={this.state.challenges}
