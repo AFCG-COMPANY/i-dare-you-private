@@ -1,11 +1,11 @@
 import React from 'react';
 import {
-    Image,
+    Image, ImageBackground,
     Platform,
     StyleProp,
     StyleSheet,
-    TouchableHighlight,
-    TouchableOpacity, TouchableWithoutFeedback,
+    TouchableOpacity,
+    TouchableWithoutFeedback,
     View,
     ViewStyle
 } from 'react-native';
@@ -14,6 +14,10 @@ import { Challenge, User } from '../../models';
 import { getFormattedDateString } from '../../helpers/date.helper';
 import { VersusIcon } from './images/versus';
 import { DefaultOpponentAvatar } from './images/default-opponent-avatar';
+import { HealthBar } from './components/HealthBar';
+import { ChallengeResult, ChallengeStatus } from '../../models/challenge';
+import { WinIcon } from './images/win';
+import { LossIcon } from './images/loss';
 
 interface ChallengeCardProps {
     challenge: Challenge;
@@ -21,23 +25,30 @@ interface ChallengeCardProps {
 
 /**
  * TODO
- * 1. Single opponent view
- * 2. Opponents stack view
- * 3. Progress bars
- * 4. Challenge status images (Win, Lose)
- * 5. Like/Undo Like
- * 6. Comments/Tap on Card => navigation to Challenge Screen
- * 7. Navigation to Profile
- * 8. Vote button
+ * - Single opponent view
+ * - Opponents stack view
+ * - Like/Undo Like
+ * - Comments/Tap on Card => navigation to Challenge Screen
+ * - Navigation to Profile
+ * - Vote button
+ * TODO Backend integration
+ * 1. Progress bars
+ * 2. Challenge status images (Win, Lose)
  */
 
 export const ChallengeCard: React.FC<ChallengeCardProps> = ({ challenge }) => {
     return (
-        <Card containerStyle={styles.container}>
-            {/*TODO*/}
-            <TouchableOpacity onPress={() => console.log('navigate to challenge view')}>
+        <TouchableWithoutFeedback onPress={() => console.log('navigate to challenge view')}>
+            <Card containerStyle={styles.container}>
+                {/*TODO*/}
                 <View style={styles.participantsContainer}>
                     <View style={styles.participant}>
+                        <HealthBar
+                            style={styles.healthBar}
+                            health={70}
+                            max={100}
+                        />
+
                         <Image
                             style={styles.avatar}
                             source={{ uri: challenge.createdBy.avatar }}
@@ -46,10 +57,7 @@ export const ChallengeCard: React.FC<ChallengeCardProps> = ({ challenge }) => {
                         <Text style={styles.creatorName}>{challenge.createdBy.username}</Text>
                     </View>
 
-                    <Image
-                        style={styles.versus}
-                        source={{ uri: VersusIcon }}
-                    />
+                    <StatusImage status={challenge.status} />
 
                     <Opponents
                         containerStyle={styles.participant}
@@ -100,9 +108,38 @@ export const ChallengeCard: React.FC<ChallengeCardProps> = ({ challenge }) => {
                         {/*TODO comments*/}
                     </TouchableOpacity>
                 </View>
-            </TouchableOpacity>
-        </Card>
+            </Card>
+        </TouchableWithoutFeedback>
     );
+};
+
+interface StatusImageProps {
+    status: ChallengeStatus;
+    result?: ChallengeResult;
+}
+const StatusImage: React.FC<StatusImageProps> = (props) => {
+    // if (props.status === ChallengeStatus.Finished) {
+        const uri = props.result === ChallengeResult.Win ? WinIcon : LossIcon;
+
+        return (
+            <ImageBackground
+                style={styles.versus}
+                source={{ uri: VersusIcon }}
+            >
+                <Image
+                    style={styles.resultImage}
+                    source={{ uri }}
+                />
+            </ImageBackground>
+        );
+    // } else {
+    //     return (
+    //         <Image
+    //             style={styles.versus}
+    //             source={{ uri: VersusIcon }}
+    //         />
+    //     )
+    // }
 };
 
 const InfoTooltip: React.FC<{ text: string, width?: number }> = props => (
@@ -128,6 +165,11 @@ const Opponents: React.FC<OpponentsProps> = props => {
     } else if (props.opponents.length === 1) {
         return (
             <View style={props.containerStyle}>
+                <HealthBar
+                    style={styles.healthBar}
+                    health={70}
+                />
+
                 {props.opponents?.map(user => (
                     <Image
                         style={styles.avatar}
@@ -141,6 +183,11 @@ const Opponents: React.FC<OpponentsProps> = props => {
     } else {
         return (
             <View style={{ alignItems: 'center' }}>
+                <HealthBar
+                    style={styles.healthBar}
+                    health={100}
+                />
+
                 <View style={StyleSheet.flatten([styles.avatar, {backgroundColor: 'lightgray', justifyContent: 'center' }])}>
                     <Image
                         style={{ width: 70, height: 70, borderRadius: 35, alignSelf: 'center' }}
@@ -175,8 +222,11 @@ const styles = StyleSheet.create({
         color: 'tomato',
         fontWeight: '500'
     },
+    healthBar: {
+        width: 64,
+    },
     avatar: {
-        marginBottom: 4,
+        marginVertical: 4,
         width: 80,
         height: 80,
         borderRadius: 40
@@ -219,5 +269,10 @@ const styles = StyleSheet.create({
         shadowRadius: 2.62,
         elevation: 4,
         borderRadius: 4
+    },
+    resultImage: {
+        flex: 1,
+        resizeMode: 'contain',
+        transform: [{ rotate: '45deg' }]
     }
 });

@@ -9,4 +9,18 @@ export interface Challenge {
     creationDate: number;
     opponents: User[] | string[];
     likedBy: string[]; // Ids of users who liked the challenge
+    status: ChallengeStatus;
+    result?: ChallengeResult;
+}
+
+export enum ChallengeStatus {
+    Created, // Initial status
+    InProgress, // There is at least 1 opponent
+    Voting,// Creator has finished the challenge or the due date is passed
+    Finished // All participants voted or voting phase is over (after 3 days)
+}
+
+export enum ChallengeResult {
+    Win,
+    Loss
 }
