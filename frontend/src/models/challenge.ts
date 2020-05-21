@@ -16,7 +16,7 @@ export interface Challenge {
 export enum ChallengeStatus {
     Created, // Initial status
     InProgress, // There is at least 1 opponent
-    Voting,// Creator has finished the challenge or the due date is passed
+    Voting, // Creator has finished the challenge or the due date is passed
     Finished // All participants voted or voting phase is over (after 3 days)
 }
 

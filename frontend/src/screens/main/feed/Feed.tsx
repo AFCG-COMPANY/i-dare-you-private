@@ -8,6 +8,9 @@ interface FeedProps {
 
 export const Feed: React.FC<FeedProps> = ({ navigation }) => {
     return (
-        <ChallengesList />
+        <ChallengesList
+            onProfilePress={user => navigation.navigate('UserInfo', { user })}
+            onChallengePress={challenge => navigation.navigate('ChallengeInfo', { challenge })}
+        />
     );
 };

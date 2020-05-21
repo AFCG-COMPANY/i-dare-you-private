@@ -1,6 +1,6 @@
 import React from 'react';
 import { ActivityIndicator, FlatList } from 'react-native';
-import { Challenge } from '../models';
+import { Challenge, User } from '../models';
 import { getChallenges } from '../api/challenge';
 import { ChallengeCard } from './ChallengeCard/ChallengeCard';
 
@@ -8,6 +8,8 @@ export interface ChallengesListProps {
     flatListProps?: any;
     filterBy?: 'participant' | 'likedBy';
     userId?: string;
+    onProfilePress?: (user: User) => void;
+    onChallengePress?: (challenge: Challenge) => void;
 }
 
 interface ChallengesListState {
@@ -78,7 +80,13 @@ export class ChallengesList extends React.Component<ChallengesListProps, Challen
                 data={this.state.challenges}
                 keyExtractor={item => item.id}
                 renderItem={({ item }: { item: Challenge }) => (
-                    <ChallengeCard challenge={item}/>
+                    <ChallengeCard
+                        challenge={item}
+                        onChallengePress={() => {
+                            this.props.onChallengePress && this.props.onChallengePress(item);
+                        }}
+                        onProfilePress={this.props.onProfilePress}
+                    />
                 )}
                 ListFooterComponent={this.renderListFooter}
                 ListEmptyComponent={this.state.fetchedAll && ListEmptyComponent}

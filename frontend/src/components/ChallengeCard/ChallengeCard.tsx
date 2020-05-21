@@ -1,6 +1,7 @@
 import React from 'react';
 import {
-    Image, ImageBackground,
+    Image,
+    ImageBackground,
     Platform,
     StyleProp,
     StyleSheet,
@@ -21,28 +22,33 @@ import { LossIcon } from './images/loss';
 
 interface ChallengeCardProps {
     challenge: Challenge;
+    onProfilePress?: (user: User) => void;
+    onChallengePress?: () => void;
 }
 
 /**
  * TODO
+ * - Comments/Tap on Card => navigation to Challenge Screen
+ * - Navigation to Profile
  * - Single opponent view
  * - Opponents stack view
  * - Like/Undo Like
- * - Comments/Tap on Card => navigation to Challenge Screen
- * - Navigation to Profile
  * - Vote button
  * TODO Backend integration
  * 1. Progress bars
  * 2. Challenge status images (Win, Lose)
  */
 
-export const ChallengeCard: React.FC<ChallengeCardProps> = ({ challenge }) => {
+export const ChallengeCard: React.FC<ChallengeCardProps> = ({ challenge, onChallengePress, onProfilePress }) => {
     return (
-        <TouchableWithoutFeedback onPress={() => console.log('navigate to challenge view')}>
+        <TouchableWithoutFeedback onPress={onChallengePress}>
             <Card containerStyle={styles.container}>
                 {/*TODO*/}
                 <View style={styles.participantsContainer}>
-                    <View style={styles.participant}>
+                    <TouchableOpacity
+                        style={styles.participant}
+                        onPress={() => onProfilePress && onProfilePress(challenge.createdBy)}
+                    >
                         <HealthBar
                             style={styles.healthBar}
                             health={70}
@@ -55,7 +61,7 @@ export const ChallengeCard: React.FC<ChallengeCardProps> = ({ challenge }) => {
                         />
 
                         <Text style={styles.creatorName}>{challenge.createdBy.username}</Text>
-                    </View>
+                    </TouchableOpacity>
 
                     <StatusImage status={challenge.status} />
 
