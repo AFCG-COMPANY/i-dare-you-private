@@ -45,6 +45,18 @@ export const setChallenge = functions.https.onRequest(async (request, response) 
         });
 });
 
+export const setOpponent = functions.https.onRequest(async (request, response) => {
+    admin.firestore().collection('challenges').doc(request.query.id.toString()).update({
+        opponents: admin.firestore.FieldValue.arrayUnion(request.body.userId)
+    })
+        .then(doc => {
+            response.status(200).send()
+        })
+        .catch(err => {
+            response.status(500).send()
+        });
+})
+
 const CHALLENGES_PER_PAGE: number = 10;
 
 export const getChallenges = functions.https.onRequest(async (request, response) => {
