@@ -118,7 +118,7 @@ interface StatusImageProps {
     result?: ChallengeResult;
 }
 const StatusImage: React.FC<StatusImageProps> = (props) => {
-    // if (props.status === ChallengeStatus.Finished) {
+    if (props.status === ChallengeStatus.Finished) {
         const uri = props.result === ChallengeResult.Win ? WinIcon : LossIcon;
 
         return (
@@ -132,14 +132,14 @@ const StatusImage: React.FC<StatusImageProps> = (props) => {
                 />
             </ImageBackground>
         );
-    // } else {
-    //     return (
-    //         <Image
-    //             style={styles.versus}
-    //             source={{ uri: VersusIcon }}
-    //         />
-    //     )
-    // }
+    } else {
+        return (
+            <Image
+                style={styles.versus}
+                source={{ uri: VersusIcon }}
+            />
+        )
+    }
 };
 
 const InfoTooltip: React.FC<{ text: string, width?: number }> = props => (
