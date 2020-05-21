@@ -29,8 +29,8 @@ interface ChallengeCardProps {
 
 /**
  * TODO
- * - Comments/Tap on Card => navigation to Challenge Screen
- * - Navigation to Profile
+ ✅ - Comments/Tap on Card => navigation to Challenge Screen
+ ✅ - Navigation to Profile
  * - Single opponent view
  * - Opponents stack view
  * - Like/Undo Like
