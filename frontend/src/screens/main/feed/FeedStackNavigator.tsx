@@ -11,7 +11,7 @@ import { ChallengeInfo } from './ChallengeInfo';
 export type FeedStackParamList = {
     Feed: undefined;
     UserInfo: { user: User };
-    ChallengeInfo: { challenge: Challenge };
+    ChallengeInfo: { challenge: Challenge, commentPressed?: boolean };
 };
 
 export type FeedNavigationProp = CompositeNavigationProp<

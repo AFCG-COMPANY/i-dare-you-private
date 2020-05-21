@@ -14,7 +14,7 @@ interface ChallengeInfoProps {
 }
 
 export const ChallengeInfo: React.FC<ChallengeInfoProps> = ({ route }) => {
-    const { challenge } = route.params;
+    const { challenge, commentPressed } = route.params;
 
     return (
         <View style={styles.container}>

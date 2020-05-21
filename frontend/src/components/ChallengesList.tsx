@@ -10,6 +10,7 @@ export interface ChallengesListProps {
     userId?: string;
     onProfilePress?: (user: User) => void;
     onChallengePress?: (challenge: Challenge) => void;
+    onCommentPress?: (challenge: Challenge) => void;
 }
 
 interface ChallengesListState {
@@ -82,9 +83,8 @@ export class ChallengesList extends React.Component<ChallengesListProps, Challen
                 renderItem={({ item }: { item: Challenge }) => (
                     <ChallengeCard
                         challenge={item}
-                        onChallengePress={() => {
-                            this.props.onChallengePress && this.props.onChallengePress(item);
-                        }}
+                        onChallengePress={() => this.props.onChallengePress && this.props.onChallengePress(item)}
+                        onCommentPress={() => this.props.onCommentPress && this.props.onCommentPress(item)}
                         onProfilePress={this.props.onProfilePress}
                     />
                 )}

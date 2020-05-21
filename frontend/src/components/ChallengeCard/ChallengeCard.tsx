@@ -24,6 +24,7 @@ interface ChallengeCardProps {
     challenge: Challenge;
     onProfilePress?: (user: User) => void;
     onChallengePress?: () => void;
+    onCommentPress?: () => void;
 }
 
 /**
@@ -39,7 +40,12 @@ interface ChallengeCardProps {
  * 2. Challenge status images (Win, Lose)
  */
 
-export const ChallengeCard: React.FC<ChallengeCardProps> = ({ challenge, onChallengePress, onProfilePress }) => {
+export const ChallengeCard: React.FC<ChallengeCardProps> = ({
+    challenge,
+    onChallengePress,
+    onCommentPress,
+    onProfilePress
+}) => {
     return (
         <TouchableWithoutFeedback onPress={onChallengePress}>
             <Card containerStyle={styles.container}>
@@ -109,9 +115,8 @@ export const ChallengeCard: React.FC<ChallengeCardProps> = ({ challenge, onChall
                         {challenge.likedBy.length > 0 && <Text>{challenge.likedBy.length}</Text>}
                     </TouchableOpacity>
 
-                    <TouchableOpacity>
+                    <TouchableOpacity onPress={onCommentPress}>
                         <Icon type='octicon' name='comment' size={22} />
-                        {/*TODO comments*/}
                     </TouchableOpacity>
                 </View>
             </Card>
