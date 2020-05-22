@@ -11,26 +11,20 @@ interface Challenge {
     bid: string;
     description: string;
     endDate: number;
-    createdBy: User;
+    createdBy: string;
     creationDate: number;
     opponents: string[]; // Ids of creator's opponents
     likedBy: string[]; // Ids of users who liked the challenge
 }
 
 export const setChallenge = functions.https.onRequest(async (request, response) => {
-    const userDoc = await admin.firestore().collection('users').doc(request.body.userId).get();
-    const user = await userDoc.data();
 
     admin.firestore().collection('challenges')
         .add(<Challenge>{
             bid: request.body.bid,
             endDate: request.body.endDate,
             description: request.body.description,
-            createdBy: {
-                avatar: user?.avatar,
-                username: user?.username,
-                id: request.body.userId as string
-            },
+            createdBy: request.body.userId as string,
             creationDate: Date.now(),
             opponents: [],
             likedBy: []
@@ -57,7 +51,46 @@ export const setOpponent = functions.https.onRequest(async (request, response) =
         });
 })
 
+export const setLiked = functions.https.onRequest(async (request, response) => {
+    admin.firestore().collection('challenges').doc(request.query.id.toString()).update({
+        likedBy: admin.firestore.FieldValue.arrayUnion(request.body.userId)
+    })
+        .then(doc => {
+            response.status(200).send()
+        })
+        .catch(err => {
+            response.status(500).send()
+        });
+})
+
 const CHALLENGES_PER_PAGE: number = 10;
+
+const updateChallengesWithUsersInfo = async (challenges: any) => {
+    const users: { [id: string]: User | {} } = {};
+    for (const challenge of challenges) {
+        users[challenge.createdBy] = {}
+        for (const opponent of challenge.opponents) {
+            users[opponent] = {}
+        }
+    }
+    const usersCollection = admin.firestore().collection('users');
+    await usersCollection.where(admin.firestore.FieldPath.documentId(), 'in', Object.keys(users))
+        .get().then(querySnapshot => {
+            querySnapshot.forEach(documentSnapshot => {
+                users[documentSnapshot.id] = documentSnapshot.data();
+            });
+        })
+    const extendedChallenges = challenges.map((challenge: any) => {
+        return {
+            ...challenge,
+            createdBy: users[challenge.createdBy],
+            opponents: challenge.opponents.map((opponent: string) => {
+                return users[opponent];
+            })
+        }
+    });
+    return extendedChallenges;
+}
 
 export const getChallenges = functions.https.onRequest(async (request, response) => {
     const { filterBy, userId } = request.query;
@@ -87,7 +120,7 @@ export const getChallenges = functions.https.onRequest(async (request, response)
                     .sort((a, b) => (b.createTime.toMillis() - a.createTime.toMillis()))
                     .slice(offset, offset + CHALLENGES_PER_PAGE);
 
-                response.send(result.map(doc => ({...doc.data(), id: doc.id})));
+                response.send(result.map(doc => ({ ...doc.data(), id: doc.id })));
                 return;
 
             } else if (filterBy === 'likedBy') {
@@ -105,7 +138,7 @@ export const getChallenges = functions.https.onRequest(async (request, response)
         // Send the response
         try {
             const result = await challenges.get();
-            response.send(result.docs.map(doc => ({ ...doc.data(), id: doc.id })));
+            response.send(await updateChallengesWithUsersInfo(result.docs.map(doc => ({ ...doc.data(), id: doc.id }))));
         } catch (e) {
             console.log(e);
             response.status(500).send();
