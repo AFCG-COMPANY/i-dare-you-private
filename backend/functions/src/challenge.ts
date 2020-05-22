@@ -15,6 +15,8 @@ interface Challenge {
     creationDate: number;
     opponents: string[]; // Ids of creator's opponents
     likedBy: string[]; // Ids of users who liked the challenge
+    challengeStatus: string,
+    challengeResult: number,
 }
 
 export const setChallenge = functions.https.onRequest(async (request, response) => {
