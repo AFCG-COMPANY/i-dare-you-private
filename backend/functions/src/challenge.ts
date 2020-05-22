@@ -27,7 +27,9 @@ export const setChallenge = functions.https.onRequest(async (request, response) 
             createdBy: request.body.userId as string,
             creationDate: Date.now(),
             opponents: [],
-            likedBy: []
+            likedBy: [],
+            challengeStatus: 'Created',
+            challengeResult: 0,
         })
         .then(doc => {
             response.status(200).send();
