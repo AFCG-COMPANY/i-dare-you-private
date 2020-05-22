@@ -52,13 +52,21 @@ export const setOpponent = functions.https.onRequest(async (request, response) =
 })
 
 export const setLiked = functions.https.onRequest(async (request, response) => {
+    let databaseAction;
+    if (request.body.action === 'like'){
+        databaseAction = admin.firestore.FieldValue.arrayUnion(request.body.userId)
+    }
+    else {
+        databaseAction = admin.firestore.FieldValue.arrayRemove(request.body.userId)
+    }
     admin.firestore().collection('challenges').doc(request.query.id.toString()).update({
-        likedBy: admin.firestore.FieldValue.arrayUnion(request.body.userId)
+        likedBy: databaseAction
     })
         .then(doc => {
             response.status(200).send()
         })
         .catch(err => {
+            console.log(err)
             response.status(500).send()
         });
 })
