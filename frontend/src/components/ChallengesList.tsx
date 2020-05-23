@@ -30,29 +30,34 @@ export class ChallengesList extends React.Component<ChallengesListProps, Challen
         refreshing: false
     };
 
-    componentDidMount = () => {
-        this.fetchData();
-    };
+    componentDidMount = () => this.fetchData();
 
     fetchData = async () => {
         this.setState({ loading: true });
 
         const { filterBy, userId } = this.props;
 
-        const challenges = await getChallenges(this.state.page, filterBy, userId);
-        this.setState(state => ({
-            challenges: state.refreshing ? challenges : [...state.challenges, ...challenges],
-            loading: false,
-            fetchedAll: !challenges || !challenges.length,
-            refreshing: false
-        }));
+        try {
+            const challenges = await getChallenges(this.state.page, filterBy, userId);
+
+            this.setState(state => ({
+                challenges: state.refreshing ? challenges : [...state.challenges, ...challenges],
+                loading: false,
+                fetchedAll: !challenges || !challenges.length,
+                refreshing: false
+            }));
+        } catch (e) {
+            this.setState(state => ({
+                loading: false,
+                refreshing: false,
+                fetchedAll: true,
+                page: state.page > 0 ? state.page - 1 : 0
+            }));
+        }
     };
 
     onScrollEnd = () => {
-        if (this.state.fetchedAll) {
-            return;
-        }
-
+        console.log('scroll end');
         this.setState(
             state => ({ page: state.page + 1 }),
             () => this.fetchData()
@@ -91,7 +96,7 @@ export class ChallengesList extends React.Component<ChallengesListProps, Challen
                 ListFooterComponent={this.renderListFooter}
                 ListEmptyComponent={this.state.fetchedAll && ListEmptyComponent}
                 onEndReachedThreshold={0.3}
-                onEndReached={this.onScrollEnd}
+                onEndReached={!this.state.loading && !this.state.fetchedAll && this.onScrollEnd}
                 refreshing={this.state.refreshing}
                 onRefresh={this.handleRefresh}
             />

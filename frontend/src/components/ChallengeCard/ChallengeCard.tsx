@@ -181,12 +181,12 @@ const Opponents: React.FC<OpponentsProps> = props => {
                     health={70}
                 />
 
-                {props.opponents?.map(user => (
-                    <Image
-                        style={styles.avatar}
-                        source={{}}
-                    />
-                ))}
+                {/*{props.opponents?.map(user => (*/}
+                {/*    <Image*/}
+                {/*        style={styles.avatar}*/}
+                {/*        source={{}}*/}
+                {/*    />*/}
+                {/*))}*/}
 
                 <Text style={styles.opponentName}>Dare him</Text>
             </View>
