@@ -3,6 +3,7 @@ import { ActivityIndicator, FlatList } from 'react-native';
 import { Challenge, User } from '../models';
 import { getChallenges } from '../api/challenge';
 import { ChallengeCard } from './ChallengeCard/ChallengeCard';
+import { AppContext } from '../contexts/AppContext';
 
 export interface ChallengesListProps {
     flatListProps?: any;
@@ -22,6 +23,8 @@ interface ChallengesListState {
 }
 
 export class ChallengesList extends React.Component<ChallengesListProps, ChallengesListState> {
+    static contextType = AppContext;
+
     state = {
         loading: false,
         challenges: [],

@@ -9,6 +9,7 @@ export interface Challenge {
     creationDate: number;
     opponents: User[] | string[];
     likedBy: string[]; // Ids of users who liked the challenge
+    likedByUser: boolean;
     status: ChallengeStatus;
     result?: ChallengeResult;
 }
