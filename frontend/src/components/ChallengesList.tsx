@@ -57,7 +57,6 @@ export class ChallengesList extends React.Component<ChallengesListProps, Challen
     };
 
     onScrollEnd = () => {
-        console.log('scroll end');
         this.setState(
             state => ({ page: state.page + 1 }),
             () => this.fetchData()
