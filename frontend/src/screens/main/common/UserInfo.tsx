@@ -31,7 +31,7 @@ export const UserInfo: React.FC<UserInfoProps> = ({ route, navigation }) => {
         if (user.id === state.user?.id) {
             navigation.navigate('Profile' as any);
         } else {
-            navigation.navigate('UserInfo', { user });
+            navigation.push('UserInfo', { user });
         }
     };
 

@@ -5,8 +5,8 @@ import { MainNavigatorParamList } from '../MainNavigator';
 import { CompositeNavigationProp } from '@react-navigation/native';
 import { Feed } from './Feed';
 import { Challenge, User } from '../../../models';
-import { ChallengeInfo } from './ChallengeInfo';
 import { UserInfo } from '../common/UserInfo';
+import { ChallengeInfo } from '../common/ChallengeInfo';
 
 export type FeedStackParamList = {
     Feed: undefined;

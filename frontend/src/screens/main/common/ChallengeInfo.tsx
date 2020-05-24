@@ -1,12 +1,15 @@
 import React from 'react';
 import { Text } from 'react-native-elements';
 import { StyleSheet, View } from 'react-native';
-import { FeedStackParamList } from './FeedStackNavigator';
 import { RouteProp } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
+import { Challenge } from '../../../models';
 
-type ChallengeInfoRouteProp = RouteProp<FeedStackParamList, 'ChallengeInfo'>;
-type ChallengeInfoNavigationProp = StackNavigationProp<FeedStackParamList, 'ChallengeInfo'>;
+type ParentStackParamsList = {
+    ChallengeInfo: { challenge: Challenge, commentPressed?: boolean };
+};
+type ChallengeInfoRouteProp = RouteProp<ParentStackParamsList, 'ChallengeInfo'>;
+type ChallengeInfoNavigationProp = StackNavigationProp<ParentStackParamsList, 'ChallengeInfo'>;
 
 interface ChallengeInfoProps {
     route: ChallengeInfoRouteProp,

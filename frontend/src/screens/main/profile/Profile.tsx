@@ -22,7 +22,7 @@ export const Profile: React.FC<ProfileProps> = ({ navigation }) => {
         if (user.id === state.user?.id) {
             navigation.navigate('Profile');
         } else {
-            navigation.navigate('UserInfo', { user });
+            navigation.push('UserInfo', { user });
         }
     };
 
