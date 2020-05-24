@@ -1,7 +1,6 @@
 import React from 'react';
 import { User } from '../../../models';
-import { Image, StyleProp, StyleSheet, TouchableOpacity, View, ViewStyle } from 'react-native';
-import { Text } from 'react-native-elements';
+import { Image, StyleProp, StyleSheet, TouchableOpacity, View, ViewStyle, Text } from 'react-native';
 import { DefaultOpponentAvatar } from '../images/default-opponent-avatar';
 
 interface OpponentsProps {
@@ -39,7 +38,11 @@ export const Opponents: React.FC<OpponentsProps> = props => {
                 ))}
             </View>
 
-            <Text style={styles.name}>
+            <Text
+                style={styles.name}
+                numberOfLines={1}
+                ellipsizeMode='middle'
+            >
                 {opponents[0].username}
                 {opponents.length - 1 > 0 && ` + ${opponents.length - 1}`}
             </Text>
@@ -141,6 +144,7 @@ const styles = StyleSheet.create({
     name: {
         alignSelf: 'center',
         color: 'tomato',
-        fontWeight: '500'
+        fontWeight: '500',
+        maxWidth: 80
     }
 });

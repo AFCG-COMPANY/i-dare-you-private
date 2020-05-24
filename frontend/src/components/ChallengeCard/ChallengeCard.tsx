@@ -44,7 +44,13 @@ export const ChallengeCard: React.FC<ChallengeCardProps> = ({
                                 source={{ uri: challenge.createdBy.avatar }}
                             />
 
-                            <Text style={styles.creatorName}>{challenge.createdBy.username}</Text>
+                            <Text
+                                style={styles.creatorName}
+                                numberOfLines={1}
+                                ellipsizeMode='middle'
+                            >
+                                {challenge.createdBy.username}
+                            </Text>
                         </TouchableOpacity>
                     </View>
 
@@ -126,11 +132,8 @@ const styles = StyleSheet.create({
     },
     creatorName: {
         color: 'green',
-        fontWeight: '500'
-    },
-    opponentName: {
-        color: 'tomato',
-        fontWeight: '500'
+        fontWeight: '500',
+        maxWidth: 80
     },
     healthBar: {
         marginBottom: 4,
