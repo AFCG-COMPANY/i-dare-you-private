@@ -4,6 +4,8 @@ import { Challenge, User } from '../models';
 import { getChallenges } from '../api/challenge';
 import { ChallengeCard } from './ChallengeCard/ChallengeCard';
 import { AppContext } from '../contexts/AppContext';
+import { Divider } from 'react-native-elements';
+import { ChallengeToolbar } from './ChallengeToolbar';
 
 export interface ChallengesListProps {
     flatListProps?: any;
@@ -91,9 +93,17 @@ export class ChallengesList extends React.Component<ChallengesListProps, Challen
                     <ChallengeCard
                         challenge={item}
                         onChallengePress={() => this.props.onChallengePress && this.props.onChallengePress(item)}
-                        onCommentPress={() => this.props.onCommentPress && this.props.onCommentPress(item)}
                         onProfilePress={this.props.onProfilePress}
-                    />
+                    >
+                        <Divider style={{ marginVertical: 16 }} />
+
+                        <ChallengeToolbar
+                            liked={item.likedByUser}
+                            likedBy={item.likedBy}
+                            onCommentPress={() => this.props.onCommentPress && this.props.onCommentPress(item)}
+                            onLikePress={() => console.log('like')}
+                        />
+                    </ChallengeCard>
                 )}
                 ListFooterComponent={this.renderListFooter}
                 ListEmptyComponent={this.state.fetchedAll && ListEmptyComponent}

@@ -2,14 +2,14 @@ import React from 'react';
 import { Platform, StyleSheet, TouchableOpacity, View } from 'react-native';
 import { Icon, Text } from 'react-native-elements';
 
-interface ToolbarProps {
+interface ChallengeToolbarProps {
     liked: boolean;
     likedBy: string[];
     onCommentPress?: () => void;
     onLikePress?: () => void;
 }
 
-export const Toolbar: React.FC<ToolbarProps> = (props) => (
+export const ChallengeToolbar: React.FC<ChallengeToolbarProps> = (props) => (
     <View style={styles.toolbar}>
         <TouchableOpacity
             style={{ marginRight: 16 }}

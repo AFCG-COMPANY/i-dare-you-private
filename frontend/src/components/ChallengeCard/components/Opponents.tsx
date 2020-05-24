@@ -1,12 +1,13 @@
 import React from 'react';
 import { User } from '../../../models';
-import { Image, StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
+import { Image, StyleProp, StyleSheet, TouchableOpacity, View, ViewStyle } from 'react-native';
 import { Text } from 'react-native-elements';
 import { DefaultOpponentAvatar } from '../images/default-opponent-avatar';
 
 interface OpponentsProps {
-    opponents: User[],
-    containerStyle?: StyleProp<ViewStyle>
+    opponents: User[];
+    onOpponentPress?: (opponent: User) => void;
+    containerStyle?: StyleProp<ViewStyle>;
 }
 export const Opponents: React.FC<OpponentsProps> = props => {
     const opponents = props.opponents;
@@ -17,18 +18,24 @@ export const Opponents: React.FC<OpponentsProps> = props => {
         content = (<>
             <View style={styles.deck}>
                 {layout.map((cell, index) => (
-                    <Image
+                    <TouchableOpacity
                         key={index}
                         style={{
                             position: 'absolute',
-                            width: cell.size,
-                            height: cell.size,
                             left: cell.left,
-                            top: cell.top,
-                            borderRadius: cell.size / 2
+                            top: cell.top
                         }}
-                        source={{ uri: opponents[index].avatar }}
-                    />
+                        onPress={() => props.onOpponentPress && props.onOpponentPress(opponents[index])}
+                    >
+                        <Image
+                            style={{
+                                width: cell.size,
+                                height: cell.size,
+                                borderRadius: cell.size / 2
+                            }}
+                            source={{ uri: opponents[index].avatar }}
+                        />
+                    </TouchableOpacity>
                 ))}
             </View>
 

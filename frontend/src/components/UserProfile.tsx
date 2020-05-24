@@ -57,7 +57,7 @@ export const UserProfile: React.FC<UserProfileProps> = ({ user, isCurrentUser, .
                 filterBy='participant'
                 userId={user?.id}
                 flatListProps={{
-                    ListHeaderComponent: <Text>{user?.bio}</Text>,
+                    ListHeaderComponent: <Text style={{ marginBottom: 16 }}>{user?.bio}</Text>,
                     ListEmptyComponent: <ChallengesEmptyComponent isCurrentUser={isCurrentUser} {...props} />
                 }}
             />
