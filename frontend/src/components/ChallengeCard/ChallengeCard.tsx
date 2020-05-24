@@ -1,6 +1,6 @@
 import React from 'react';
 import { Image, Platform, StyleSheet, TouchableOpacity, TouchableWithoutFeedback, View } from 'react-native';
-import { Card, Icon, Text, Divider } from 'react-native-elements';
+import { Card, Icon, Text } from 'react-native-elements';
 import { Challenge, User } from '../../models';
 import { getFormattedDateString } from '../../helpers/date.helper';
 import { HealthBar, InfoTooltip, Opponents, StatusImage } from './components';
