@@ -57,7 +57,7 @@ export const setOpponent = functions.https.onRequest(async (request, response) =
 
 export const setLiked = functions.https.onRequest(async (request, response) => {
     let databaseAction;
-    if (request.body.action === 'like'){
+    if (request.body.action === 'like') {
         databaseAction = admin.firestore.FieldValue.arrayUnion(request.body.userId)
     }
     else {
@@ -77,7 +77,7 @@ export const setLiked = functions.https.onRequest(async (request, response) => {
 
 const CHALLENGES_PER_PAGE: number = 10;
 
-const updateChallengesWithUsersInfo = async (challenges: any) => {
+const extendChallenges = async (challenges: any, userId: string) => {
     const users: { [id: string]: User | {} } = {};
     for (const challenge of challenges) {
         users[challenge.createdBy] = {}
@@ -89,12 +89,13 @@ const updateChallengesWithUsersInfo = async (challenges: any) => {
     await usersCollection.where(admin.firestore.FieldPath.documentId(), 'in', Object.keys(users))
         .get().then(querySnapshot => {
             querySnapshot.forEach(documentSnapshot => {
-                users[documentSnapshot.id] = documentSnapshot.data();
+                users[documentSnapshot.id] = {id: `${documentSnapshot.id}`, ...documentSnapshot.data()};
             });
         })
     const extendedChallenges = challenges.map((challenge: any) => {
         return {
             ...challenge,
+            likedByUser: challenge.likedBy.includes(userId),
             createdBy: users[challenge.createdBy],
             opponents: challenge.opponents.map((opponent: string) => {
                 return users[opponent];
@@ -132,7 +133,7 @@ export const getChallenges = functions.https.onRequest(async (request, response)
                     .sort((a, b) => (b.createTime.toMillis() - a.createTime.toMillis()))
                     .slice(offset, offset + CHALLENGES_PER_PAGE);
 
-                response.send(result.map(doc => ({ ...doc.data(), id: doc.id })));
+                response.send(await extendChallenges(result.map(doc => ({ ...doc.data(), id: doc.id })), userId as string));
                 return;
 
             } else if (filterBy === 'likedBy') {
@@ -150,7 +151,12 @@ export const getChallenges = functions.https.onRequest(async (request, response)
         // Send the response
         try {
             const result = await challenges.get();
-            response.send(await updateChallengesWithUsersInfo(result.docs.map(doc => ({ ...doc.data(), id: doc.id }))));
+            if (result.docs.length > 0) {
+                response.send(await extendChallenges(result.docs.map(doc => ({ ...doc.data(), id: doc.id })), userId as string));
+            }
+            else{
+                response.send([])
+            }
         } catch (e) {
             console.log(e);
             response.status(500).send();
