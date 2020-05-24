@@ -1,14 +1,20 @@
 import React from 'react';
+import { RouteProp } from '@react-navigation/native';
+import { StackNavigationProp } from '@react-navigation/stack';
 import { UserProfile } from '../../../components';
-import { ProfileNavigationProp } from './ProfileStackNavigator';
+import { ProfileStackParamList } from './ProfileStackNavigator';
 import { AppContext } from '../../../contexts/AppContext';
 import { Challenge, User } from '../../../models';
 
-interface ProfileProps {
-    navigation: ProfileNavigationProp;
+type UserInfoRouteProp = RouteProp<ProfileStackParamList, 'UserInfo'>;
+type UserInfoNavigationProp = StackNavigationProp<ProfileStackParamList, 'UserInfo'>;
+
+interface UserInfoProps {
+    route: UserInfoRouteProp,
+    navigation: UserInfoNavigationProp;
 }
 
-export const Profile: React.FC<ProfileProps> = ({ navigation }) => {
+export const UserInfo: React.FC<UserInfoProps> = ({ route, navigation }) => {
     const { state } = React.useContext(AppContext);
 
     const navigateToChallenge = (challenge: Challenge, commentPressed?: boolean) => {
@@ -28,10 +34,7 @@ export const Profile: React.FC<ProfileProps> = ({ navigation }) => {
 
     return (
         <UserProfile
-            user={state.user}
-            isCurrentUser={true}
-            onBrowseChallengesPress={() => navigation.navigate('Feed')}
-            onCreateNewChallengePress={() => navigation.navigate('CreateChallenge')}
+            user={route.params.user}
             challengeListProps={{
                 onProfilePress: navigateToProfile,
                 onChallengePress: navigateToChallenge,
@@ -39,4 +42,4 @@ export const Profile: React.FC<ProfileProps> = ({ navigation }) => {
             }}
         />
     );
-};
+}

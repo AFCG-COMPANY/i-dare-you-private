@@ -10,10 +10,14 @@ import { MainNavigatorParamList } from '../MainNavigator';
 import * as firebase from 'firebase';
 import { AppContext } from '../../../contexts/AppContext';
 import { Settings } from './Settings';
+import { Challenge, User } from '../../../models';
+import { UserInfo } from './UserInfo';
 
 export type ProfileStackParamList = {
     Profile: undefined;
     Settings: undefined;
+    UserInfo: { user: User };
+    ChallengeInfo: { challenge: Challenge, commentPressed?: boolean };
 };
 
 export type ProfileNavigationProp = CompositeNavigationProp<
@@ -63,6 +67,16 @@ export const ProfileStackNavigator: React.FC<ProfileStackProps> = ({ navigation 
                     headerBackTitle: 'Profile'
                 })}
             />
+            <ProfileStack.Screen
+                name='UserInfo'
+                component={UserInfo}
+                options={({ route }) => ({ title: route.params.user.username })}
+            />
+            {/*<ProfileStack.Screen*/}
+            {/*    name='ChallengeInfo'*/}
+            {/*    component={ChallengeInfo}*/}
+            {/*    options={{ title: 'Challenge' }}*/}
+            {/*/>*/}
         </ProfileStack.Navigator>
     );
 };

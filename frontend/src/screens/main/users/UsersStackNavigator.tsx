@@ -5,11 +5,12 @@ import { MainNavigatorParamList } from '../MainNavigator';
 import { CompositeNavigationProp } from '@react-navigation/native';
 import { Users } from './Users';
 import { UserInfo } from './UserInfo';
-import { User } from '../../../models';
+import { Challenge, User } from '../../../models';
 
 export type UsersStackParamList = {
     Users: undefined;
     UserInfo: { user: User };
+    ChallengeInfo: { challenge: Challenge, commentPressed?: boolean }
 };
 
 export type UsersNavigationProp = CompositeNavigationProp<

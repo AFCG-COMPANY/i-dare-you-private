@@ -9,6 +9,7 @@ import { User } from '../../models';
 import { UserProfileEdit } from '../../components';
 import { UsersStackNavigator } from './users/UsersStackNavigator';
 import { CreateChallengeStackNavigator } from './challenge/СreateChallengeStackNavigator';
+import { FavoriteStackNavigator } from './favorite/FavoriteStackNavigator';
 
 export type MainNavigatorParamList = {
     Feed: undefined;
@@ -123,7 +124,7 @@ export const MainNavigator: React.FC<MainNavigatorProps> = ({ user }) => {
                     options={{ title: 'Challenge' }}
                     component={CreateChallengeStackNavigator}
                 />
-                <Tabs.Screen name='Favorite' component={FeedStackNavigator} />
+                <Tabs.Screen name='Favorite' component={FavoriteStackNavigator}/>
                 <Tabs.Screen name='Profile' component={ProfileStackNavigator} />
             </Tabs.Navigator>
         );

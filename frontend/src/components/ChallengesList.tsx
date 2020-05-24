@@ -44,7 +44,7 @@ export class ChallengesList extends React.Component<ChallengesListProps, Challen
 
         try {
             let challenges = await getChallenges(this.state.page, filterBy, userId);
-            challenges = challenges.map(challenge => ({ ...challenge, likesCount: challenge.likedBy.length }))
+            challenges = challenges.map(challenge => ({ ...challenge, likesCount: challenge.likedBy.length }));
 
             this.setState(state => ({
                 challenges: state.refreshing ? challenges : [...state.challenges, ...challenges],

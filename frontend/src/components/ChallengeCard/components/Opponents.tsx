@@ -55,7 +55,7 @@ export const Opponents: React.FC<OpponentsProps> = props => {
                     source={{ uri: DefaultOpponentAvatar }}
                 />
             </View>
-            <Text style={styles.name}>No opponents</Text>
+            <Text style={styles.name}>No rivals</Text>
         </>);
     }
 
@@ -128,6 +128,7 @@ const styles = StyleSheet.create({
         borderRadius: AVATAR_BORDER_RADIUS
     },
     defaultAvatarContainer: {
+        marginBottom: 4,
         alignSelf: 'center',
         width: AVATAR_SIZE,
         height: AVATAR_SIZE,

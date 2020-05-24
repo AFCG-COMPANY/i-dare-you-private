@@ -4,9 +4,9 @@ import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
 import { MainNavigatorParamList } from '../MainNavigator';
 import { CompositeNavigationProp } from '@react-navigation/native';
 import { Feed } from './Feed';
-import { UserInfo } from '../users/UserInfo';
 import { Challenge, User } from '../../../models';
 import { ChallengeInfo } from './ChallengeInfo';
+import { UserInfo } from './UserInfo';
 
 export type FeedStackParamList = {
     Feed: undefined;
