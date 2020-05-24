@@ -1,15 +1,9 @@
 import React from 'react';
-import { Image, Platform, StyleSheet, TouchableOpacity, TouchableWithoutFeedback, View } from 'react-native';
+import { Image, Platform, StyleProp, StyleSheet, TouchableOpacity, TouchableWithoutFeedback, View } from 'react-native';
 import { Card, Icon, Text } from 'react-native-elements';
 import { Challenge, User } from '../../models';
 import { getFormattedDateString } from '../../helpers/date.helper';
 import { HealthBar, InfoTooltip, Opponents, StatusImage } from './components';
-
-interface ChallengeCardProps {
-    challenge: Challenge;
-    onProfilePress?: (user: User) => void;
-    onChallengePress?: () => void;
-}
 
 /**
  * TODO
@@ -19,6 +13,11 @@ interface ChallengeCardProps {
  * 2. Challenge status images (Win, Lose)
  */
 
+interface ChallengeCardProps {
+    challenge: Challenge;
+    onProfilePress?: (user: User) => void;
+    onChallengePress?: () => void;
+}
 export const ChallengeCard: React.FC<ChallengeCardProps> = ({
     challenge,
     onChallengePress,

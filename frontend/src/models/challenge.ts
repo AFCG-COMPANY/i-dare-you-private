@@ -7,6 +7,7 @@ export interface Challenge {
     endDate: number;
     createdBy: User;
     creationDate: number;
+    currentUserIsOpponent: boolean;
     opponents: User[] | string[];
     likedBy: string[]; // Ids of users who liked the challenge
     likedByUser: boolean;
@@ -24,5 +25,6 @@ export enum ChallengeStatus {
 
 export enum ChallengeResult {
     Loss,
-    Win
+    Win,
+    Draw
 }
