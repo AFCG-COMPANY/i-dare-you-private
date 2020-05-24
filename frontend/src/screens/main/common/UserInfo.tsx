@@ -4,10 +4,13 @@ import { StackNavigationProp } from '@react-navigation/stack';
 import { UserProfile } from '../../../components';
 import { AppContext } from '../../../contexts/AppContext';
 import { Challenge, User } from '../../../models';
-import { FeedStackParamList } from './FeedStackNavigator';
 
-type UserInfoRouteProp = RouteProp<FeedStackParamList, 'UserInfo'>;
-type UserInfoNavigationProp = StackNavigationProp<FeedStackParamList, 'UserInfo'>;
+type ParentStackParamList = {
+    UserInfo: { user: User },
+    ChallengeInfo: { challenge: Challenge, commentPressed?: boolean }
+};
+type UserInfoRouteProp = RouteProp<ParentStackParamList, 'UserInfo'>;
+type UserInfoNavigationProp = StackNavigationProp<ParentStackParamList, 'UserInfo'>;
 
 interface UserInfoProps {
     route: UserInfoRouteProp,
@@ -42,4 +45,4 @@ export const UserInfo: React.FC<UserInfoProps> = ({ route, navigation }) => {
             }}
         />
     );
-}
+};

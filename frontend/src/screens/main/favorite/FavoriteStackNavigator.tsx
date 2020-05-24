@@ -4,8 +4,8 @@ import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
 import { MainNavigatorParamList } from '../MainNavigator';
 import { CompositeNavigationProp } from '@react-navigation/native';
 import { Favorites } from './Favorites';
-import { UserInfo } from '../users/UserInfo';
 import { Challenge, User } from '../../../models';
+import { UserInfo } from '../common/UserInfo';
 
 export type FavoriteStackParamList = {
     Favorites: undefined;

@@ -11,7 +11,7 @@ import * as firebase from 'firebase';
 import { AppContext } from '../../../contexts/AppContext';
 import { Settings } from './Settings';
 import { Challenge, User } from '../../../models';
-import { UserInfo } from './UserInfo';
+import { UserInfo } from '../common/UserInfo';
 
 export type ProfileStackParamList = {
     Profile: undefined;

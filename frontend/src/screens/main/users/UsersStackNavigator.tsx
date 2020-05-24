@@ -4,7 +4,7 @@ import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
 import { MainNavigatorParamList } from '../MainNavigator';
 import { CompositeNavigationProp } from '@react-navigation/native';
 import { Users } from './Users';
-import { UserInfo } from './UserInfo';
+import { UserInfo } from '../common/UserInfo';
 import { Challenge, User } from '../../../models';
 
 export type UsersStackParamList = {

@@ -14,8 +14,6 @@ interface UserProfileProps {
 }
 
 export const UserProfile: React.FC<UserProfileProps> = ({ user, isCurrentUser, ...props }) => {
-    console.log(props.challengeListProps)
-
     return (
         <View style={styles.container}>
             <View style={styles.header}>
