@@ -13,7 +13,6 @@ interface ChallengeCardProps {
 
 /**
  * TODO
- * - Like/Undo Like
  * - Vote button
  * TODO Check backend integration
  * 1. Progress bars

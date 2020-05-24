@@ -10,6 +10,7 @@ export interface Challenge {
     opponents: User[] | string[];
     likedBy: string[]; // Ids of users who liked the challenge
     likedByUser: boolean;
+    likesCount: number;
     status: ChallengeStatus;
     result?: ChallengeResult;
 }

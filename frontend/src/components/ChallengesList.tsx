@@ -1,11 +1,11 @@
 import React from 'react';
-import { ActivityIndicator, FlatList } from 'react-native';
+import { ActivityIndicator, Alert, FlatList } from 'react-native';
 import { Challenge, User } from '../models';
-import { getChallenges } from '../api/challenge';
+import { getChallenges, setLikedChallenge } from '../api/challenge';
 import { ChallengeCard } from './ChallengeCard/ChallengeCard';
-import { AppContext } from '../contexts/AppContext';
 import { Divider } from 'react-native-elements';
 import { ChallengeToolbar } from './ChallengeToolbar';
+import { AppContext } from '../contexts/AppContext';
 
 export interface ChallengesListProps {
     flatListProps?: any;
@@ -43,7 +43,8 @@ export class ChallengesList extends React.Component<ChallengesListProps, Challen
         const { filterBy, userId } = this.props;
 
         try {
-            const challenges = await getChallenges(this.state.page, filterBy, userId);
+            let challenges = await getChallenges(this.state.page, filterBy, userId);
+            challenges = challenges.map(challenge => ({ ...challenge, likesCount: challenge.likedBy.length }))
 
             this.setState(state => ({
                 challenges: state.refreshing ? challenges : [...state.challenges, ...challenges],
@@ -81,6 +82,27 @@ export class ChallengesList extends React.Component<ChallengesListProps, Challen
             : null;
     };
 
+    toggleLike = (challenge: Challenge) => {
+        challenge.likedByUser = !challenge.likedByUser;
+        challenge.likedByUser ? ++challenge.likesCount : --challenge.likesCount;
+
+        this.setState(
+            { challenges: [...this.state.challenges] },
+            () => {
+                setLikedChallenge(challenge.id, this.context.state.user.id, challenge.likedByUser)
+                    .then(() => console.log('successfully set like on challenge'))
+                    .catch((e: Error) => {
+                        console.log(e);
+                        Alert.alert('Failed to set like on this challenge. Please, try again later.');
+
+                        challenge.likedByUser = !challenge.likedByUser;
+                        challenge.likedByUser ? ++challenge.likesCount : --challenge.likesCount;
+                        this.setState({ challenges: [...this.state.challenges] });
+                    });
+            }
+        );
+    }
+
     render() {
         const { ListEmptyComponent, ...flatListProps } = this.props.flatListProps || {};
 
@@ -99,9 +121,9 @@ export class ChallengesList extends React.Component<ChallengesListProps, Challen
 
                         <ChallengeToolbar
                             liked={item.likedByUser}
-                            likedBy={item.likedBy}
+                            likesCount={item.likesCount}
                             onCommentPress={() => this.props.onCommentPress && this.props.onCommentPress(item)}
-                            onLikePress={() => console.log('like')}
+                            onLikePress={() => this.toggleLike(item)}
                         />
                     </ChallengeCard>
                 )}

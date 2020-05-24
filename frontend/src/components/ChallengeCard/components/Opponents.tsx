@@ -140,6 +140,7 @@ const styles = StyleSheet.create({
     },
     name: {
         alignSelf: 'center',
-        color: 'tomato'
+        color: 'tomato',
+        fontWeight: '500'
     }
 });

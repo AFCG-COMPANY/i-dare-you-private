@@ -4,7 +4,7 @@ import { Icon, Text } from 'react-native-elements';
 
 interface ChallengeToolbarProps {
     liked: boolean;
-    likedBy: string[];
+    likesCount: number;
     onCommentPress?: () => void;
     onLikePress?: () => void;
 }
@@ -12,7 +12,7 @@ interface ChallengeToolbarProps {
 export const ChallengeToolbar: React.FC<ChallengeToolbarProps> = (props) => (
     <View style={styles.toolbar}>
         <TouchableOpacity
-            style={{ marginRight: 16 }}
+            style={styles.likeButton}
             onPress={props.onLikePress}
         >
             {props.liked
@@ -33,7 +33,7 @@ export const ChallengeToolbar: React.FC<ChallengeToolbarProps> = (props) => (
                 )
             }
 
-            {props.likedBy.length > 0 && <Text>{props.likedBy.length}</Text>}
+            {props.likesCount > 0 && <Text style={styles.likesCount}>{props.likesCount}</Text>}
         </TouchableOpacity>
 
         <TouchableOpacity onPress={props.onCommentPress}>
@@ -47,5 +47,16 @@ const styles = StyleSheet.create({
         paddingHorizontal: 2,
         flexDirection: 'row',
         alignItems: 'center'
+    },
+    likeButton: {
+        marginRight: 20,
+        position: 'relative',
+        flexDirection: 'row',
+        alignItems: 'center'
+    },
+    likesCount: {
+        position: 'absolute',
+        left: 21,
+        top: 3
     }
 });
