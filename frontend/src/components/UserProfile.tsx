@@ -3,13 +3,14 @@ import { StyleSheet, View } from 'react-native';
 import { Badge, Button, Text } from 'react-native-elements';
 import { User } from '../models';
 import { Avatar } from './Avatar';
-import { ChallengesList } from './ChallengesList';
+import { ChallengesList, ChallengesListProps } from './ChallengesList';
 
 interface UserProfileProps {
     user: User | null,
     isCurrentUser?: boolean;
     onCreateNewChallengePress?: () => void;
     onBrowseChallengesPress?: () => void;
+    challengeListProps?: ChallengesListProps
 }
 
 export const UserProfile: React.FC<UserProfileProps> = ({ user, isCurrentUser, ...props }) => {
@@ -57,9 +58,10 @@ export const UserProfile: React.FC<UserProfileProps> = ({ user, isCurrentUser, .
                 filterBy='participant'
                 userId={user?.id}
                 flatListProps={{
-                    ListHeaderComponent: <Text>{user?.bio}</Text>,
+                    ListHeaderComponent: <Text style={{ marginBottom: 16 }}>{user?.bio}</Text>,
                     ListEmptyComponent: <ChallengesEmptyComponent isCurrentUser={isCurrentUser} {...props} />
                 }}
+                {...props.challengeListProps}
             />
         </View>
     );

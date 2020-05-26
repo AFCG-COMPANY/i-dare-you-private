@@ -1,35 +1,28 @@
 import React from 'react';
-import { Image, Platform, StyleSheet, TouchableOpacity, TouchableWithoutFeedback, View } from 'react-native';
-import { Card, Divider, Icon, Text } from 'react-native-elements';
+import { Image, Platform, StyleProp, StyleSheet, TouchableOpacity, TouchableWithoutFeedback, View } from 'react-native';
+import { Card, Icon, Text } from 'react-native-elements';
 import { Challenge, User } from '../../models';
 import { getFormattedDateString } from '../../helpers/date.helper';
-import { HealthBar, InfoTooltip, Opponents, StatusImage, Toolbar } from './components';
+import { HealthBar, InfoTooltip, Opponents, StatusImage } from './components';
+
+/**
+ * TODO
+ * - Vote button
+ * TODO Check backend integration
+ * 1. Progress bars
+ * 2. Challenge status images (Win, Lose)
+ */
 
 interface ChallengeCardProps {
     challenge: Challenge;
     onProfilePress?: (user: User) => void;
     onChallengePress?: () => void;
-    onCommentPress?: () => void;
 }
-
-/**
- * TODO
- ✅ - Comments/Tap on Card => navigation to Challenge Screen
- ✅ - Navigation to Profile
- ✅ - Single opponent view
- ✅ - Opponents stack view
- * - Like/Undo Like
- * - Vote button
- * TODO Backend integration
- * 1. Progress bars
- * 2. Challenge status images (Win, Lose)
- */
-
 export const ChallengeCard: React.FC<ChallengeCardProps> = ({
     challenge,
     onChallengePress,
-    onCommentPress,
-    onProfilePress
+    onProfilePress,
+    children
 }) => {
     return (
         <TouchableWithoutFeedback onPress={onChallengePress}>
@@ -50,7 +43,13 @@ export const ChallengeCard: React.FC<ChallengeCardProps> = ({
                                 source={{ uri: challenge.createdBy.avatar }}
                             />
 
-                            <Text style={styles.creatorName}>{challenge.createdBy.username}</Text>
+                            <Text
+                                style={styles.creatorName}
+                                numberOfLines={1}
+                                ellipsizeMode='middle'
+                            >
+                                {challenge.createdBy.username}
+                            </Text>
                         </TouchableOpacity>
                     </View>
 
@@ -65,6 +64,7 @@ export const ChallengeCard: React.FC<ChallengeCardProps> = ({
                         <Opponents
                             containerStyle={styles.participant}
                             opponents={challenge.opponents as User[]}
+                            onOpponentPress={onProfilePress}
                         />
                     </View>
                 </View>
@@ -105,14 +105,7 @@ export const ChallengeCard: React.FC<ChallengeCardProps> = ({
                     </View>
                 </View>
 
-                <Divider style={{ marginVertical: 16 }} />
-
-                <Toolbar
-                    liked={challenge.likedByUser}
-                    likedBy={challenge.likedBy}
-                    onCommentPress={onCommentPress}
-                    onLikePress={() => console.log('like')}
-                />
+                <>{children}</>
             </Card>
         </TouchableWithoutFeedback>
     );
@@ -138,11 +131,8 @@ const styles = StyleSheet.create({
     },
     creatorName: {
         color: 'green',
-        fontWeight: '500'
-    },
-    opponentName: {
-        color: 'tomato',
-        fontWeight: '500'
+        fontWeight: '500',
+        maxWidth: 80
     },
     healthBar: {
         marginBottom: 4,

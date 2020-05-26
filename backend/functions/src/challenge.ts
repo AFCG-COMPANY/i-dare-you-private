@@ -59,13 +59,14 @@ export const setLiked = functions.https.onRequest(async (request, response) => {
     let databaseAction;
     if (request.body.action === 'like') {
         databaseAction = admin.firestore.FieldValue.arrayUnion(request.body.userId)
-    }
-    else {
+    } else {
         databaseAction = admin.firestore.FieldValue.arrayRemove(request.body.userId)
     }
-    admin.firestore().collection('challenges').doc(request.query.id.toString()).update({
-        likedBy: databaseAction
-    })
+
+    admin.firestore()
+        .collection('challenges')
+        .doc(request.query.id.toString())
+        .update({ likedBy: databaseAction })
         .then(doc => {
             response.status(200).send()
         })

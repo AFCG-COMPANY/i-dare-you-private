@@ -1,12 +1,12 @@
 import React from 'react';
 import { User } from '../../../models';
-import { Image, StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
-import { Text } from 'react-native-elements';
+import { Image, StyleProp, StyleSheet, TouchableOpacity, View, ViewStyle, Text } from 'react-native';
 import { DefaultOpponentAvatar } from '../images/default-opponent-avatar';
 
 interface OpponentsProps {
-    opponents: User[],
-    containerStyle?: StyleProp<ViewStyle>
+    opponents: User[];
+    onOpponentPress?: (opponent: User) => void;
+    containerStyle?: StyleProp<ViewStyle>;
 }
 export const Opponents: React.FC<OpponentsProps> = props => {
     const opponents = props.opponents;
@@ -17,22 +17,32 @@ export const Opponents: React.FC<OpponentsProps> = props => {
         content = (<>
             <View style={styles.deck}>
                 {layout.map((cell, index) => (
-                    <Image
+                    <TouchableOpacity
                         key={index}
                         style={{
                             position: 'absolute',
-                            width: cell.size,
-                            height: cell.size,
                             left: cell.left,
-                            top: cell.top,
-                            borderRadius: cell.size / 2
+                            top: cell.top
                         }}
-                        source={{ uri: opponents[index].avatar }}
-                    />
+                        onPress={() => props.onOpponentPress && props.onOpponentPress(opponents[index])}
+                    >
+                        <Image
+                            style={{
+                                width: cell.size,
+                                height: cell.size,
+                                borderRadius: cell.size / 2
+                            }}
+                            source={{ uri: opponents[index].avatar }}
+                        />
+                    </TouchableOpacity>
                 ))}
             </View>
 
-            <Text style={styles.name}>
+            <Text
+                style={styles.name}
+                numberOfLines={1}
+                ellipsizeMode='middle'
+            >
                 {opponents[0].username}
                 {opponents.length - 1 > 0 && ` + ${opponents.length - 1}`}
             </Text>
@@ -45,7 +55,7 @@ export const Opponents: React.FC<OpponentsProps> = props => {
                     source={{ uri: DefaultOpponentAvatar }}
                 />
             </View>
-            <Text style={styles.name}>No opponents</Text>
+            <Text style={styles.name}>No rivals</Text>
         </>);
     }
 
@@ -118,6 +128,7 @@ const styles = StyleSheet.create({
         borderRadius: AVATAR_BORDER_RADIUS
     },
     defaultAvatarContainer: {
+        marginBottom: 4,
         alignSelf: 'center',
         width: AVATAR_SIZE,
         height: AVATAR_SIZE,
@@ -133,6 +144,8 @@ const styles = StyleSheet.create({
     },
     name: {
         alignSelf: 'center',
-        color: 'tomato'
+        color: 'tomato',
+        fontWeight: '500',
+        maxWidth: 80
     }
 });
