@@ -9,6 +9,7 @@ interface ActionsProps {
     status: ChallengeStatus;
     onProgressChangePress: (progress: number) => void;
     onEndChallengePress: () => void;
+    onMakeBidPress: (bid: string) => void;
 }
 
 interface ActionsState {
@@ -40,7 +41,9 @@ export class Actions extends React.Component<ActionsProps, ActionsState> {
     };
 
     onMakeBidPress = () => {
-        if (!this.state.bid) {
+        if (this.state.bid) {
+            this.props.onMakeBidPress(this.state.bid);
+        } else {
             this.setState({ bidError: 'You must specify your bid.' });
         }
     };

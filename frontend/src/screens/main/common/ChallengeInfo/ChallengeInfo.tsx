@@ -23,10 +23,7 @@ interface ChallengeInfoProps {
 export const ChallengeInfo: React.FC<ChallengeInfoProps> = ({ route, navigation }) => {
     const { state } = React.useContext(AppContext);
     const { challenge, commentPressed } = route.params;
-
-    // User is participant if he is in opponents list or he is creator
     const userIsCreator = state.user?.id === challenge.createdBy.id;
-    const userIsParticipant = challenge.currentUserIsOpponent || userIsCreator;
 
     return (
         <ScrollView style={styles.container}>
@@ -40,8 +37,9 @@ export const ChallengeInfo: React.FC<ChallengeInfoProps> = ({ route, navigation 
                         status={ChallengeStatus.Created}
                         isCreator={userIsCreator}
                         isOpponent={challenge.currentUserIsOpponent}
-                        onProgressChangePress={progress => console.log('Progress set to ', progress)}
+                        onProgressChangePress={progress => console.log('Progress set to', progress)}
                         onEndChallengePress={() => console.log('End challenge')}
+                        onMakeBidPress={bid => console.log('Bid was made:', bid)}
                     />
                 </View>
             </ChallengeCard>
