@@ -1,45 +1,165 @@
 import React from 'react';
-import { StyleProp, View, ViewStyle } from 'react-native';
-import { Text } from 'react-native-elements';
+import { View, Slider } from 'react-native';
+import { Button, Input, Overlay, Text } from 'react-native-elements';
 import { ChallengeStatus } from '../../../../../models/challenge';
 
 interface ActionsProps {
-    containerStyle?: StyleProp<ViewStyle>
-    isParticipant: boolean;
+    isCreator: boolean;
+    isOpponent: boolean;
     status: ChallengeStatus;
+    onProgressChangePress: (progress: number) => void;
+    onEndChallengePress: () => void;
 }
-export const Actions: React.FC<ActionsProps> = ({
-    containerStyle,
-    status,
-    isParticipant
-}) => {
-    let content;
-    switch (status) {
-        case ChallengeStatus.Created:
-        case ChallengeStatus.InProgress:
-            if (isParticipant) {
-                content = <Text>You are already participating in this challenge.</Text>;
-            } else {
-                content = null;
-            }
-            break;
 
-        case ChallengeStatus.Voting:
-            return null;
-            break;
+interface ActionsState {
+    isOpponent: boolean;
+    status: ChallengeStatus;
+    finishOverlayVisible: boolean;
+    progressSliderValue: number;
+    bidError?: string;
+    bid?: string;
+}
 
-        case ChallengeStatus.Finished:
-            return null;
-            break;
+export class Actions extends React.Component<ActionsProps, ActionsState> {
+    state: ActionsState = {
+        isOpponent: this.props.isOpponent,
+        status: this.props.status,
+        finishOverlayVisible: false,
+        progressSliderValue: 0
+    };
 
-        default:
-            console.log('Incorrect challenge status');
-            return null;
+    toggleFinishOverlay = () => this.setState({ finishOverlayVisible: !this.state.finishOverlayVisible });
+
+    onEndChallengePress = () => {
+        this.toggleFinishOverlay();
+        this.props.onEndChallengePress();
+    };
+
+    onProgressSliderValueChange = (value: number) => {
+        this.setState({ progressSliderValue: value });
+    };
+
+    onMakeBidPress = () => {
+        if (!this.state.bid) {
+            this.setState({ bidError: 'You must specify your bid.' });
+        }
+    };
+
+    componentDidUpdate(prevProps: Readonly<ActionsProps>, prevState: Readonly<ActionsState>, snapshot?: any) {
     }
 
-    return (
-        <View style={containerStyle}>
-            {content}
-        </View>
-    );
-};
+    render() {
+        switch (this.state.status) {
+            case ChallengeStatus.Created:
+            case ChallengeStatus.InProgress:
+                if (this.state.isOpponent) {
+                    return <Text>You are already participating in this challenge.</Text>;
+                } else if (this.props.isCreator) {
+                    return <>
+                        <Text>
+                            Set your current progress: <
+                            Text style={{ fontWeight: 'bold' }}>{this.state.progressSliderValue}%</Text>
+                        </Text>
+                        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                            <Text>0</Text>
+                            <Slider
+                                style={{ flex: 1, marginHorizontal: 8 }}
+                                maximumValue={100}
+                                minimumValue={0}
+                                step={1}
+                                value={this.state.progressSliderValue}
+                                onValueChange={this.onProgressSliderValueChange}
+                            />
+                            <Text>100</Text>
+                        </View>
+
+                        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+                            <Button
+                                type='clear'
+                                containerStyle={{ marginTop: 16 }}
+                                title='End the Challenge'
+                                titleStyle={{ fontSize: 16 }}
+                                onPress={this.toggleFinishOverlay}
+                            />
+
+                            <Button
+                                containerStyle={{ width: 92 }}
+                                title='Apply'
+                                onPress={() => this.props.onProgressChangePress(this.state.progressSliderValue)}
+                            />
+                        </View>
+
+                        <Overlay
+                            overlayStyle={{ width: 280, height: 200, padding: 20 }}
+                            isVisible={this.state.finishOverlayVisible}
+                            animationType='fade'
+                            onBackdropPress={this.toggleFinishOverlay}
+                        >
+                            <>
+                                <Text h3>Caution</Text>
+                                <Text style={{ marginTop: 16, marginBottom: 32 }}>
+                                    Are you sure you want to finish the challenge before the due date?
+                                </Text>
+                                <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                                    <Button
+                                        containerStyle={{ width: 80 }}
+                                        title='No'
+                                        onPress={this.toggleFinishOverlay}
+                                    />
+                                    <Button
+                                        containerStyle={{ width: 80 }}
+                                        type='outline'
+                                        title='Yes'
+                                        onPress={this.onEndChallengePress}
+                                    />
+                                </View>
+                            </>
+                        </Overlay>
+                    </>;
+                } else {
+                    return <>
+                            <Input
+                                containerStyle={{ marginBottom: 20 }}
+                                errorMessage={this.state.bidError}
+                                errorStyle={{ marginHorizontal: 0 }}
+                                inputStyle={{ maxHeight: 100 }}
+                                inputContainerStyle={{ borderBottomColor: this.state.bidError && 'red' }}
+                                multiline={true}
+                                autoCorrect={false}
+                                placeholder='$100'
+                                value={this.state.bid}
+                                onChangeText={bid => this.setState({ bid })}
+                            />
+
+                            <Button
+                                containerStyle={{ alignSelf: 'flex-end' }}
+                                title='Make the Bid'
+                                onPress={this.onMakeBidPress}
+                            />
+                        </>;
+                }
+
+            case ChallengeStatus.Voting:
+                return (
+                    <View style={{ flexDirection: 'row' }}>
+                        <Button
+                            containerStyle={{ flex: 1 }}
+                            title='Goal Accomplished'
+                        />
+
+                        <Button
+                            containerStyle={{ flex: 1 }}
+                            title='Goal is not Accomplished'
+                        />
+                    </View>
+                );
+
+            case ChallengeStatus.Finished:
+                return null;
+
+            default:
+                console.log('Incorrect challenge status');
+                return null;
+        }
+    }
+}
