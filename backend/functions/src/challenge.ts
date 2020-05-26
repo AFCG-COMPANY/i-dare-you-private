@@ -15,8 +15,8 @@ interface Challenge {
     creationDate: number;
     opponents: string[]; // Ids of creator's opponents
     likedBy: string[]; // Ids of users who liked the challenge
-    challengeStatus: string,
-    challengeResult: number,
+    status: string,
+    result: number,
 }
 
 export const setChallenge = functions.https.onRequest(async (request, response) => {
@@ -30,8 +30,8 @@ export const setChallenge = functions.https.onRequest(async (request, response) 
             creationDate: Date.now(),
             opponents: [],
             likedBy: [],
-            challengeStatus: 'Created',
-            challengeResult: 0,
+            status: 'Created',
+            result: 0,
         })
         .then(doc => {
             response.status(200).send();
@@ -89,7 +89,7 @@ const extendChallenges = async (challenges: any, userId: string) => {
     await usersCollection.where(admin.firestore.FieldPath.documentId(), 'in', Object.keys(users))
         .get().then(querySnapshot => {
             querySnapshot.forEach(documentSnapshot => {
-                users[documentSnapshot.id] = {id: `${documentSnapshot.id}`, ...documentSnapshot.data()};
+                users[documentSnapshot.id] = { id: `${documentSnapshot.id}`, ...documentSnapshot.data() };
             });
         })
     const extendedChallenges = challenges.map((challenge: any) => {
@@ -106,7 +106,7 @@ const extendChallenges = async (challenges: any, userId: string) => {
 }
 
 export const getChallenges = functions.https.onRequest(async (request, response) => {
-    const { filterBy, userId } = request.query;
+    const { filterBy, userId, currentUserId } = request.query;
 
     if (!request.query.page) {
         response.status(400).send('You must specify the page.');
@@ -133,7 +133,7 @@ export const getChallenges = functions.https.onRequest(async (request, response)
                     .sort((a, b) => (b.createTime.toMillis() - a.createTime.toMillis()))
                     .slice(offset, offset + CHALLENGES_PER_PAGE);
 
-                response.send(await extendChallenges(result.map(doc => ({ ...doc.data(), id: doc.id })), userId as string));
+                response.send(await extendChallenges(result.map(doc => ({ ...doc.data(), id: doc.id })), currentUserId as string));
                 return;
 
             } else if (filterBy === 'likedBy') {
@@ -152,9 +152,9 @@ export const getChallenges = functions.https.onRequest(async (request, response)
         try {
             const result = await challenges.get();
             if (result.docs.length > 0) {
-                response.send(await extendChallenges(result.docs.map(doc => ({ ...doc.data(), id: doc.id })), userId as string));
+                response.send(await extendChallenges(result.docs.map(doc => ({ ...doc.data(), id: doc.id })), currentUserId as string));
             }
-            else{
+            else {
                 response.send([])
             }
         } catch (e) {
