@@ -43,8 +43,7 @@ export class ChallengesList extends React.Component<ChallengesListProps, Challen
         const { filterBy, userId } = this.props;
 
         try {
-            let challenges = await getChallenges(this.state.page, filterBy, userId);
-            // let challenges = await getChallenges(this.context.user.id, this.state.page, filterBy, userId);
+            let challenges = await getChallenges(this.context.state.user.id, this.state.page, filterBy, userId);
             challenges = challenges.map(challenge => ({ ...challenge, likesCount: challenge.likedBy.length }));
 
             this.setState(state => ({
@@ -54,6 +53,7 @@ export class ChallengesList extends React.Component<ChallengesListProps, Challen
                 refreshing: false
             }));
         } catch (e) {
+            console.log(e);
             this.setState(state => ({
                 loading: false,
                 refreshing: false,

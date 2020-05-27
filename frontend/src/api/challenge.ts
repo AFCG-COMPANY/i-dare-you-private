@@ -8,7 +8,7 @@ export async function getChallenges(
     filterBy?: 'participant' | 'likedBy',
     userId?: string
 ): Promise<Challenge[]> {
-    const params = { page, filterBy, userId };
+    const params = { page, filterBy, userId, currentUserId };
     const res = await axios.get(`${HOST}challenge-getChallenges`, { params });
 
     return res.data;
