@@ -78,7 +78,7 @@ export class ChallengesList extends React.Component<ChallengesListProps, Challen
     };
 
     renderListFooter = () => {
-        return this.state.loading
+        return this.state.loading && !this.state.refreshing
             ? <ActivityIndicator style={{ marginTop: 20 }} size='large'/>
             : null;
     };

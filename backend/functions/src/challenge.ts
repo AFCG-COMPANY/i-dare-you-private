@@ -131,7 +131,7 @@ export const getChallenges = functions.https.onRequest(async (request, response)
         let challenges;
         if (filterBy && userId) {
             if (filterBy === 'participant') {
-                const createdChallenges = await challengesRef.where('createdBy.id', '==', userId).get();
+                const createdChallenges = await challengesRef.where('createdBy', '==', userId).get();
                 const participatingChallenges = await challengesRef.where('opponents', 'array-contains', userId).get();
 
                 // Merge matching challenges
