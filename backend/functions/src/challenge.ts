@@ -142,7 +142,7 @@ export const getChallenges = functions.https.onRequest(async (request, response)
                     .slice(offset, offset + CHALLENGES_PER_PAGE)
                     .map(doc => ({ ...doc.data(), id: doc.id } as Challenge));
 
-                response.send(await extendChallenges(result, currentUserId as string));
+                response.send(result.length > 0 ? await extendChallenges(result, currentUserId as string) : result);
                 return;
 
             } else if (filterBy === 'likedBy') {
