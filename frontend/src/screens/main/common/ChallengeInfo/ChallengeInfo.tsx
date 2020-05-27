@@ -10,7 +10,7 @@ import { ChallengeStatus } from '../../../../models/challenge';
 import { Actions } from './components/Actions';
 
 type ParentStackParamsList = {
-    UserInfo: { user: User }
+    UserInfo: { user: User };
     ChallengeInfo: { challenge: Challenge, commentPressed?: boolean };
 };
 type ChallengeInfoRouteProp = RouteProp<ParentStackParamsList, 'ChallengeInfo'>;
@@ -40,6 +40,7 @@ export const ChallengeInfo: React.FC<ChallengeInfoProps> = ({ route, navigation 
                         onProgressChangePress={progress => console.log('Progress set to', progress)}
                         onEndChallengePress={() => console.log('End challenge')}
                         onMakeBidPress={bid => console.log('Bid was made:', bid)}
+                        onVotePress={vote => console.log('Voted', vote)}
                     />
                 </View>
             </ChallengeCard>

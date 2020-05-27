@@ -10,6 +10,7 @@ interface ActionsProps {
     onProgressChangePress: (progress: number) => void;
     onEndChallengePress: () => void;
     onMakeBidPress: (bid: string) => void;
+    onVotePress: (goalAccomplished: boolean) => void;
 }
 
 interface ActionsState {
@@ -47,6 +48,10 @@ export class Actions extends React.Component<ActionsProps, ActionsState> {
             this.setState({ bidError: 'You must specify your bid.' });
         }
     };
+
+    onVotePress = (goalAccomplished: boolean) => {
+        this.props.onVotePress(goalAccomplished);
+    }
 
     componentDidUpdate(prevProps: Readonly<ActionsProps>, prevState: Readonly<ActionsState>, snapshot?: any) {
     }
@@ -143,22 +148,31 @@ export class Actions extends React.Component<ActionsProps, ActionsState> {
                 }
 
             case ChallengeStatus.Voting:
-                return (
-                    <View style={{ flexDirection: 'row' }}>
-                        <Button
-                            containerStyle={{ flex: 1 }}
-                            title='Goal Accomplished'
-                        />
-
-                        <Button
-                            containerStyle={{ flex: 1 }}
-                            title='Goal is not Accomplished'
-                        />
-                    </View>
-                );
+                if (this.state.isOpponent || this.props.isCreator) {
+                    return (
+                        <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                            <Button
+                                containerStyle={{ width: '40%' }}
+                                buttonStyle={{ backgroundColor: '#00c851', height: 62 }}
+                                titleStyle={{ color: 'white', fontWeight: '600' }}
+                                title='Goal Achieved'
+                                onPress={() => this.onVotePress(true)}
+                            />
+                            <Button
+                                containerStyle={{ width: '40%' }}
+                                buttonStyle={{ backgroundColor: '#e52b50', height: 62 }}
+                                title='Goal not Reached'
+                                titleStyle={{ color: 'white', fontWeight: '600' }}
+                                onPress={() => this.onVotePress(false)}
+                            />
+                        </View>
+                    );
+                } else {
+                    return <Text>The challenge is in voting phase.</Text>
+                }
 
             case ChallengeStatus.Finished:
-                return null;
+                return <Text>Challenge ended.</Text>;
 
             default:
                 console.log('Incorrect challenge status');

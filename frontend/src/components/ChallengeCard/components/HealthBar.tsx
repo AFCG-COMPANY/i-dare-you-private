@@ -20,7 +20,7 @@ export const HealthBar: React.FC<HealthBarProps> = props => {
         >
             <View
                 style={{
-                    backgroundColor: '#16A70C',
+                    backgroundColor: '#00c851',
                     width: healthPercentage + '%'
                 }}
             >
@@ -32,7 +32,7 @@ export const HealthBar: React.FC<HealthBarProps> = props => {
 const styles = StyleSheet.create({
     bar: {
         flexDirection: 'row',
-        backgroundColor: 'red',
+        backgroundColor: '#e52b50',
         height: 4
     }
 });

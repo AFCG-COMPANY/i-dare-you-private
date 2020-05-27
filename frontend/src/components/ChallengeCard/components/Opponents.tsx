@@ -144,7 +144,7 @@ const styles = StyleSheet.create({
     },
     name: {
         alignSelf: 'center',
-        color: 'tomato',
+        color: '#e52b50',
         fontWeight: '500',
         maxWidth: 80
     }
