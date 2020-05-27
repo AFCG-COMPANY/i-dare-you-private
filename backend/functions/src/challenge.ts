@@ -21,6 +21,7 @@ enum ChallengeResult {
 }
 
 interface Challenge {
+    id?: string;
     bid: string;
     description: string;
     endDate: number;
@@ -86,7 +87,7 @@ export const setLiked = functions.https.onRequest(async (request, response) => {
 
 const CHALLENGES_PER_PAGE: number = 10;
 
-const extendChallenges = async (challenges: any, userId: string) => {
+const extendChallenges = async (challenges: Challenge[], currentUserId: string) => {
     const users: { [id: string]: User | {} } = {};
     for (const challenge of challenges) {
         users[challenge.createdBy] = {};
@@ -105,9 +106,9 @@ const extendChallenges = async (challenges: any, userId: string) => {
             });
         });
 
-    return challenges.map((challenge: any) => ({
+    return challenges.map((challenge: Challenge) => ({
         ...challenge,
-        likedByUser: challenge.likedBy.includes(userId),
+        likedByUser: challenge.likedBy.includes(currentUserId),
         createdBy: users[challenge.createdBy],
         opponents: challenge.opponents.map((opponent: string) => users[opponent])
     }));
@@ -138,9 +139,10 @@ export const getChallenges = functions.https.onRequest(async (request, response)
                     .concat(participatingChallenges.docs)
                     // Sort by creation date
                     .sort((a, b) => (b.createTime.toMillis() - a.createTime.toMillis()))
-                    .slice(offset, offset + CHALLENGES_PER_PAGE);
+                    .slice(offset, offset + CHALLENGES_PER_PAGE)
+                    .map(doc => ({ ...doc.data(), id: doc.id } as Challenge));
 
-                response.send(await extendChallenges(result.map(doc => ({ ...doc.data(), id: doc.id })), currentUserId as string));
+                response.send(await extendChallenges(result, currentUserId as string));
                 return;
 
             } else if (filterBy === 'likedBy') {
@@ -159,7 +161,11 @@ export const getChallenges = functions.https.onRequest(async (request, response)
         try {
             const result = await challenges.get();
             if (result.docs.length > 0) {
-                response.send(await extendChallenges(result.docs.map(doc => ({ ...doc.data(), id: doc.id })), currentUserId as string));
+                response.send(
+                    await extendChallenges(
+                        result.docs.map(doc => ({ ...doc.data(), id: doc.id } as Challenge)),
+                        currentUserId as string
+                    ));
             }
             else {
                 response.send([])
