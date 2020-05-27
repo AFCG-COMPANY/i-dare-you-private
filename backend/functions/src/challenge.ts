@@ -29,7 +29,7 @@ interface Challenge {
     opponents: string[]; // Ids of creator's opponents
     likedBy: string[]; // Ids of users who liked the challenge
     status: ChallengeStatus,
-    result: ChallengeResult,
+    result?: ChallengeResult
 }
 
 export const setChallenge = functions.https.onRequest(async (request, response) => {
@@ -43,8 +43,7 @@ export const setChallenge = functions.https.onRequest(async (request, response) 
             creationDate: Date.now(),
             opponents: [],
             likedBy: [],
-            status: ChallengeStatus.Created,
-            result: 0,
+            status: ChallengeStatus.Created
         } as Challenge)
         .then(doc => response.status(200).send())
         .catch(e => {
