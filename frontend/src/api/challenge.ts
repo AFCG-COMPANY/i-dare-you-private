@@ -24,3 +24,14 @@ export function setLikedChallenge(challengeId: string, userId: string, like: boo
         userId
     });
 }
+
+export function setChallengeOpponent(challengeId: string, opponentId: string, bid: string): Promise<void> {
+    return axios.post(HOST + 'challenge-setOpponent',
+    {
+        id: opponentId,
+        message: bid
+    },
+    {
+        params: { id: challengeId }
+    });
+}

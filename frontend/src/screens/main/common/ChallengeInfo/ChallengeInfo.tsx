@@ -1,6 +1,6 @@
 import React from 'react';
 import { ScrollView, StyleSheet, View } from 'react-native';
-import { Divider } from 'react-native-elements';
+import { Divider, Overlay } from 'react-native-elements';
 import { RouteProp } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { Challenge, User } from '../../../../models';
@@ -8,6 +8,7 @@ import { ChallengeCard } from '../../../../components';
 import { AppContext } from '../../../../contexts/AppContext';
 import { ChallengeStatus } from '../../../../models/challenge';
 import { Actions } from './components/Actions';
+import { setChallengeOpponent } from '../../../../api/challenge';
 
 type ParentStackParamsList = {
     UserInfo: { user: User };
@@ -22,8 +23,31 @@ interface ChallengeInfoProps {
 }
 export const ChallengeInfo: React.FC<ChallengeInfoProps> = ({ route, navigation }) => {
     const { state } = React.useContext(AppContext);
-    const { challenge, commentPressed } = route.params;
-    const userIsCreator = state.user?.id === challenge.createdBy.id;
+    const user = state.user as User;
+
+    const { commentPressed } = route.params;
+    const [ challenge, setChallenge ] = React.useState(route.params.challenge);
+    const [ loading, setLoading ] = React.useState(false);
+    const userIsCreator = user.id === challenge.createdBy.id;
+
+    const onMakeBidPress = async (bid: string) => {
+        setLoading(true);
+
+        try {
+            await setChallengeOpponent(challenge.id, user.id, bid);
+
+            setChallenge({
+                ...challenge,
+                status: ChallengeStatus.InProgress,
+                isOpponent: true,
+                opponents: [...challenge.opponents, user] as User[]
+            });
+        } catch (e) {
+            console.log(e);
+        } finally {
+            setLoading(false);
+        }
+    }
 
     return (
         <ScrollView style={styles.container}>
@@ -34,16 +58,24 @@ export const ChallengeInfo: React.FC<ChallengeInfoProps> = ({ route, navigation 
                 <Divider style={styles.divider} />
                 <View style={styles.actions}>
                     <Actions
-                        status={ChallengeStatus.Created}
+                        loading={loading}
                         isCreator={userIsCreator}
-                        isOpponent={challenge.currentUserIsOpponent}
+                        isOpponent={challenge.isOpponent}
+                        status={challenge.status}
                         onProgressChangePress={progress => console.log('Progress set to', progress)}
                         onEndChallengePress={() => console.log('End challenge')}
-                        onMakeBidPress={bid => console.log('Bid was made:', bid)}
+                        onMakeBidPress={onMakeBidPress}
                         onVotePress={vote => console.log('Voted', vote)}
                     />
                 </View>
             </ChallengeCard>
+
+            <Overlay isVisible={loading}
+                     containerStyle={{ backgroundColor: 'transparent' }}
+                     overlayBackgroundColor='transparent'
+            >
+                <></>
+            </Overlay>
         </ScrollView>
     );
 };
