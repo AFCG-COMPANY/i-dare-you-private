@@ -29,6 +29,7 @@ interface Challenge {
     createdBy: string;
     creationDate: number;
     opponents: { [id: string]: {} }; // creator's opponents
+    _opponents: string[]; // field for search
     likedBy: string[]; // Ids of users who liked the challenge
     status: ChallengeStatus,
     result?: ChallengeResult
@@ -45,6 +46,7 @@ export const setChallenge = functions.https.onRequest(async (request, response) 
             creationDate: Date.now(),
             creatorProgress: 0,
             opponents: {},
+            _opponents: [],
             likedBy: [],
             status: ChallengeStatus.Created
         } as Challenge)
@@ -58,6 +60,8 @@ export const setChallenge = functions.https.onRequest(async (request, response) 
 export const setOpponent = functions.https.onRequest(async (request, response) => {
     let update: { [id: string]: {} } = {};
     update[`opponents.${request.body.id}`] = { message: request.body.message }
+    update['_opponents'] = admin.firestore.FieldValue.arrayUnion(request.body.id);
+    update['status'] = ChallengeStatus.InProgress;
     admin.firestore()
         .collection('challenges')
         .doc(request.query.id.toString())
@@ -70,7 +74,16 @@ export const setCreatorProgress = functions.https.onRequest(async (request, resp
     admin.firestore()
         .collection('challenges')
         .doc(request.query.id.toString())
-        .update({creatorProgress: parseInt(request.body.creatorProgress)})
+        .update({ creatorProgress: parseInt(request.body.creatorProgress) })
+        .then(doc => response.status(200).send())
+        .catch(err => response.status(500).send());
+})
+
+export const setChallengeStatusToVoiting = functions.https.onRequest(async (request, response) => {
+    admin.firestore()
+        .collection('challenges')
+        .doc(request.query.id.toString())
+        .update({ status: ChallengeStatus.Voting })
         .then(doc => response.status(200).send())
         .catch(err => response.status(500).send());
 })
@@ -144,7 +157,7 @@ export const getChallenges = functions.https.onRequest(async (request, response)
         if (filterBy && userId) {
             if (filterBy === 'participant') {
                 const createdChallenges = await challengesRef.where('createdBy', '==', userId).get();
-                const participatingChallenges = await challengesRef.where('opponents', 'array-contains', userId).get();
+                const participatingChallenges = await challengesRef.where('_opponents', 'array-contains', userId).get();
 
                 // Merge matching challenges
                 const result = createdChallenges.docs
