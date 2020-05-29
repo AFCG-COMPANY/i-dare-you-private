@@ -31,7 +31,7 @@ export const ChallengeCard: React.FC<ChallengeCardProps> = ({
                     <View style={styles.participantContainer}>
                         <HealthBar
                             style={styles.healthBar}
-                            health={70}
+                            health={100}
                         />
 
                         <TouchableOpacity

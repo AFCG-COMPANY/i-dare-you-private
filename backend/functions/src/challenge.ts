@@ -148,7 +148,7 @@ export const getChallenges = functions.https.onRequest(async (request, response)
     }
 
     const page = parseInt(<string>request.query.page, 10);
-    console.log(page);
+
     if (!isNaN(page) && page > -1) {
         const offset = page * CHALLENGES_PER_PAGE;
         const challengesRef = admin.firestore().collection('challenges');

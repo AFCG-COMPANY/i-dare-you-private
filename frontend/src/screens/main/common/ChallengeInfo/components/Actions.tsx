@@ -4,6 +4,7 @@ import { Button, Input, Overlay, Text } from 'react-native-elements';
 import { ChallengeStatus } from '../../../../../models/challenge';
 
 interface ActionsProps {
+    loading: boolean;
     isCreator: boolean;
     isOpponent: boolean;
     status: ChallengeStatus;
@@ -14,8 +15,6 @@ interface ActionsProps {
 }
 
 interface ActionsState {
-    isOpponent: boolean;
-    status: ChallengeStatus;
     finishOverlayVisible: boolean;
     progressSliderValue: number;
     bidError?: string;
@@ -24,8 +23,6 @@ interface ActionsState {
 
 export class Actions extends React.Component<ActionsProps, ActionsState> {
     state: ActionsState = {
-        isOpponent: this.props.isOpponent,
-        status: this.props.status,
         finishOverlayVisible: false,
         progressSliderValue: 0
     };
@@ -41,7 +38,7 @@ export class Actions extends React.Component<ActionsProps, ActionsState> {
         this.setState({ progressSliderValue: value });
     };
 
-    onMakeBidPress = () => {
+    onMakeBidPress = async () => {
         if (this.state.bid) {
             this.props.onMakeBidPress(this.state.bid);
         } else {
@@ -57,10 +54,10 @@ export class Actions extends React.Component<ActionsProps, ActionsState> {
     }
 
     render() {
-        switch (this.state.status) {
+        switch (this.props.status) {
             case ChallengeStatus.Created:
             case ChallengeStatus.InProgress:
-                if (this.state.isOpponent) {
+                if (this.props.isOpponent) {
                     return <Text>You are already participating in this challenge.</Text>;
                 } else if (this.props.isCreator) {
                     return <>
@@ -140,7 +137,8 @@ export class Actions extends React.Component<ActionsProps, ActionsState> {
                             />
 
                             <Button
-                                containerStyle={{ alignSelf: 'flex-end' }}
+                                containerStyle={{ alignSelf: 'flex-end', width: 128 }}
+                                loading={this.props.loading}
                                 title='Make the Bid'
                                 onPress={this.onMakeBidPress}
                             />
@@ -148,7 +146,7 @@ export class Actions extends React.Component<ActionsProps, ActionsState> {
                 }
 
             case ChallengeStatus.Voting:
-                if (this.state.isOpponent || this.props.isCreator) {
+                if (this.props.isOpponent || this.props.isCreator) {
                     return (
                         <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
                             <Button
