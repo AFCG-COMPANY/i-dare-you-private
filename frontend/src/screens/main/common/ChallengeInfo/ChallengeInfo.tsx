@@ -72,7 +72,7 @@ export const ChallengeInfo: React.FC<ChallengeInfoProps> = ({ route, navigation 
 
             <Overlay isVisible={loading}
                      containerStyle={{ backgroundColor: 'transparent' }}
-                     overlayBackgroundColor='transparent'
+                     overlayStyle={{ display: 'none' }}
             >
                 <></>
             </Overlay>
