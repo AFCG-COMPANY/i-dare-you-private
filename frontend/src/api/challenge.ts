@@ -43,3 +43,10 @@ export function setChallengeProgress(challengeId: string, progress: number): Pro
         { params: { id: challengeId }
     })
 }
+
+export function endChallenge(challengeId: string): Promise<void> {
+    return axios.get(
+        HOST + 'challenge-setChallengeStatusToVoting',
+        { params: { id: challengeId } }
+    );
+}

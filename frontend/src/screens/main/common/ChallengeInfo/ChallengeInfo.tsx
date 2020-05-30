@@ -8,7 +8,7 @@ import { ChallengeCard } from '../../../../components';
 import { AppContext } from '../../../../contexts/AppContext';
 import { ChallengeStatus } from '../../../../models/challenge';
 import { Actions, ActionsLoadingType } from './components/Actions';
-import { setChallengeOpponent, setChallengeProgress } from '../../../../api/challenge';
+import { endChallenge, setChallengeOpponent, setChallengeProgress } from '../../../../api/challenge';
 
 type ParentStackParamsList = {
     UserInfo: { user: User };
@@ -66,6 +66,23 @@ export const ChallengeInfo: React.FC<ChallengeInfoProps> = ({ route, navigation 
         }
     };
 
+    const onEndChallenge = async () => {
+        setLoading('end');
+
+        try {
+            await endChallenge(challenge.id);
+
+            setChallenge({
+                ...challenge,
+                status: ChallengeStatus.Voting
+            });
+        } catch (e) {
+            console.log(e);
+        } finally {
+            setLoading(null);
+        }
+    };
+
     return (
         <ScrollView style={styles.container}>
             <ChallengeCard
@@ -81,7 +98,7 @@ export const ChallengeInfo: React.FC<ChallengeInfoProps> = ({ route, navigation 
                         status={challenge.status}
                         creatorProgress={challenge.creatorProgress}
                         onProgressChangePress={onSetProgress}
-                        onEndChallengePress={() => console.log('End challenge')}
+                        onEndChallengePress={onEndChallenge}
                         onMakeBidPress={onMakeBidPress}
                         onVotePress={vote => console.log('Voted', vote)}
                     />
