@@ -57,6 +57,6 @@ const styles = StyleSheet.create({
     likesCount: {
         position: 'absolute',
         left: 21,
-        top: 3
+        top: Platform.OS == 'ios' ? 3 : 1
     }
 });

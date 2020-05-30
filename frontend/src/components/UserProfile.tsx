@@ -58,7 +58,13 @@ export const UserProfile: React.FC<UserProfileProps> = ({ user, isCurrentUser, .
                 filterBy='participant'
                 userId={user?.id}
                 flatListProps={{
-                    ListHeaderComponent: <Text style={{ marginBottom: 16 }}>{user?.bio}</Text>,
+                    ListHeaderComponent: (
+                        <Text
+                            style={{ marginBottom: 16, paddingHorizontal: 20 }}
+                        >
+                            {user?.bio}
+                        </Text>
+                    ),
                     ListEmptyComponent: <ChallengesEmptyComponent isCurrentUser={isCurrentUser} {...props} />
                 }}
                 {...props.challengeListProps}
@@ -103,28 +109,27 @@ const ChallengesEmptyComponent: React.FC<ChallengesEmptyComponentProps> = (props
 
 const styles = StyleSheet.create({
     container: {
-        paddingVertical: 20,
-        paddingHorizontal: 40,
         flex: 1,
         backgroundColor: '#fff'
     },
     header: {
         marginBottom: 18,
+        paddingTop: 20,
+        paddingHorizontal: 20,
         display: 'flex',
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-between'
     },
     avatarContainer: {
-        marginRight: 20
     },
     stats: {
+        marginLeft: 'auto',
         display: 'flex',
-        flexDirection: 'row',
-        flex: 1,
-        justifyContent: 'space-between'
+        flexDirection: 'row'
     },
     statsItem: {
+        marginLeft: 40,
         display: 'flex',
         alignItems: 'center'
     },
