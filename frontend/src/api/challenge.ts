@@ -35,3 +35,11 @@ export function setChallengeOpponent(challengeId: string, opponentId: string, bi
         params: { id: challengeId }
     });
 }
+
+export function setChallengeProgress(challengeId: string, progress: number): Promise<void> {
+    return axios.post(
+        HOST + 'challenge-setCreatorProgress',
+        { creatorProgress: progress },
+        { params: { id: challengeId }
+    })
+}

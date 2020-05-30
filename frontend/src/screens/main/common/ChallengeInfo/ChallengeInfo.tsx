@@ -7,8 +7,8 @@ import { Challenge, User } from '../../../../models';
 import { ChallengeCard } from '../../../../components';
 import { AppContext } from '../../../../contexts/AppContext';
 import { ChallengeStatus } from '../../../../models/challenge';
-import { Actions } from './components/Actions';
-import { setChallengeOpponent } from '../../../../api/challenge';
+import { Actions, ActionsLoadingType } from './components/Actions';
+import { setChallengeOpponent, setChallengeProgress } from '../../../../api/challenge';
 
 type ParentStackParamsList = {
     UserInfo: { user: User };
@@ -27,11 +27,11 @@ export const ChallengeInfo: React.FC<ChallengeInfoProps> = ({ route, navigation 
 
     const { commentPressed } = route.params;
     const [ challenge, setChallenge ] = React.useState(route.params.challenge);
-    const [ loading, setLoading ] = React.useState(false);
+    const [ loading, setLoading ] = React.useState<ActionsLoadingType>(null);
     const userIsCreator = user.id === challenge.createdBy.id;
 
     const onMakeBidPress = async (bid: string) => {
-        setLoading(true);
+        setLoading('join');
 
         try {
             await setChallengeOpponent(challenge.id, user.id, bid);
@@ -45,9 +45,26 @@ export const ChallengeInfo: React.FC<ChallengeInfoProps> = ({ route, navigation 
         } catch (e) {
             console.log(e);
         } finally {
-            setLoading(false);
+            setLoading(null);
         }
-    }
+    };
+
+    const onSetProgress = async (progress: number) => {
+        setLoading('setProgress');
+
+        try {
+            await setChallengeProgress(challenge.id, progress);
+
+            setChallenge({
+                ...challenge,
+                creatorProgress: progress
+            });
+        } catch (e) {
+            console.log(e);
+        } finally {
+            setLoading(null);
+        }
+    };
 
     return (
         <ScrollView style={styles.container}>
@@ -62,7 +79,8 @@ export const ChallengeInfo: React.FC<ChallengeInfoProps> = ({ route, navigation 
                         isCreator={userIsCreator}
                         isOpponent={challenge.isOpponent}
                         status={challenge.status}
-                        onProgressChangePress={progress => console.log('Progress set to', progress)}
+                        creatorProgress={challenge.creatorProgress}
+                        onProgressChangePress={onSetProgress}
                         onEndChallengePress={() => console.log('End challenge')}
                         onMakeBidPress={onMakeBidPress}
                         onVotePress={vote => console.log('Voted', vote)}
@@ -70,7 +88,7 @@ export const ChallengeInfo: React.FC<ChallengeInfoProps> = ({ route, navigation 
                 </View>
             </ChallengeCard>
 
-            <Overlay isVisible={loading}
+            <Overlay isVisible={loading != null}
                      containerStyle={{ backgroundColor: 'transparent' }}
                      overlayStyle={{ display: 'none' }}
             >

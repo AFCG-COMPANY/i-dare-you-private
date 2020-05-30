@@ -3,11 +3,14 @@ import { View, Slider } from 'react-native';
 import { Button, Input, Overlay, Text } from 'react-native-elements';
 import { ChallengeStatus } from '../../../../../models/challenge';
 
+export type ActionsLoadingType = 'end' | 'setProgress' | 'join' | null;
+
 interface ActionsProps {
-    loading: boolean;
+    loading: ActionsLoadingType;
     isCreator: boolean;
     isOpponent: boolean;
     status: ChallengeStatus;
+    creatorProgress?: number;
     onProgressChangePress: (progress: number) => void;
     onEndChallengePress: () => void;
     onMakeBidPress: (bid: string) => void;
@@ -24,7 +27,7 @@ interface ActionsState {
 export class Actions extends React.Component<ActionsProps, ActionsState> {
     state: ActionsState = {
         finishOverlayVisible: false,
-        progressSliderValue: 0
+        progressSliderValue: this.props.creatorProgress || 0
     };
 
     toggleFinishOverlay = () => this.setState({ finishOverlayVisible: !this.state.finishOverlayVisible });
@@ -50,9 +53,6 @@ export class Actions extends React.Component<ActionsProps, ActionsState> {
         this.props.onVotePress(goalAccomplished);
     }
 
-    componentDidUpdate(prevProps: Readonly<ActionsProps>, prevState: Readonly<ActionsState>, snapshot?: any) {
-    }
-
     render() {
         switch (this.props.status) {
             case ChallengeStatus.Created:
@@ -62,8 +62,8 @@ export class Actions extends React.Component<ActionsProps, ActionsState> {
                 } else if (this.props.isCreator) {
                     return <>
                         <Text>
-                            Set your current progress: <
-                            Text style={{ fontWeight: 'bold' }}>{this.state.progressSliderValue}%</Text>
+                            Set your current progress:
+                            <Text style={{ fontWeight: 'bold' }}> {this.state.progressSliderValue}%</Text>
                         </Text>
                         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                             <Text>0</Text>
@@ -80,8 +80,9 @@ export class Actions extends React.Component<ActionsProps, ActionsState> {
 
                         <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
                             <Button
-                                type='clear'
                                 containerStyle={{ marginTop: 16 }}
+                                loading={this.props.loading === 'end'}
+                                type='clear'
                                 title='End the Challenge'
                                 titleStyle={{ fontSize: 16 }}
                                 onPress={this.toggleFinishOverlay}
@@ -89,6 +90,7 @@ export class Actions extends React.Component<ActionsProps, ActionsState> {
 
                             <Button
                                 containerStyle={{ width: 92 }}
+                                loading={this.props.loading === 'setProgress'}
                                 title='Apply'
                                 onPress={() => this.props.onProgressChangePress(this.state.progressSliderValue)}
                             />
@@ -138,7 +140,7 @@ export class Actions extends React.Component<ActionsProps, ActionsState> {
 
                             <Button
                                 containerStyle={{ alignSelf: 'flex-end', width: 128 }}
-                                loading={this.props.loading}
+                                loading={this.props.loading === 'join'}
                                 title='Make the Bid'
                                 onPress={this.onMakeBidPress}
                             />

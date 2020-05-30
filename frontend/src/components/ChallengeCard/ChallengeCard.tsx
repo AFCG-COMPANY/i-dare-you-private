@@ -1,5 +1,5 @@
 import React from 'react';
-import { Image, Platform, StyleProp, StyleSheet, TouchableOpacity, TouchableWithoutFeedback, View } from 'react-native';
+import { Image, Platform, StyleSheet, TouchableOpacity, TouchableWithoutFeedback, View } from 'react-native';
 import { Card, Icon, Text } from 'react-native-elements';
 import { Challenge, User } from '../../models';
 import { getFormattedDateString } from '../../helpers/date.helper';
@@ -58,7 +58,7 @@ export const ChallengeCard: React.FC<ChallengeCardProps> = ({
                     <View style={styles.participantContainer}>
                         <HealthBar
                             style={styles.healthBar}
-                            health={100}
+                            health={100 - (challenge.creatorProgress || 0)}
                         />
 
                         <Opponents
