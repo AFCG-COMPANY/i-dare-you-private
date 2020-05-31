@@ -5,7 +5,7 @@ import { RouteProp } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { Challenge, User } from '../../../../models';
 import { ChallengeCard } from '../../../../components';
-import { AppContext } from '../../../../contexts/AppContext';
+import { AppActionTypes, AppContext } from '../../../../contexts/AppContext';
 import { ChallengeStatus } from '../../../../models/challenge';
 import { Actions, ActionsLoadingType } from './components/Actions';
 import { endChallenge, setChallengeOpponent, setChallengeProgress } from '../../../../api/challenge';
@@ -22,13 +22,17 @@ interface ChallengeInfoProps {
     navigation: ChallengeInfoNavigationProp;
 }
 export const ChallengeInfo: React.FC<ChallengeInfoProps> = ({ route, navigation }) => {
-    const { state } = React.useContext(AppContext);
+    const { state, dispatch } = React.useContext(AppContext);
     const user = state.user as User;
 
     const { commentPressed } = route.params;
     const [ challenge, setChallenge ] = React.useState(route.params.challenge);
     const [ loading, setLoading ] = React.useState<ActionsLoadingType>(null);
     const userIsCreator = user.id === challenge.createdBy.id;
+
+    React.useEffect(() => {
+        dispatch({ type: AppActionTypes.SetChallenge, payload: challenge });
+    }, [challenge])
 
     const onMakeBidPress = async (bid: string) => {
         setLoading('join');

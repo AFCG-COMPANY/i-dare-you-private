@@ -1,11 +1,11 @@
 import React from 'react';
-import { ActivityIndicator, Alert, FlatList } from 'react-native';
+import { ActivityIndicator, Alert, FlatList, Text } from 'react-native';
 import { Challenge, User } from '../models';
 import { getChallenges, setLikedChallenge } from '../api/challenge';
 import { ChallengeCard } from './ChallengeCard/ChallengeCard';
 import { Divider } from 'react-native-elements';
 import { ChallengeToolbar } from './ChallengeToolbar';
-import { AppContext } from '../contexts/AppContext';
+import { AppActionTypes, AppContext } from '../contexts/AppContext';
 
 export interface ChallengesListProps {
     flatListProps?: any;
@@ -27,7 +27,7 @@ interface ChallengesListState {
 export class ChallengesList extends React.Component<ChallengesListProps, ChallengesListState> {
     static contextType = AppContext;
 
-    state = {
+    state: ChallengesListState = {
         loading: false,
         challenges: [],
         page: 0,
@@ -36,6 +36,17 @@ export class ChallengesList extends React.Component<ChallengesListProps, Challen
     };
 
     componentDidMount = () => this.fetchData();
+
+    componentDidUpdate(prevProps: Readonly<ChallengesListProps>, prevState: Readonly<ChallengesListState>, snapshot?: any) {
+        const challenge = this.context.state.challenge as Challenge;
+        if (challenge) {
+            const index = this.state.challenges.findIndex((c: Challenge) => c.id === challenge.id);
+            this.state.challenges[index] = challenge;
+            this.setState({
+                challenges: [...this.state.challenges]
+            }, () => this.context.dispatch({ type: AppActionTypes.SetChallenge, payload: null }));
+        }
+    }
 
     fetchData = async () => {
         this.setState({ loading: true });
@@ -108,33 +119,36 @@ export class ChallengesList extends React.Component<ChallengesListProps, Challen
         const { ListEmptyComponent, ...flatListProps } = this.props.flatListProps || {};
 
         return (
-            <FlatList
-                {...flatListProps}
-                data={this.state.challenges}
-                keyExtractor={item => item.id}
-                renderItem={({ item }: { item: Challenge }) => (
-                    <ChallengeCard
-                        challenge={item}
-                        onChallengePress={() => this.props.onChallengePress && this.props.onChallengePress(item)}
-                        onProfilePress={this.props.onProfilePress}
-                    >
-                        <Divider style={{ marginVertical: 16 }} />
+            <>
+                <FlatList
+                    {...flatListProps}
+                    data={this.state.challenges}
+                    keyExtractor={item => item.id}
+                    renderItem={({ item }: { item: Challenge }) => (
+                        <ChallengeCard
+                            challenge={item}
+                            onChallengePress={() => this.props.onChallengePress && this.props.onChallengePress(item)}
+                            onProfilePress={this.props.onProfilePress}
+                        >
+                            <Text>{this.context.challenge}</Text>
+                            <Divider style={{ marginVertical: 16 }} />
 
-                        <ChallengeToolbar
-                            liked={item.likedByUser}
-                            likesCount={item.likesCount}
-                            onCommentPress={() => this.props.onCommentPress && this.props.onCommentPress(item)}
-                            onLikePress={() => this.toggleLike(item)}
-                        />
-                    </ChallengeCard>
-                )}
-                ListFooterComponent={this.renderListFooter}
-                ListEmptyComponent={this.state.fetchedAll && ListEmptyComponent}
-                onEndReachedThreshold={0.3}
-                onEndReached={!this.state.loading && !this.state.fetchedAll && this.onScrollEnd}
-                refreshing={this.state.refreshing}
-                onRefresh={this.handleRefresh}
-            />
+                            <ChallengeToolbar
+                                liked={item.likedByUser}
+                                likesCount={item.likesCount}
+                                onCommentPress={() => this.props.onCommentPress && this.props.onCommentPress(item)}
+                                onLikePress={() => this.toggleLike(item)}
+                            />
+                        </ChallengeCard>
+                    )}
+                    ListFooterComponent={this.renderListFooter}
+                    ListEmptyComponent={this.state.fetchedAll && ListEmptyComponent}
+                    onEndReachedThreshold={0.3}
+                    onEndReached={!this.state.loading && !this.state.fetchedAll && this.onScrollEnd}
+                    refreshing={this.state.refreshing}
+                    onRefresh={this.handleRefresh}
+                />
+            </>
         );
     }
 }

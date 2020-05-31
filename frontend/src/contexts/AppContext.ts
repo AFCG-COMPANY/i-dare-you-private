@@ -1,15 +1,20 @@
 import React, { Dispatch } from 'react';
-import { User } from '../models';
+import { Challenge, User } from '../models';
 
 export interface AppState {
     user: User | null;
+    challenge: Challenge | null;
 }
 
 export enum AppActionTypes {
-    SetUser
+    SetUser,
+    SetChallenge
 }
 
-export const INITIAL_STATE: AppState = { user: null };
+export const INITIAL_STATE: AppState = {
+    user: null,
+    challenge: null
+};
 
 export const AppContext = React.createContext<{
     state: AppState;
