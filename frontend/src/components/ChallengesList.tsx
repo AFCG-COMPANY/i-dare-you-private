@@ -22,6 +22,7 @@ interface ChallengesListState {
     page: number;
     fetchedAll: boolean;
     refreshing: boolean;
+    challengeIdToIndexMap: {[challengeId: string]: number};
 }
 
 export class ChallengesList extends React.Component<ChallengesListProps, ChallengesListState> {
@@ -32,7 +33,8 @@ export class ChallengesList extends React.Component<ChallengesListProps, Challen
         challenges: [],
         page: 0,
         fetchedAll: false,
-        refreshing: false
+        refreshing: false,
+        challengeIdToIndexMap: {}
     };
 
     componentDidMount = () => this.fetchData();
@@ -40,7 +42,7 @@ export class ChallengesList extends React.Component<ChallengesListProps, Challen
     componentDidUpdate(prevProps: Readonly<ChallengesListProps>, prevState: Readonly<ChallengesListState>, snapshot?: any) {
         const challenge = this.context.state.challenge as Challenge;
         if (challenge) {
-            const index = this.state.challenges.findIndex((c: Challenge) => c.id === challenge.id);
+            const index = this.state.challengeIdToIndexMap[challenge.id];
             this.state.challenges[index] = challenge;
             this.setState({
                 challenges: [...this.state.challenges]
@@ -55,14 +57,33 @@ export class ChallengesList extends React.Component<ChallengesListProps, Challen
 
         try {
             let challenges = await getChallenges(this.context.state.user.id, this.state.page, filterBy, userId);
-            challenges = challenges.map(challenge => ({ ...challenge, likesCount: challenge.likedBy.length }));
+            const fetchedAll = !challenges || !challenges.length;
 
-            this.setState(state => ({
-                challenges: state.refreshing ? challenges : [...state.challenges, ...challenges],
-                loading: false,
-                fetchedAll: !challenges || !challenges.length,
-                refreshing: false
-            }));
+            this.setState(state => {
+                let challengeIdToIndexMap: {[key: string]: number};
+                if (state.refreshing) {
+                    challengeIdToIndexMap = {};
+                    challenges = challenges.map((challenge, index) => {
+                        challengeIdToIndexMap[challenge.id] = index;
+                        return { ...challenge, likesCount: challenge.likedBy.length };
+                    });
+                } else {
+                    challengeIdToIndexMap = state.challengeIdToIndexMap;
+                    challenges = challenges.map((challenge, index) => {
+                        challengeIdToIndexMap[challenge.id] = state.challenges.length + index;
+                        return { ...challenge, likesCount: challenge.likedBy.length };
+                    });
+                    challenges = [...state.challenges, ...challenges];
+                }
+
+                return {
+                    challenges,
+                    challengeIdToIndexMap,
+                    loading: false,
+                    fetchedAll,
+                    refreshing: false
+                };
+            });
         } catch (e) {
             console.log(e);
             this.setState(state => ({
@@ -130,7 +151,7 @@ export class ChallengesList extends React.Component<ChallengesListProps, Challen
                             onChallengePress={() => this.props.onChallengePress && this.props.onChallengePress(item)}
                             onProfilePress={this.props.onProfilePress}
                         >
-                            <Text>{this.context.challenge}</Text>
+                            <Text>{item.id}</Text>
                             <Divider style={{ marginVertical: 16 }} />
 
                             <ChallengeToolbar
