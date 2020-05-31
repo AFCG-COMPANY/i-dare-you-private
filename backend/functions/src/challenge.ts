@@ -27,6 +27,7 @@ interface Challenge {
     endDate: number;
     creatorProgress: number;
     createdBy: string;
+    creatorStatus: boolean | null; // creator opinion about challenge result
     creationDate: number;
     opponents: { [id: string]: {} }; // creator's opponents
     _opponents: string[]; // field for search
@@ -43,6 +44,7 @@ export const setChallenge = functions.https.onRequest(async (request, response) 
             endDate: request.body.endDate,
             description: request.body.description,
             createdBy: request.body.userId as string,
+            creatorStatus: null,
             creationDate: Date.now(),
             creatorProgress: 0,
             opponents: {},
@@ -70,6 +72,22 @@ export const setOpponent = functions.https.onRequest(async (request, response) =
         .catch(err => response.status(500).send());
 })
 
+export const setUserChallengeResult = functions.https.onRequest(async (request, response) => {
+    let update: { [id: string]: string } = {};
+    const challenge = await (await admin.firestore().collection('challenges').doc(request.query.id.toString()).get()).data();
+    if (challenge?.createdBy === request.body.id) {
+        update[`creatorResult`] = request.body.result;
+    } else {
+        update[`opponents.${request.body.id}.result`] = request.body.result;
+    }
+    admin.firestore()
+        .collection('challenges')
+        .doc(request.query.id.toString())
+        .update(update)
+        .then(doc => response.status(200).send())
+        .catch(err => response.status(500).send());
+})
+
 export const setCreatorProgress = functions.https.onRequest(async (request, response) => {
     admin.firestore()
         .collection('challenges')
@@ -79,7 +97,7 @@ export const setCreatorProgress = functions.https.onRequest(async (request, resp
         .catch(err => response.status(500).send());
 })
 
-export const setChallengeStatusToVoiting = functions.https.onRequest(async (request, response) => {
+export const setChallengeStatusToVoting = functions.https.onRequest(async (request, response) => {
     admin.firestore()
         .collection('challenges')
         .doc(request.query.id.toString())
@@ -132,11 +150,20 @@ const extendChallenges = async (challenges: Challenge[], currentUserId: string) 
 
     return challenges.map((challenge: Challenge) => ({
         ...challenge,
+        creatorHealth: getCreatorHealth(challenge.endDate, challenge.creationDate),
         isOpponent: Object.keys(challenge.opponents).includes(currentUserId),
         likedByUser: challenge.likedBy.includes(currentUserId),
         createdBy: users[challenge.createdBy],
         opponents: Object.keys(challenge.opponents).map((opponent: string) => users[opponent])
     }));
+}
+
+const getCreatorHealth = (endDate : number, creationDate : number) => {
+    let health = (endDate - Date.now())/(endDate - creationDate) * 100;
+    if (health < 0) {
+        return 0;
+    }
+    return Math.round(health);
 }
 
 export const getChallenges = functions.https.onRequest(async (request, response) => {
@@ -203,3 +230,20 @@ export const getChallenges = functions.https.onRequest(async (request, response)
         response.status(400).send('Invalid page format. Page must be an integer value.');
     }
 });
+
+export const setComment = functions.https.onRequest(async (request, response) => {
+    admin.firestore()
+        .collection('challenges')
+        .doc(request.query.id.toString())
+        .collection('comments').add({
+            message: request.body.message !== undefined ? request.body.message : null,
+            image: request.body.image !== undefined ? request.body.image : null,
+        })
+        .then(doc => response.status(200).send())
+        .catch(err => response.status(500).send());
+})
+
+export const getComments = functions.https.onRequest(async (request, response) => {
+    const snapshot = await admin.firestore().collection('challenges').doc(request.query.id.toString()).collection('comments').get()
+    response.status(200).send(snapshot.docs.map(doc => doc.data()));
+})
