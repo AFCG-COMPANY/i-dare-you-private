@@ -22,9 +22,13 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.ibetyouwill",
+      "buildNumber": "1.0.0"
     },
     "android": {
+      "package": "com.i_bet_you_will",
+      "versionCode": 1,
       "icon": "./assets/icon-android.png",
       "adaptiveIcon": {
         "backgroundColor": "#005dfb",
