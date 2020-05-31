@@ -5,10 +5,10 @@ import { RouteProp } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { Challenge, User } from '../../../../models';
 import { ChallengeCard } from '../../../../components';
-import { AppContext } from '../../../../contexts/AppContext';
+import { AppActionTypes, AppContext } from '../../../../contexts/AppContext';
 import { ChallengeStatus } from '../../../../models/challenge';
-import { Actions } from './components/Actions';
-import { setChallengeOpponent } from '../../../../api/challenge';
+import { Actions, ActionsLoadingType } from './components/Actions';
+import { endChallenge, setChallengeOpponent, setChallengeProgress } from '../../../../api/challenge';
 
 type ParentStackParamsList = {
     UserInfo: { user: User };
@@ -22,16 +22,20 @@ interface ChallengeInfoProps {
     navigation: ChallengeInfoNavigationProp;
 }
 export const ChallengeInfo: React.FC<ChallengeInfoProps> = ({ route, navigation }) => {
-    const { state } = React.useContext(AppContext);
+    const { state, dispatch } = React.useContext(AppContext);
     const user = state.user as User;
 
     const { commentPressed } = route.params;
     const [ challenge, setChallenge ] = React.useState(route.params.challenge);
-    const [ loading, setLoading ] = React.useState(false);
+    const [ loading, setLoading ] = React.useState<ActionsLoadingType>(null);
     const userIsCreator = user.id === challenge.createdBy.id;
 
+    React.useEffect(() => {
+        dispatch({ type: AppActionTypes.SetChallenge, payload: challenge });
+    }, [challenge])
+
     const onMakeBidPress = async (bid: string) => {
-        setLoading(true);
+        setLoading('join');
 
         try {
             await setChallengeOpponent(challenge.id, user.id, bid);
@@ -45,9 +49,43 @@ export const ChallengeInfo: React.FC<ChallengeInfoProps> = ({ route, navigation 
         } catch (e) {
             console.log(e);
         } finally {
-            setLoading(false);
+            setLoading(null);
         }
-    }
+    };
+
+    const onSetProgress = async (progress: number) => {
+        setLoading('setProgress');
+
+        try {
+            await setChallengeProgress(challenge.id, progress);
+
+            setChallenge({
+                ...challenge,
+                creatorProgress: progress
+            });
+        } catch (e) {
+            console.log(e);
+        } finally {
+            setLoading(null);
+        }
+    };
+
+    const onEndChallenge = async () => {
+        setLoading('end');
+
+        try {
+            await endChallenge(challenge.id);
+
+            setChallenge({
+                ...challenge,
+                status: ChallengeStatus.Voting
+            });
+        } catch (e) {
+            console.log(e);
+        } finally {
+            setLoading(null);
+        }
+    };
 
     return (
         <ScrollView style={styles.container}>
@@ -62,17 +100,18 @@ export const ChallengeInfo: React.FC<ChallengeInfoProps> = ({ route, navigation 
                         isCreator={userIsCreator}
                         isOpponent={challenge.isOpponent}
                         status={challenge.status}
-                        onProgressChangePress={progress => console.log('Progress set to', progress)}
-                        onEndChallengePress={() => console.log('End challenge')}
+                        creatorProgress={challenge.creatorProgress}
+                        onProgressChangePress={onSetProgress}
+                        onEndChallengePress={onEndChallenge}
                         onMakeBidPress={onMakeBidPress}
                         onVotePress={vote => console.log('Voted', vote)}
                     />
                 </View>
             </ChallengeCard>
 
-            <Overlay isVisible={loading}
+            <Overlay isVisible={loading != null}
                      containerStyle={{ backgroundColor: 'transparent' }}
-                     overlayBackgroundColor='transparent'
+                     overlayStyle={{ display: 'none' }}
             >
                 <></>
             </Overlay>

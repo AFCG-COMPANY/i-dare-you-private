@@ -118,6 +118,7 @@ const generateAvatarsLayout = (opponentsCount: number) => {
 
 const styles = StyleSheet.create({
     deck: {
+        marginBottom: 4,
         width: 80,
         height: 80,
         position: 'relative'
@@ -146,6 +147,6 @@ const styles = StyleSheet.create({
         alignSelf: 'center',
         color: '#e52b50',
         fontWeight: '500',
-        maxWidth: 80
+        maxWidth: 120
     }
 });

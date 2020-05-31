@@ -16,6 +16,8 @@ function reducer(
     switch (action.type) {
         case AppActionTypes.SetUser:
             return { ...state, user: action.payload };
+        case AppActionTypes.SetChallenge:
+            return { ...state, challenge: action.payload }
         default:
             return state;
     }

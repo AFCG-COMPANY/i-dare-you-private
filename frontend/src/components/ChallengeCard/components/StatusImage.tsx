@@ -1,9 +1,6 @@
 import { ChallengeResult, ChallengeStatus } from '../../../models/challenge';
 import React from 'react';
-import { WinIcon } from '../images/win';
-import { LossIcon } from '../images/loss';
 import { Image, ImageBackground, StyleSheet } from 'react-native';
-import { VersusIcon } from '../images/versus';
 
 interface StatusImageProps {
     status: ChallengeStatus;
@@ -11,17 +8,26 @@ interface StatusImageProps {
 }
 
 export const StatusImage: React.FC<StatusImageProps> = (props) => {
+    const versusImage = require('../images/vs.png');
+
     if (props.status === ChallengeStatus.Finished) {
-        const uri = props.result === ChallengeResult.Win ? WinIcon : LossIcon;
+        let resultImage;
+        if (props.result === ChallengeResult.Win) {
+            resultImage = require('../images/win.png');
+        } else if (props.result === ChallengeResult.Loss) {
+            // TODO loss image
+        } else {
+            // TODO draw image
+        }
 
         return (
             <ImageBackground
                 style={styles.versus}
-                source={{ uri: VersusIcon }}
+                source={versusImage}
             >
                 <Image
                     style={styles.resultImage}
-                    source={{ uri }}
+                    source={resultImage}
                 />
             </ImageBackground>
         );
@@ -29,7 +35,7 @@ export const StatusImage: React.FC<StatusImageProps> = (props) => {
         return (
             <Image
                 style={styles.versus}
-                source={{ uri: VersusIcon }}
+                source={versusImage}
             />
         )
     }
