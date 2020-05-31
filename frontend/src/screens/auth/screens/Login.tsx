@@ -117,7 +117,7 @@ export function Login({ navigation }: AuthNavProps<'Login'>) {
             </View>
 
             <View style={styles.signInContainer}>
-                <Text style={styles.signInText}>New to I Dare You?</Text>
+                <Text style={styles.signInText}>New to I Bet You Will?</Text>
                 <Button
                     type='clear'
                     title='Sign Up'
