@@ -1,5 +1,5 @@
 import React from 'react';
-import { ActivityIndicator, Alert, FlatList, Text } from 'react-native';
+import { ActivityIndicator, Alert, FlatList } from 'react-native';
 import { Challenge, User } from '../models';
 import { getChallenges, setLikedChallenge } from '../api/challenge';
 import { ChallengeCard } from './ChallengeCard/ChallengeCard';
@@ -151,7 +151,6 @@ export class ChallengesList extends React.Component<ChallengesListProps, Challen
                             onChallengePress={() => this.props.onChallengePress && this.props.onChallengePress(item)}
                             onProfilePress={this.props.onProfilePress}
                         >
-                            <Text>{item.id}</Text>
                             <Divider style={{ marginVertical: 16 }} />
 
                             <ChallengeToolbar
