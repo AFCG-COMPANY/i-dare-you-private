@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "I Dare You",
-    "slug": "i-dare-you",
+    "name": "I Bet You Will",
+    "slug": "i-bet-you-will",
     "platforms": [
       "ios",
       "android",
@@ -9,7 +9,7 @@
     ],
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/icon-ios.png",
     "splash": {
       "image": "./assets/splash.png",
       "resizeMode": "contain",
@@ -23,6 +23,13 @@
     ],
     "ios": {
       "supportsTablet": true
+    },
+    "android": {
+      "icon": "./assets/icon-android.png",
+      "adaptiveIcon": {
+        "backgroundColor": "#005dfb",
+        "foregroundImage": "./assets/android-foreground.png"
+      }
     },
     "description": ""
   }
