@@ -25,15 +25,19 @@ interface Challenge {
     bid: string;
     description: string;
     endDate: number;
+    creatorHealth?: number;
     creatorProgress: number;
     createdBy: string;
     creatorVote?: boolean; // creator opinion about challenge result, true if goal achieved
     creationDate: number;
+    isOpponent?: boolean;
     opponents: { [id: string]: {} }; // creator's opponents
     _opponents: string[]; // field for search
     likedBy: string[]; // Ids of users who liked the challenge
     status: ChallengeStatus,
-    result?: ChallengeResult
+    result?: ChallengeResult,
+    likedByUser?: boolean;
+    userVote?: boolean;
 }
 
 export const setChallenge = functions.https.onRequest(async (request, response) => {
@@ -155,7 +159,7 @@ const extendChallenges = async (challenges: Challenge[], currentUserId: string) 
 
     return challenges.map((challenge: Challenge) => ({
         ...challenge,
-        userResult: getUserResult(challenge, currentUserId),
+        userVote: getUserVote(challenge, currentUserId),
         creatorHealth: getCreatorHealth(challenge.endDate, challenge.creationDate),
         isOpponent: Object.keys(challenge.opponents).includes(currentUserId),
         likedByUser: challenge.likedBy.includes(currentUserId),
@@ -172,17 +176,13 @@ const getCreatorHealth = (endDate : number, creationDate : number) => {
     return Math.round(health);
 }
 
-const getUserResult = (challenge: any, currentUserId: string) => {
+const getUserVote = (challenge: any, currentUserId: string) => {
     if (challenge.createdBy === currentUserId) {
-        return challenge.creatorResult
+        return challenge.creatorVote;
     } else {
-        for (const opponent in challenge.opponents) {
-            if (opponent === currentUserId) {
-                return challenge.opponents[opponent].challengeStatus;
-            }
-        }
+        const currentUser = challenge.opponents[currentUserId];
+        return currentUser ? currentUser.vote : null;
     }
-    return null;
 }
 
 export const getChallenges = functions.https.onRequest(async (request, response) => {
