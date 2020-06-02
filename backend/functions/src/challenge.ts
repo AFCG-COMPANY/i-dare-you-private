@@ -27,7 +27,7 @@ interface Challenge {
     endDate: number;
     creatorProgress: number;
     createdBy: string;
-    creatorStatus: boolean | null; // creator opinion about challenge result
+    creatorVote?: boolean; // creator opinion about challenge result, true if goal achieved
     creationDate: number;
     opponents: { [id: string]: {} }; // creator's opponents
     _opponents: string[]; // field for search
@@ -44,7 +44,6 @@ export const setChallenge = functions.https.onRequest(async (request, response) 
             endDate: request.body.endDate,
             description: request.body.description,
             createdBy: request.body.userId as string,
-            creatorStatus: null,
             creationDate: Date.now(),
             creatorProgress: 0,
             opponents: {},
@@ -52,7 +51,7 @@ export const setChallenge = functions.https.onRequest(async (request, response) 
             likedBy: [],
             status: ChallengeStatus.Created
         } as Challenge)
-        .then(doc => response.status(200).send())
+        .then(() => response.status(200).send())
         .catch(e => {
             console.log(e);
             response.status(500).send();
@@ -60,7 +59,7 @@ export const setChallenge = functions.https.onRequest(async (request, response) 
 });
 
 export const setOpponent = functions.https.onRequest(async (request, response) => {
-    let update: { [id: string]: {} } = {};
+    const update: { [id: string]: {} } = {};
     update[`opponents.${request.body.id}`] = { message: request.body.message }
     update['_opponents'] = admin.firestore.FieldValue.arrayUnion(request.body.id);
     update['status'] = ChallengeStatus.InProgress;
@@ -68,24 +67,29 @@ export const setOpponent = functions.https.onRequest(async (request, response) =
         .collection('challenges')
         .doc(request.query.id.toString())
         .update(update)
-        .then(doc => response.status(200).send())
-        .catch(err => response.status(500).send());
+        .then(() => response.status(200).send())
+        .catch(() => response.status(500).send());
 })
 
-export const setUserChallengeResult = functions.https.onRequest(async (request, response) => {
-    let update: { [id: string]: string } = {};
-    const challenge = await (await admin.firestore().collection('challenges').doc(request.query.id.toString()).get()).data();
-    if (challenge?.createdBy === request.body.id) {
-        update[`creatorResult`] = request.body.result;
+export const setVote = functions.https.onRequest(async (request, response) => {
+    const challengeId: string = request.query.id.toString();
+    const { userId, vote } = request.body;
+    const update: { [id: string]: string } = {};
+
+    const challengesCollection = admin.firestore().collection('challenges');
+    const challengeDocRef = challengesCollection.doc(challengeId);
+    const challenge = await (await challengeDocRef.get()).data();
+
+    if (challenge?.createdBy === userId) {
+        update.creatorVote = vote;
     } else {
-        update[`opponents.${request.body.id}.result`] = request.body.result;
+        update[`opponents.${userId}.vote`] = vote;
     }
-    admin.firestore()
-        .collection('challenges')
-        .doc(request.query.id.toString())
+
+    challengeDocRef
         .update(update)
-        .then(doc => response.status(200).send())
-        .catch(err => response.status(500).send());
+        .then(() => response.status(200).send())
+        .catch(() => response.status(500).send());
 })
 
 export const setCreatorProgress = functions.https.onRequest(async (request, response) => {
@@ -93,8 +97,8 @@ export const setCreatorProgress = functions.https.onRequest(async (request, resp
         .collection('challenges')
         .doc(request.query.id.toString())
         .update({ creatorProgress: parseInt(request.body.creatorProgress) })
-        .then(doc => response.status(200).send())
-        .catch(err => response.status(500).send());
+        .then(() => response.status(200).send())
+        .catch(() => response.status(500).send());
 })
 
 export const setChallengeStatusToVoting = functions.https.onRequest(async (request, response) => {
@@ -102,8 +106,8 @@ export const setChallengeStatusToVoting = functions.https.onRequest(async (reque
         .collection('challenges')
         .doc(request.query.id.toString())
         .update({ status: ChallengeStatus.Voting })
-        .then(doc => response.status(200).send())
-        .catch(err => response.status(500).send());
+        .then(() => response.status(200).send())
+        .catch(() => response.status(500).send());
 })
 
 export const setLiked = functions.https.onRequest(async (request, response) => {
@@ -118,9 +122,7 @@ export const setLiked = functions.https.onRequest(async (request, response) => {
         .collection('challenges')
         .doc(request.query.id.toString())
         .update({ likedBy: databaseAction })
-        .then(doc => {
-            response.status(200).send()
-        })
+        .then(() => response.status(200).send())
         .catch(err => {
             console.log(err)
             response.status(500).send()
@@ -142,11 +144,14 @@ const extendChallenges = async (challenges: Challenge[], currentUserId: string) 
     await admin.firestore()
         .collection('users')
         .where(admin.firestore.FieldPath.documentId(), 'in', usersKeys)
-        .get().then(querySnapshot => {
-            querySnapshot.forEach(documentSnapshot => {
-                users[documentSnapshot.id] = { id: `${documentSnapshot.id}`, ...documentSnapshot.data(), ...users[documentSnapshot.id] };
-            });
-        });
+        .get()
+        .then(querySnapshot => querySnapshot.forEach(documentSnapshot => {
+            users[documentSnapshot.id] = {
+                id: `${documentSnapshot.id}`,
+                ...documentSnapshot.data(),
+                ...users[documentSnapshot.id]
+            };
+        }));
 
     return challenges.map((challenge: Challenge) => ({
         ...challenge,
@@ -159,7 +164,7 @@ const extendChallenges = async (challenges: Challenge[], currentUserId: string) 
 }
 
 const getCreatorHealth = (endDate : number, creationDate : number) => {
-    let health = (endDate - Date.now())/(endDate - creationDate) * 100;
+    const health = (endDate - Date.now())/(endDate - creationDate) * 100;
     if (health < 0) {
         return 0;
     }
@@ -239,11 +244,16 @@ export const setComment = functions.https.onRequest(async (request, response) =>
             message: request.body.message !== undefined ? request.body.message : null,
             image: request.body.image !== undefined ? request.body.image : null,
         })
-        .then(doc => response.status(200).send())
-        .catch(err => response.status(500).send());
+        .then(() => response.status(200).send())
+        .catch(() => response.status(500).send());
 })
 
 export const getComments = functions.https.onRequest(async (request, response) => {
-    const snapshot = await admin.firestore().collection('challenges').doc(request.query.id.toString()).collection('comments').get()
-    response.status(200).send(snapshot.docs.map(doc => doc.data()));
+    const commentsSnapshot = await admin.firestore()
+        .collection('challenges')
+        .doc(request.query.id.toString())
+        .collection('comments')
+        .get();
+
+    response.status(200).send(commentsSnapshot.docs.map(doc => doc.data()));
 })
