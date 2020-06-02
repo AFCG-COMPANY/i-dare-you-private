@@ -2,22 +2,27 @@ import { ChallengeResult, ChallengeStatus } from '../../../models/challenge';
 import React from 'react';
 import { Image, StyleSheet } from 'react-native';
 
-interface StatusImageProps {
+interface ResultImageProps {
     status: ChallengeStatus;
     result?: ChallengeResult;
 }
 
-export const StatusImage: React.FC<StatusImageProps> = (props) => {
+export const ResultImage: React.FC<ResultImageProps> = (props) => {
     let image;
 
     if (props.status === ChallengeStatus.Finished) {
-        if (props.result === ChallengeResult.Win) {
-            image = require('../images/vs-win.png');
-        } else if (props.result === ChallengeResult.Loss) {
-            image = require('../images/vs-fail.png')
-        } else {
-            // TODO draw image
-            image = require('../images/vs.png');
+        switch (props.result) {
+            case ChallengeResult.Win:
+                image = require('../images/vs-win.png');
+                break;
+
+            case ChallengeResult.Draw:
+                // TODO draw image
+                image = require('../images/vs.png');
+                break;
+
+            case ChallengeResult.Loss:
+                image = require('../images/vs-fail.png');
         }
     } else {
         image = require('../images/vs.png')

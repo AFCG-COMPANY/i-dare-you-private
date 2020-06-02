@@ -1,4 +1,4 @@
 export { HealthBar } from './HealthBar';
 export { InfoTooltip } from './InfoTooltip';
 export { Opponents } from './Opponents';
-export { StatusImage } from './StatusImage';
+export { ResultImage } from './ResultImage';

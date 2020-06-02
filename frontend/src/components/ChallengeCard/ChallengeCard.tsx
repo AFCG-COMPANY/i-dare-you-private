@@ -1,9 +1,9 @@
 import React from 'react';
-import { Image, Platform, StyleSheet, TouchableOpacity, TouchableWithoutFeedback, View } from 'react-native';
+import { Platform, StyleSheet, TouchableOpacity, TouchableWithoutFeedback, View } from 'react-native';
 import { Card, Icon, Text } from 'react-native-elements';
 import { Challenge, User } from '../../models';
 import { getFormattedDateString } from '../../helpers/date.helper';
-import { HealthBar, InfoTooltip, Opponents, StatusImage } from './components';
+import { HealthBar, InfoTooltip, Opponents, ResultImage } from './components';
 
 interface ChallengeCardProps {
     challenge: Challenge;
@@ -45,7 +45,10 @@ export const ChallengeCard: React.FC<ChallengeCardProps> = ({
                         </TouchableOpacity>
                     </View>
 
-                    <StatusImage status={challenge.status} />
+                    <ResultImage
+                        status={challenge.status}
+                        result={challenge.result}
+                    />
 
                     <View style={styles.participantContainer}>
                         <HealthBar
