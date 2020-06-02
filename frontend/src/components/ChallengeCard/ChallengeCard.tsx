@@ -69,8 +69,6 @@ export const ChallengeCard: React.FC<ChallengeCardProps> = ({
                     </View>
                 </View>
 
-                <Text>{JSON.stringify(challenge.creatorHealth)}</Text>
-
                 <View style={styles.info}>
                     <View style={styles.infoRow}>
                         <InfoTooltip
