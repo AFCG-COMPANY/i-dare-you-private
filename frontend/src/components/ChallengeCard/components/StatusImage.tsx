@@ -1,6 +1,6 @@
 import { ChallengeResult, ChallengeStatus } from '../../../models/challenge';
 import React from 'react';
-import { Image, ImageBackground, StyleSheet } from 'react-native';
+import { Image, StyleSheet } from 'react-native';
 
 interface StatusImageProps {
     status: ChallengeStatus;
@@ -8,49 +8,34 @@ interface StatusImageProps {
 }
 
 export const StatusImage: React.FC<StatusImageProps> = (props) => {
-    const versusImage = require('../images/vs.png');
+    let image;
 
     if (props.status === ChallengeStatus.Finished) {
-        let resultImage;
         if (props.result === ChallengeResult.Win) {
-            resultImage = require('../images/win.png');
+            image = require('../images/vs-win.png');
         } else if (props.result === ChallengeResult.Loss) {
-            // TODO loss image
+            image = require('../images/vs-fail.png')
         } else {
             // TODO draw image
+            image = require('../images/vs.png');
         }
-
-        return (
-            <ImageBackground
-                style={styles.versus}
-                source={versusImage}
-            >
-                <Image
-                    style={styles.resultImage}
-                    source={resultImage}
-                />
-            </ImageBackground>
-        );
     } else {
-        return (
-            <Image
-                style={styles.versus}
-                source={versusImage}
-            />
-        )
+        image = require('../images/vs.png')
     }
+
+    return (
+        <Image
+            style={styles.image}
+            source={image}
+        />
+    )
 };
 
 export const styles = StyleSheet.create({
-    versus: {
+    image: {
         marginHorizontal: 16,
         alignSelf: 'center',
         width: 70,
         height: 70
-    },
-    resultImage: {
-        flex: 1,
-        resizeMode: 'contain',
-        transform: [{ rotate: '45deg' }]
     }
 });

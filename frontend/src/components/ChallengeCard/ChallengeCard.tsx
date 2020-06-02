@@ -5,14 +5,6 @@ import { Challenge, User } from '../../models';
 import { getFormattedDateString } from '../../helpers/date.helper';
 import { HealthBar, InfoTooltip, Opponents, StatusImage } from './components';
 
-/**
- * TODO
- * - Vote button
- * TODO Check backend integration
- * 1. Progress bars
- * 2. Challenge status images (Win, Lose)
- */
-
 interface ChallengeCardProps {
     challenge: Challenge;
     onProfilePress?: (user: User) => void;
@@ -31,7 +23,7 @@ export const ChallengeCard: React.FC<ChallengeCardProps> = ({
                     <View style={styles.participantContainer}>
                         <HealthBar
                             style={styles.healthBar}
-                            health={100}
+                            health={challenge.creatorHealth || 0}
                         />
 
                         <TouchableOpacity
@@ -68,6 +60,8 @@ export const ChallengeCard: React.FC<ChallengeCardProps> = ({
                         />
                     </View>
                 </View>
+
+                {/*<Text>{JSON.stringify(challenge.opponents)}</Text>*/}
 
                 <View style={styles.info}>
                     <View style={styles.infoRow}>

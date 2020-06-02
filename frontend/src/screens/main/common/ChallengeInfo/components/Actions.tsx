@@ -3,7 +3,7 @@ import { View, Slider } from 'react-native';
 import { Button, Input, Overlay, Text } from 'react-native-elements';
 import { ChallengeStatus } from '../../../../../models/challenge';
 
-export type ActionsLoadingType = 'end' | 'setProgress' | 'join' | null;
+export type ActionsLoadingType = 'end' | 'setProgress' | 'join' | 'voteSuccess' | 'voteFail' | null;
 
 interface ActionsProps {
     loading: ActionsLoadingType;
@@ -11,6 +11,7 @@ interface ActionsProps {
     isOpponent: boolean;
     status: ChallengeStatus;
     creatorProgress?: number;
+    creatorVote?: boolean;
     onProgressChangePress: (progress: number) => void;
     onEndChallengePress: () => void;
     onMakeBidPress: (bid: string) => void;
@@ -149,23 +150,40 @@ export class Actions extends React.Component<ActionsProps, ActionsState> {
 
             case ChallengeStatus.Voting:
                 if (this.props.isOpponent || this.props.isCreator) {
+                    let vote;
+                    if (this.props.isCreator) {
+                        vote = this.props.creatorVote;
+                    } else {
+
+                    }
+
                     return (
-                        <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                            <Button
-                                containerStyle={{ width: '40%' }}
-                                buttonStyle={{ backgroundColor: '#00c851', height: 62 }}
-                                titleStyle={{ color: 'white', fontWeight: '600' }}
-                                title='Goal Achieved'
-                                onPress={() => this.onVotePress(true)}
-                            />
-                            <Button
-                                containerStyle={{ width: '40%' }}
-                                buttonStyle={{ backgroundColor: '#e52b50', height: 62 }}
-                                title='Goal not Reached'
-                                titleStyle={{ color: 'white', fontWeight: '600' }}
-                                onPress={() => this.onVotePress(false)}
-                            />
-                        </View>
+                        <>
+                            {vote != null && <Text style={{ marginBottom: 16 }}>You voted for:
+                                <Text style={{ fontWeight: '600' }}>
+                                    {vote ? ' Goal Achieved' : ' Goal not Reached'}
+                                </Text>
+                            </Text>}
+
+                            <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                                <Button
+                                    containerStyle={{ width: '40%' }}
+                                    buttonStyle={{ backgroundColor: '#00c851', height: 62 }}
+                                    title='Goal Achieved'
+                                    titleStyle={{ color: 'white', fontWeight: '600' }}
+                                    loading={this.props.loading === 'voteSuccess'}
+                                    onPress={() => this.onVotePress(true)}
+                                />
+                                <Button
+                                    containerStyle={{ width: '40%' }}
+                                    buttonStyle={{ backgroundColor: '#e52b50', height: 62 }}
+                                    title='Goal not Reached'
+                                    titleStyle={{ color: 'white', fontWeight: '600' }}
+                                    loading={this.props.loading === 'voteFail'}
+                                    onPress={() => this.onVotePress(false)}
+                                />
+                            </View>
+                        </>
                     );
                 } else {
                     return <Text>The challenge is in voting phase.</Text>
