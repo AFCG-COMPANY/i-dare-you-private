@@ -8,6 +8,7 @@ export interface Challenge {
     createdBy: User;
     creationDate: number;
     creatorProgress?: number;
+    creatorHealth?: number;
     isOpponent: boolean;
     opponents: User[] | string[];
     likedBy: string[]; // Ids of users who liked the challenge

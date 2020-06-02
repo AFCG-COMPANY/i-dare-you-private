@@ -31,7 +31,7 @@ export const ChallengeCard: React.FC<ChallengeCardProps> = ({
                     <View style={styles.participantContainer}>
                         <HealthBar
                             style={styles.healthBar}
-                            health={100}
+                            health={challenge.creatorHealth || 0}
                         />
 
                         <TouchableOpacity
@@ -68,6 +68,8 @@ export const ChallengeCard: React.FC<ChallengeCardProps> = ({
                         />
                     </View>
                 </View>
+
+                <Text>{JSON.stringify(challenge.creatorHealth)}</Text>
 
                 <View style={styles.info}>
                     <View style={styles.infoRow}>
