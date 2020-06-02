@@ -150,6 +150,7 @@ const extendChallenges = async (challenges: Challenge[], currentUserId: string) 
 
     return challenges.map((challenge: Challenge) => ({
         ...challenge,
+        userResult: getUserResult(challenge, currentUserId),
         creatorHealth: getCreatorHealth(challenge.endDate, challenge.creationDate),
         isOpponent: Object.keys(challenge.opponents).includes(currentUserId),
         likedByUser: challenge.likedBy.includes(currentUserId),
@@ -164,6 +165,19 @@ const getCreatorHealth = (endDate : number, creationDate : number) => {
         return 0;
     }
     return Math.round(health);
+}
+
+const getUserResult = (challenge: any, currentUserId: string) => {
+    if (challenge.createdBy === currentUserId) {
+        return challenge.creatorResult
+    } else {
+        for (const opponent in challenge.opponents) {
+            if (opponent === currentUserId) {
+                return challenge.opponents[opponent].challengeStatus;
+            }
+        }
+    }
+    return null;
 }
 
 export const getChallenges = functions.https.onRequest(async (request, response) => {
