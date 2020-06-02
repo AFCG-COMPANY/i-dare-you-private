@@ -140,6 +140,7 @@ const styles = StyleSheet.create({
         fontSize: 14
     },
     challengesEmptyContainer: {
+        paddingHorizontal: 20,
         marginTop: 40,
         flexDirection: 'row',
         alignItems: 'center',

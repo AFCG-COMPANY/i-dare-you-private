@@ -50,3 +50,16 @@ export function endChallenge(challengeId: string): Promise<void> {
         { params: { id: challengeId } }
     );
 }
+
+/**
+ * @param challengeId - id of the challenge voting on
+ * @param userId - id of the current user (who is voting)
+ * @param vote - true, if goal achieved, false otherwise
+ */
+export function voteOnChallenge(challengeId: string, userId: string, vote: boolean): Promise<void> {
+    return axios.post(
+        HOST + 'challenge-setVote',
+        { userId, vote },
+        { params: { id: challengeId } }
+    )
+}

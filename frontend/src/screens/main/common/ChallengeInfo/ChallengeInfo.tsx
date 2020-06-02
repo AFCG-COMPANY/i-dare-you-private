@@ -8,7 +8,7 @@ import { ChallengeCard } from '../../../../components';
 import { AppActionTypes, AppContext } from '../../../../contexts/AppContext';
 import { ChallengeStatus } from '../../../../models/challenge';
 import { Actions, ActionsLoadingType } from './components/Actions';
-import { endChallenge, setChallengeOpponent, setChallengeProgress } from '../../../../api/challenge';
+import { endChallenge, setChallengeOpponent, setChallengeProgress, voteOnChallenge } from '../../../../api/challenge';
 
 type ParentStackParamsList = {
     UserInfo: { user: User };
@@ -87,6 +87,23 @@ export const ChallengeInfo: React.FC<ChallengeInfoProps> = ({ route, navigation 
         }
     };
 
+    const onVotePress = async (vote: boolean) => {
+        setLoading(vote ? 'voteSuccess' : 'voteFail');
+
+        try {
+            await voteOnChallenge(challenge.id, user.id, vote);
+            if (userIsCreator) {
+                setChallenge({...challenge, creatorVote: vote});
+            } else {
+
+            }
+        } catch (e) {
+            console.log(e);
+        } finally {
+            setLoading(null);
+        }
+    };
+
     return (
         <ScrollView style={styles.container}>
             <ChallengeCard
@@ -101,10 +118,11 @@ export const ChallengeInfo: React.FC<ChallengeInfoProps> = ({ route, navigation 
                         isOpponent={challenge.isOpponent}
                         status={challenge.status}
                         creatorProgress={challenge.creatorProgress}
+                        creatorVote={challenge.creatorVote}
                         onProgressChangePress={onSetProgress}
                         onEndChallengePress={onEndChallenge}
                         onMakeBidPress={onMakeBidPress}
-                        onVotePress={vote => console.log('Voted', vote)}
+                        onVotePress={onVotePress}
                     />
                 </View>
             </ChallengeCard>
