@@ -9,12 +9,12 @@ export interface Challenge {
     creationDate: number;
     creatorProgress?: number;
     creatorHealth?: number;
-    creatorVote?: boolean;
     isOpponent: boolean;
     opponents: User[] | string[];
     likedBy: string[]; // Ids of users who liked the challenge
     likedByUser: boolean;
     likesCount: number;
+    userVote?: boolean;
     status: ChallengeStatus;
     result?: ChallengeResult;
 }

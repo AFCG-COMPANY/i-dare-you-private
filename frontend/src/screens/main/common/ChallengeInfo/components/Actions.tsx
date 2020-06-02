@@ -11,7 +11,7 @@ interface ActionsProps {
     isOpponent: boolean;
     status: ChallengeStatus;
     creatorProgress?: number;
-    creatorVote?: boolean;
+    userVote?: boolean;
     onProgressChangePress: (progress: number) => void;
     onEndChallengePress: () => void;
     onMakeBidPress: (bid: string) => void;
@@ -150,18 +150,11 @@ export class Actions extends React.Component<ActionsProps, ActionsState> {
 
             case ChallengeStatus.Voting:
                 if (this.props.isOpponent || this.props.isCreator) {
-                    let vote;
-                    if (this.props.isCreator) {
-                        vote = this.props.creatorVote;
-                    } else {
-
-                    }
-
                     return (
                         <>
-                            {vote != null && <Text style={{ marginBottom: 16 }}>You voted for:
+                            {this.props.userVote != null && <Text style={{ marginBottom: 16 }}>You voted for:
                                 <Text style={{ fontWeight: '600' }}>
-                                    {vote ? ' Goal Achieved' : ' Goal not Reached'}
+                                    {this.props.userVote ? ' Goal Achieved' : ' Goal not Reached'}
                                 </Text>
                             </Text>}
 

@@ -92,11 +92,7 @@ export const ChallengeInfo: React.FC<ChallengeInfoProps> = ({ route, navigation 
 
         try {
             await voteOnChallenge(challenge.id, user.id, vote);
-            if (userIsCreator) {
-                setChallenge({...challenge, creatorVote: vote});
-            } else {
-
-            }
+            setChallenge({...challenge, userVote: vote});
         } catch (e) {
             console.log(e);
         } finally {
@@ -118,7 +114,7 @@ export const ChallengeInfo: React.FC<ChallengeInfoProps> = ({ route, navigation 
                         isOpponent={challenge.isOpponent}
                         status={challenge.status}
                         creatorProgress={challenge.creatorProgress}
-                        creatorVote={challenge.creatorVote}
+                        userVote={challenge.userVote}
                         onProgressChangePress={onSetProgress}
                         onEndChallengePress={onEndChallenge}
                         onMakeBidPress={onMakeBidPress}

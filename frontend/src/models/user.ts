@@ -7,6 +7,4 @@ export interface User {
     wins?: number;
     draws?: number;
     losses?: number;
-    vote?: boolean;
-    message?: string;
 }
