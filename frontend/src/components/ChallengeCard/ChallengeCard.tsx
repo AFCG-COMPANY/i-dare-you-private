@@ -1,5 +1,5 @@
 import React from 'react';
-import { Platform, StyleSheet, TouchableOpacity, TouchableWithoutFeedback, View } from 'react-native';
+import { Image, Platform, StyleSheet, TouchableOpacity, TouchableWithoutFeedback, View } from 'react-native';
 import { Card, Icon, Text } from 'react-native-elements';
 import { Challenge, User } from '../../models';
 import { getFormattedDateString } from '../../helpers/date.helper';
@@ -63,8 +63,6 @@ export const ChallengeCard: React.FC<ChallengeCardProps> = ({
                         />
                     </View>
                 </View>
-
-                {/*<Text>{JSON.stringify(challenge.opponents)}</Text>*/}
 
                 <View style={styles.info}>
                     <View style={styles.infoRow}>
