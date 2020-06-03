@@ -17,6 +17,14 @@ export interface Challenge {
     userVote?: boolean;
     status: ChallengeStatus;
     result?: ChallengeResult;
+    comments?: Comment[];
+    commentsChanged?: boolean;
+}
+
+export interface Comment {
+    user: { username: string, id: string };
+    message?: string;
+    image?: string;
 }
 
 export enum ChallengeStatus {

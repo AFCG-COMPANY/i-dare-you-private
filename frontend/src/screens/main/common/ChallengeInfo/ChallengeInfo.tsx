@@ -1,5 +1,5 @@
 import React from 'react';
-import { ScrollView, StyleSheet, View } from 'react-native';
+import { StyleSheet } from 'react-native';
 import { Divider, Overlay } from 'react-native-elements';
 import { RouteProp } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
@@ -8,7 +8,15 @@ import { ChallengeCard } from '../../../../components';
 import { AppActionTypes, AppContext } from '../../../../contexts/AppContext';
 import { ChallengeStatus } from '../../../../models/challenge';
 import { Actions, ActionsLoadingType } from './components/Actions';
-import { endChallenge, setChallengeOpponent, setChallengeProgress, voteOnChallenge } from '../../../../api/challenge';
+import {
+    commentOnChallenge,
+    endChallenge, getChallengeComments,
+    setChallengeOpponent,
+    setChallengeProgress,
+    voteOnChallenge
+} from '../../../../api/challenge';
+import { Comments } from './components/Comments';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
 type ParentStackParamsList = {
     UserInfo: { user: User };
@@ -28,11 +36,33 @@ export const ChallengeInfo: React.FC<ChallengeInfoProps> = ({ route, navigation 
     const { commentPressed } = route.params;
     const [ challenge, setChallenge ] = React.useState(route.params.challenge);
     const [ loading, setLoading ] = React.useState<ActionsLoadingType>(null);
+    const [ shouldFocusInput, setShouldFocusInput ] = React.useState<boolean>();
     const userIsCreator = user.id === challenge.createdBy.id;
+
+    const scrollRef = React.useRef<KeyboardAwareScrollView>(null);
+    const loadingComments = challenge.comments == null;
+
+    React.useEffect(() => {
+        return navigation.addListener('focus', async () => {
+            setShouldFocusInput(commentPressed);
+
+            try {
+                const comments = await getChallengeComments(challenge.id);
+                setChallenge({...challenge, comments});
+            } catch (e) {
+                console.log(e);
+            }
+        });
+    }, []);
 
     React.useEffect(() => {
         dispatch({ type: AppActionTypes.SetChallenge, payload: challenge });
-    }, [challenge])
+    }, [challenge]);
+
+    React.useEffect(() => {
+        challenge.commentsChanged && scrollRef.current?.scrollToEnd();
+        challenge.commentsChanged = false;
+    }, [challenge.commentsChanged]);
 
     const onMakeBidPress = async (bid: string) => {
         setLoading('join');
@@ -100,27 +130,67 @@ export const ChallengeInfo: React.FC<ChallengeInfoProps> = ({ route, navigation 
         }
     };
 
+    const onPostCommentPress = async (message: string) => {
+        if (message) {
+            const comments = challenge.comments || [];
+            comments.push({
+                user: {
+                    id: user.id,
+                    username: user.username as string
+                },
+                message
+            });
+
+            challenge.comments = comments;
+            challenge.commentsChanged = true;
+            setChallenge({ ...challenge });
+
+            try {
+                await commentOnChallenge(
+                    challenge.id,
+                    { id: user.id, username: user.username as string },
+                    message
+                );
+            } catch (e) {
+                console.log(e);
+            }
+        }
+    };
+
     return (
-        <ScrollView style={styles.container}>
+        <KeyboardAwareScrollView
+            ref={scrollRef}
+            style={styles.container}
+            keyboardShouldPersistTaps='handled'
+            enableOnAndroid={true}
+        >
             <ChallengeCard
                 challenge={challenge}
                 onProfilePress={user => navigation.push('UserInfo', { user })}
             >
                 <Divider style={styles.divider} />
-                <View style={styles.actions}>
-                    <Actions
-                        loading={loading}
-                        isCreator={userIsCreator}
-                        isOpponent={challenge.isOpponent}
-                        status={challenge.status}
-                        creatorProgress={challenge.creatorProgress}
-                        userVote={challenge.userVote}
-                        onProgressChangePress={onSetProgress}
-                        onEndChallengePress={onEndChallenge}
-                        onMakeBidPress={onMakeBidPress}
-                        onVotePress={onVotePress}
-                    />
-                </View>
+
+                <Actions
+                    loading={loading}
+                    isCreator={userIsCreator}
+                    isOpponent={challenge.isOpponent}
+                    status={challenge.status}
+                    creatorProgress={challenge.creatorProgress}
+                    userVote={challenge.userVote}
+                    onProgressChangePress={onSetProgress}
+                    onEndChallengePress={onEndChallenge}
+                    onMakeBidPress={onMakeBidPress}
+                    onVotePress={onVotePress}
+                />
+
+                <Divider style={styles.divider} />
+
+                <Comments
+                    loading={loadingComments}
+                    shouldFocusInput={shouldFocusInput}
+                    comments={challenge.comments || []}
+                    onPost={onPostCommentPress}
+                />
             </ChallengeCard>
 
             <Overlay isVisible={loading != null}
@@ -129,18 +199,15 @@ export const ChallengeInfo: React.FC<ChallengeInfoProps> = ({ route, navigation 
             >
                 <></>
             </Overlay>
-        </ScrollView>
+        </KeyboardAwareScrollView>
     );
 };
 
 const styles = StyleSheet.create({
     container: {
-        backgroundColor: '#fff',
         flex: 1
     },
     divider: {
         marginVertical: 16
-    },
-    actions: {
     }
 });

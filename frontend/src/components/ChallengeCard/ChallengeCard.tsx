@@ -110,7 +110,6 @@ export const ChallengeCard: React.FC<ChallengeCardProps> = ({
 const styles = StyleSheet.create({
     card: {
         margin: 0,
-        marginBottom: 8
     },
     participantsContainer: {
         marginBottom: 12,

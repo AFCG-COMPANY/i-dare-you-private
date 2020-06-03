@@ -1,5 +1,5 @@
 import React from 'react';
-import { ActivityIndicator, Alert, FlatList } from 'react-native';
+import { ActivityIndicator, Alert, FlatList, View } from 'react-native';
 import { Challenge, User } from '../models';
 import { getChallenges, setLikedChallenge } from '../api/challenge';
 import { ChallengeCard } from './ChallengeCard/ChallengeCard';
@@ -147,31 +147,33 @@ export class ChallengesList extends React.Component<ChallengesListProps, Challen
                     data={this.state.challenges}
                     keyExtractor={item => item.id}
                     renderItem={({ item }: { item: Challenge }) => (
-                        <ChallengeCard
-                            challenge={item}
-                            onChallengePress={() => this.props.onChallengePress && this.props.onChallengePress(item)}
-                            onProfilePress={this.props.onProfilePress}
-                        >
-                            <Divider style={{ marginVertical: 16 }} />
+                        <View style={{ marginBottom: 8 }}>
+                            <ChallengeCard
+                                challenge={item}
+                                onChallengePress={() => this.props.onChallengePress && this.props.onChallengePress(item)}
+                                onProfilePress={this.props.onProfilePress}
+                            >
+                                <Divider style={{ marginVertical: 16 }} />
 
-                            {
-                                item.status === ChallengeStatus.Voting
-                                &&
-                                <Button
-                                    title='Vote'
-                                    onPress={() => this.props.onChallengePress && this.props.onChallengePress(item)}
+                                {
+                                    item.status === ChallengeStatus.Voting
+                                    &&
+                                    <Button
+                                        title='Vote'
+                                        onPress={() => this.props.onChallengePress && this.props.onChallengePress(item)}
+                                    />
+                                }
+
+                                <Divider style={{ marginVertical: 16 }} />
+
+                                <ChallengeToolbar
+                                    liked={item.likedByUser}
+                                    likesCount={item.likesCount}
+                                    onCommentPress={() => this.props.onCommentPress && this.props.onCommentPress(item)}
+                                    onLikePress={() => this.toggleLike(item)}
                                 />
-                            }
-
-                            <Divider style={{ marginVertical: 16 }} />
-
-                            <ChallengeToolbar
-                                liked={item.likedByUser}
-                                likesCount={item.likesCount}
-                                onCommentPress={() => this.props.onCommentPress && this.props.onCommentPress(item)}
-                                onLikePress={() => this.toggleLike(item)}
-                            />
-                        </ChallengeCard>
+                            </ChallengeCard>
+                        </View>
                     )}
                     ListFooterComponent={this.renderListFooter}
                     ListEmptyComponent={this.state.fetchedAll && ListEmptyComponent}

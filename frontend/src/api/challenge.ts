@@ -1,6 +1,7 @@
 import { HOST } from './common';
 import { Challenge } from '../models';
 import axios from 'axios';
+import { Comment } from '../models/challenge';
 
 export async function getChallenges(
     currentUserId: string,
@@ -62,4 +63,22 @@ export function voteOnChallenge(challengeId: string, userId: string, vote: boole
         { userId, vote },
         { params: { id: challengeId } }
     )
+}
+
+export function commentOnChallenge(
+    challengeId: string,
+    user: { username: string, id: string },
+    message?: string,
+    imageUrl?: string
+): Promise<void> {
+    return axios.post(
+        HOST + 'challenge-setComment',
+        { user, message, imageUrl },
+        { params: { id: challengeId } }
+    );
+}
+
+export async function getChallengeComments(challengeId: string): Promise<Comment[]> {
+    const res = await axios.get(HOST + 'challenge-getComments', { params: { id: challengeId } });
+    return res.data;
 }

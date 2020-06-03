@@ -255,8 +255,10 @@ export const setComment = functions.https.onRequest(async (request, response) =>
         .collection('challenges')
         .doc(request.query.id.toString())
         .collection('comments').add({
-            message: request.body.message !== undefined ? request.body.message : null,
-            image: request.body.image !== undefined ? request.body.image : null,
+            message: request.body.message || null,
+            imageUrl: request.body.imageUrl || null,
+            user: request.body.user,
+            timestamp: admin.firestore.FieldValue.serverTimestamp()
         })
         .then(() => response.status(200).send())
         .catch(() => response.status(500).send());
@@ -267,6 +269,7 @@ export const getComments = functions.https.onRequest(async (request, response) =
         .collection('challenges')
         .doc(request.query.id.toString())
         .collection('comments')
+        .orderBy('timestamp', 'asc')
         .get();
 
     response.status(200).send(commentsSnapshot.docs.map(doc => doc.data()));
