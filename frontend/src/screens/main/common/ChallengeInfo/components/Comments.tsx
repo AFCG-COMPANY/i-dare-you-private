@@ -64,6 +64,7 @@ const styles = StyleSheet.create({
     },
     commentAuthor: {
         fontSize: 14,
+        fontWeight: '600',
         width: '30%'
     },
     commentText: {
