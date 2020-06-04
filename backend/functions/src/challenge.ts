@@ -159,6 +159,7 @@ const extendChallenges = async (challenges: Challenge[], currentUserId: string) 
 
     return challenges.map((challenge: Challenge) => ({
         ...challenge,
+        result: getChallengeResult(challenge),
         userVote: getUserVote(challenge, currentUserId),
         creatorHealth: getCreatorHealth(challenge.endDate, challenge.creationDate),
         isOpponent: Object.keys(challenge.opponents).includes(currentUserId),
@@ -174,6 +175,25 @@ const getCreatorHealth = (endDate : number, creationDate : number) => {
         return 0;
     }
     return Math.round(health);
+}
+
+const getChallengeResult = (challenge: any) => {
+    console.log(challenge);
+    if (challenge.creatorVote === true && getOpponentsStatus(challenge.opponents, true)){
+        return ChallengeResult.Win
+    } else if (challenge.creatorVote === false && getOpponentsStatus(challenge.opponents, false)) {
+        return ChallengeResult.Loss
+    }
+    return ChallengeResult.Draw
+}
+
+const getOpponentsStatus = (opponents: any, checkStatus: boolean) => {
+    for (const opponent in opponents){
+        if (opponents[opponent].vote !== checkStatus) {
+            return false
+        }
+    }
+    return true
 }
 
 const getUserVote = (challenge: any, currentUserId: string) => {
