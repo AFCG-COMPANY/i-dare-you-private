@@ -38,6 +38,7 @@ interface Challenge {
     result?: ChallengeResult,
     likedByUser?: boolean;
     userVote?: boolean;
+    numOfComments: number;
 }
 
 export const setChallenge = functions.https.onRequest(async (request, response) => {
@@ -53,7 +54,8 @@ export const setChallenge = functions.https.onRequest(async (request, response) 
             opponents: {},
             _opponents: [],
             likedBy: [],
-            status: ChallengeStatus.Created
+            status: ChallengeStatus.Created,
+            numOfComments: 0,
         } as Challenge)
         .then(() => response.status(200).send())
         .catch(e => {
@@ -93,7 +95,7 @@ export const setVote = functions.https.onRequest(async (request, response) => {
     }
 
     await challengeDocRef.update(update);
-    response.status(200).send({'result': getChallengeResult(challenge)});
+    response.status(200).send({ 'result': getChallengeResult(challenge) });
 })
 
 export const setCreatorProgress = functions.https.onRequest(async (request, response) => {
@@ -279,15 +281,23 @@ export const getChallenges = functions.https.onRequest(async (request, response)
 });
 
 export const setComment = functions.https.onRequest(async (request, response) => {
-    admin.firestore()
-        .collection('challenges')
-        .doc(request.query.id.toString())
-        .collection('comments').add({
-            message: request.body.message || null,
-            imageUrl: request.body.imageUrl || null,
-            user: request.body.user,
-            timestamp: admin.firestore.FieldValue.serverTimestamp()
-        })
+    let batch = admin.firestore().batch();
+    let newComment = admin.firestore().collection('challenges').doc(request.query.id.toString())
+        .collection('comments').doc();
+
+    batch.set(newComment, {
+        message: request.body.message || null,
+        imageUrl: request.body.imageUrl || null,
+        user: request.body.user,
+        timestamp: admin.firestore.FieldValue.serverTimestamp()
+    });
+
+    let challenge = admin.firestore().collection('challenges').doc(request.query.id.toString())
+    const increment = admin.firestore.FieldValue.increment(1);
+
+    batch.update(challenge, { numOfComments: increment })
+
+    batch.commit()
         .then(() => response.status(200).send())
         .catch(() => response.status(500).send());
 })
