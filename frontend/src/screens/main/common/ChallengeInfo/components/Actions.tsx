@@ -127,7 +127,7 @@ export class Actions extends React.Component<ActionsProps, ActionsState> {
                 } else {
                     return <>
                             <Input
-                                containerStyle={{ marginBottom: 20 }}
+                                containerStyle={{ marginBottom: 20, paddingHorizontal: 0 }}
                                 errorMessage={this.state.bidError}
                                 errorStyle={{ marginHorizontal: 0 }}
                                 inputStyle={{ maxHeight: 100 }}

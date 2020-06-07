@@ -5,6 +5,7 @@ import { Icon, Text } from 'react-native-elements';
 interface ChallengeToolbarProps {
     liked: boolean;
     likesCount: number;
+    commentsCount: number;
     onCommentPress?: () => void;
     onLikePress?: () => void;
 }
@@ -36,8 +37,9 @@ export const ChallengeToolbar: React.FC<ChallengeToolbarProps> = (props) => (
             {props.likesCount > 0 && <Text style={styles.likesCount}>{props.likesCount}</Text>}
         </TouchableOpacity>
 
-        <TouchableOpacity onPress={props.onCommentPress}>
-            <Icon type='octicon' name='comment' size={22}/>
+        <TouchableOpacity style={styles.commentButton} onPress={props.onCommentPress}>
+            <Icon type='octicon' name='comment' size={22} />
+            {props.commentsCount > 0 && <Text style={styles.commentsCount}>{props.commentsCount}</Text>}
         </TouchableOpacity>
     </View>
 );
@@ -57,6 +59,14 @@ const styles = StyleSheet.create({
     likesCount: {
         position: 'absolute',
         left: 21,
+        top: Platform.OS == 'ios' ? 3 : 1
+    },
+    commentButton: {
+        position: 'relative'
+    },
+    commentsCount: {
+        position: 'absolute',
+        left: 26,
         top: Platform.OS == 'ios' ? 3 : 1
     }
 });

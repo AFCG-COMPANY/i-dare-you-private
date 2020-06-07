@@ -3,7 +3,7 @@ import { ActivityIndicator, Alert, FlatList, View } from 'react-native';
 import { Challenge, User } from '../models';
 import { getChallenges, setLikedChallenge } from '../api/challenge';
 import { ChallengeCard } from './ChallengeCard/ChallengeCard';
-import { Button, Divider } from 'react-native-elements';
+import { Button, Divider, Text } from 'react-native-elements';
 import { ChallengeToolbar } from './ChallengeToolbar';
 import { AppActionTypes, AppContext } from '../contexts/AppContext';
 import { ChallengeStatus } from '../models/challenge';
@@ -137,6 +137,29 @@ export class ChallengesList extends React.Component<ChallengesListProps, Challen
         );
     }
 
+    renderVoteSection = (challenge: Challenge) => {
+        if (challenge.status === ChallengeStatus.Voting
+            && (challenge.isOpponent || challenge.createdBy.id === this.context.state.user.id)
+        ) {
+            return (<>
+                <Divider style={{ marginVertical: 16 }}/>
+                {challenge.userVote != null
+                    ? (
+                        <Text>You voted for:
+                            <Text style={{ fontWeight: '600' }}>{challenge.userVote ? 'Goal Achieved' : 'Goal not Reached'}</Text>
+                        </Text>
+                    )
+                    : (
+                        <Button
+                            title='Vote'
+                            onPress={() => this.props.onChallengePress && this.props.onChallengePress(challenge)}
+                        />
+                    )
+                }
+            </>);
+        }
+    };
+
     render() {
         const { ListEmptyComponent, ...flatListProps } = this.props.flatListProps || {};
 
@@ -153,22 +176,13 @@ export class ChallengesList extends React.Component<ChallengesListProps, Challen
                                 onChallengePress={() => this.props.onChallengePress && this.props.onChallengePress(item)}
                                 onProfilePress={this.props.onProfilePress}
                             >
-                                <Divider style={{ marginVertical: 16 }} />
-
-                                {
-                                    item.status === ChallengeStatus.Voting
-                                    &&
-                                    <Button
-                                        title='Vote'
-                                        onPress={() => this.props.onChallengePress && this.props.onChallengePress(item)}
-                                    />
-                                }
-
+                                {this.renderVoteSection(item)}
                                 <Divider style={{ marginVertical: 16 }} />
 
                                 <ChallengeToolbar
                                     liked={item.likedByUser}
                                     likesCount={item.likesCount}
+                                    commentsCount={item.commentsCount}
                                     onCommentPress={() => this.props.onCommentPress && this.props.onCommentPress(item)}
                                     onLikePress={() => this.toggleLike(item)}
                                 />

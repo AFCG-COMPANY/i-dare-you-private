@@ -26,14 +26,23 @@ export const Opponents: React.FC<OpponentsProps> = props => {
                         }}
                         onPress={() => props.onOpponentPress && props.onOpponentPress(opponents[index])}
                     >
-                        <Image
+                        <View
                             style={{
                                 width: cell.size,
                                 height: cell.size,
-                                borderRadius: cell.size / 2
+                                borderRadius: cell.size / 2,
+                                backgroundColor: 'lightgreen'
                             }}
-                            source={{ uri: opponents[index].avatar }}
-                        />
+                        >
+                        </View>
+                        {/*<Image*/}
+                        {/*    style={{*/}
+                        {/*        width: cell.size,*/}
+                        {/*        height: cell.size,*/}
+                        {/*        borderRadius: cell.size / 2*/}
+                        {/*    }}*/}
+                        {/*    source={{ uri: opponents[index].avatar }}*/}
+                        {/*/>*/}
                     </TouchableOpacity>
                 ))}
             </View>
@@ -50,10 +59,10 @@ export const Opponents: React.FC<OpponentsProps> = props => {
     } else {
         content = (<>
             <View style={styles.defaultAvatarContainer}>
-                <Image
-                    style={styles.defaultAvatar}
-                    source={{ uri: DefaultOpponentAvatar }}
-                />
+                {/*<Image*/}
+                {/*    style={styles.defaultAvatar}*/}
+                {/*    source={{ uri: DefaultOpponentAvatar }}*/}
+                {/*/>*/}
             </View>
             <Text style={styles.name}>No rivals</Text>
         </>);
@@ -147,6 +156,6 @@ const styles = StyleSheet.create({
         alignSelf: 'center',
         color: '#e52b50',
         fontWeight: '500',
-        maxWidth: 120
+        maxWidth: '100%'
     }
 });

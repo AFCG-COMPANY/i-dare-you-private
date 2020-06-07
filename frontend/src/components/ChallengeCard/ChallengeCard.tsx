@@ -30,10 +30,14 @@ export const ChallengeCard: React.FC<ChallengeCardProps> = ({
                             style={styles.participant}
                             onPress={() => onProfilePress && onProfilePress(challenge.createdBy)}
                         >
-                            <Image
-                                style={styles.avatar}
-                                source={{ uri: challenge.createdBy.avatar }}
-                            />
+                            <View
+                                style={StyleSheet.flatten([styles.avatar, {backgroundColor: 'lightblue'}])}
+                            >
+                            </View>
+                            {/*<Image*/}
+                            {/*    style={styles.avatar}*/}
+                            {/*    source={{ uri: challenge.createdBy.avatar }}*/}
+                            {/*/>*/}
 
                             <Text
                                 style={styles.creatorName}
@@ -118,6 +122,7 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between'
     },
     participantContainer: {
+        flex: 1,
         alignItems: 'center'
     },
     participant: {
@@ -126,7 +131,7 @@ const styles = StyleSheet.create({
     creatorName: {
         color: 'green',
         fontWeight: '500',
-        maxWidth: 80
+        maxWidth: '100%'
     },
     healthBar: {
         marginBottom: 4,

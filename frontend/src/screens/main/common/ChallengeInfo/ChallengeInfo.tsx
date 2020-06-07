@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet } from 'react-native';
+import { RefreshControl, StyleSheet } from 'react-native';
 import { Divider, Overlay } from 'react-native-elements';
 import { RouteProp } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
@@ -10,7 +10,8 @@ import { ChallengeStatus } from '../../../../models/challenge';
 import { Actions, ActionsLoadingType } from './components/Actions';
 import {
     commentOnChallenge,
-    endChallenge, getChallengeComments,
+    endChallenge,
+    getChallengeComments,
     setChallengeOpponent,
     setChallengeProgress,
     voteOnChallenge
@@ -35,6 +36,7 @@ export const ChallengeInfo: React.FC<ChallengeInfoProps> = ({ route, navigation 
 
     const { commentPressed } = route.params;
     const [ challenge, setChallenge ] = React.useState(route.params.challenge);
+    const [ refreshing, setRefreshing ] = React.useState(false);
     const [ loading, setLoading ] = React.useState<ActionsLoadingType>(null);
     const [ shouldFocusInput, setShouldFocusInput ] = React.useState<boolean>();
     const userIsCreator = user.id === challenge.createdBy.id;
@@ -42,18 +44,29 @@ export const ChallengeInfo: React.FC<ChallengeInfoProps> = ({ route, navigation 
     const scrollRef = React.useRef<KeyboardAwareScrollView>(null);
     const loadingComments = challenge.comments == null;
 
-    React.useEffect(() => {
-        return navigation.addListener('focus', async () => {
-            setShouldFocusInput(commentPressed);
+    const fetchData = async (refreshing?: boolean) => {
+        setRefreshing(refreshing as boolean);
 
-            try {
-                const comments = await getChallengeComments(challenge.id);
-                setChallenge({...challenge, comments});
-            } catch (e) {
-                console.log(e);
-            }
+        try {
+            const comments = await getChallengeComments(challenge.id);
+            setChallenge({...challenge, comments});
+        } catch (e) {
+            console.log(e);
+        } finally {
+            setRefreshing(false);
+        }
+    }
+
+    React.useEffect(() => {
+        return navigation.addListener('focus', () => {
+            setShouldFocusInput(commentPressed);
+            fetchData();
         });
     }, []);
+
+    React.useEffect(() => {
+        refreshing && fetchData(true);
+    }, [refreshing])
 
     React.useEffect(() => {
         dispatch({ type: AppActionTypes.SetChallenge, payload: challenge });
@@ -142,6 +155,7 @@ export const ChallengeInfo: React.FC<ChallengeInfoProps> = ({ route, navigation 
             });
 
             challenge.comments = comments;
+            challenge.commentsCount = challenge.commentsCount ? challenge.commentsCount + 1 : 1;
             challenge.commentsChanged = true;
             setChallenge({ ...challenge });
 
@@ -163,6 +177,7 @@ export const ChallengeInfo: React.FC<ChallengeInfoProps> = ({ route, navigation 
             style={styles.container}
             keyboardShouldPersistTaps='handled'
             enableOnAndroid={true}
+            refreshControl={<RefreshControl refreshing={refreshing} onRefresh={fetchData} />}
         >
             <ChallengeCard
                 challenge={challenge}

@@ -20,7 +20,7 @@ export const Comments: React.FC<CommentsProps> = ({ comments, onPost, shouldFocu
     return (
         <>
             {loading
-                ? <ActivityIndicator size='large' />
+                ? <ActivityIndicator size='small' />
                 : comments.map((comment, id) => (
                     <View style={styles.comment} key={id}>
                         <Text style={styles.commentAuthor}>{comment.user.username}</Text>
