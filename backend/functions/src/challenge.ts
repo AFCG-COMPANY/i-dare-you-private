@@ -84,7 +84,7 @@ export const setVote = functions.https.onRequest(async (request, response) => {
     const challengeDocRef = challengesCollection.doc(challengeId);
     const challenge = await (await challengeDocRef.get()).data();
 
-    if (challenge?.createdBy === userId) {
+    if (challenge!.createdBy === userId) {
         update.creatorVote = vote;
         challenge!.creatorVote = vote;
     } else {
@@ -93,7 +93,6 @@ export const setVote = functions.https.onRequest(async (request, response) => {
     }
 
     await challengeDocRef.update(update);
-    console.log(getChallengeResult(challenge));
     response.status(200).send({'result': getChallengeResult(challenge)});
 })
 
@@ -179,12 +178,12 @@ const getCreatorHealth = (endDate: number, creationDate: number) => {
     return Math.round(health);
 }
 
-const getChallengeStatus = (challenge: any) => {
-    const votingTimeout = Date.now() - challenge.endDate;
-    if (votingTimeout / 3 / 24 / 60 / 60 / 1000 > 3) {
+const VOTING_TIMEOUT = 259200000;
+const getChallengeStatus = (challenge: Challenge) => {
+    if (Date.now() - challenge.endDate > VOTING_TIMEOUT) {
         return ChallengeStatus.Finished
     }
-    return ChallengeStatus.InProgress
+    return challenge.status || ChallengeStatus.Created;
 }
 
 const getChallengeResult = (challenge: any) => {
