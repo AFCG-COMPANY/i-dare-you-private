@@ -172,10 +172,7 @@ const extendChallenges = async (challenges: Challenge[], currentUserId: string) 
 
 const getCreatorHealth = (endDate: number, creationDate: number) => {
     const health = (endDate - Date.now()) / (endDate - creationDate) * 100;
-    if (health < 0) {
-        return 0;
-    }
-    return Math.round(health);
+    return health < 0 ? 0 : Math.round(health);
 }
 
 const VOTING_TIMEOUT = 259200000;
