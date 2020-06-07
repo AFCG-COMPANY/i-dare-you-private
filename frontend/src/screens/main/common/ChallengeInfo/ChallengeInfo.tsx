@@ -142,6 +142,7 @@ export const ChallengeInfo: React.FC<ChallengeInfoProps> = ({ route, navigation 
             });
 
             challenge.comments = comments;
+            challenge.commentsCount = challenge.commentsCount ? challenge.commentsCount + 1 : 1;
             challenge.commentsChanged = true;
             setChallenge({ ...challenge });
 
