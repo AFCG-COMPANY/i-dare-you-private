@@ -93,7 +93,6 @@ export const setVote = functions.https.onRequest(async (request, response) => {
     }
 
     await challengeDocRef.update(update);
-    console.log(getChallengeResult(challenge));
     response.status(200).send({'result': getChallengeResult(challenge)});
 })
 
@@ -193,7 +192,7 @@ const getChallengeResult = (challenge: any) => {
     } else if (challenge.creatorVote === false && getOpponentsStatus(challenge.opponents, false)) {
         return ChallengeResult.Loss
     }
-    return ChallengeResult.Draw
+    return null
 }
 
 const getOpponentsStatus = (opponents: any, checkStatus: boolean) => {
