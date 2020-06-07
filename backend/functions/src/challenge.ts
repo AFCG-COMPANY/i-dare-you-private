@@ -86,14 +86,15 @@ export const setVote = functions.https.onRequest(async (request, response) => {
 
     if (challenge?.createdBy === userId) {
         update.creatorVote = vote;
+        challenge!.creatorVote = vote;
     } else {
         update[`opponents.${userId}.vote`] = vote;
+        challenge!.opponents[userId].vote = vote;
     }
 
-    challengeDocRef
-        .update(update)
-        .then(() => response.status(200).send())
-        .catch(() => response.status(500).send());
+    await challengeDocRef.update(update);
+    console.log(getChallengeResult(challenge));
+    response.status(200).send({'result': getChallengeResult(challenge)});
 })
 
 export const setCreatorProgress = functions.https.onRequest(async (request, response) => {
@@ -160,6 +161,7 @@ const extendChallenges = async (challenges: Challenge[], currentUserId: string) 
     return challenges.map((challenge: Challenge) => ({
         ...challenge,
         result: getChallengeResult(challenge),
+        status: getChallengeStatus(challenge),
         userVote: getUserVote(challenge, currentUserId),
         creatorHealth: getCreatorHealth(challenge.endDate, challenge.creationDate),
         isOpponent: Object.keys(challenge.opponents).includes(currentUserId),
@@ -169,17 +171,24 @@ const extendChallenges = async (challenges: Challenge[], currentUserId: string) 
     }));
 }
 
-const getCreatorHealth = (endDate : number, creationDate : number) => {
-    const health = (endDate - Date.now())/(endDate - creationDate) * 100;
+const getCreatorHealth = (endDate: number, creationDate: number) => {
+    const health = (endDate - Date.now()) / (endDate - creationDate) * 100;
     if (health < 0) {
         return 0;
     }
     return Math.round(health);
 }
 
+const getChallengeStatus = (challenge: any) => {
+    const votingTimeout = Date.now() - challenge.endDate;
+    if (votingTimeout / 3 / 24 / 60 / 60 / 1000 > 3) {
+        return ChallengeStatus.Finished
+    }
+    return ChallengeStatus.InProgress
+}
+
 const getChallengeResult = (challenge: any) => {
-    console.log(challenge);
-    if (challenge.creatorVote === true && getOpponentsStatus(challenge.opponents, true)){
+    if (challenge.creatorVote === true && getOpponentsStatus(challenge.opponents, true)) {
         return ChallengeResult.Win
     } else if (challenge.creatorVote === false && getOpponentsStatus(challenge.opponents, false)) {
         return ChallengeResult.Loss
@@ -188,7 +197,7 @@ const getChallengeResult = (challenge: any) => {
 }
 
 const getOpponentsStatus = (opponents: any, checkStatus: boolean) => {
-    for (const opponent in opponents){
+    for (const opponent in opponents) {
         if (opponents[opponent].vote !== checkStatus) {
             return false
         }
