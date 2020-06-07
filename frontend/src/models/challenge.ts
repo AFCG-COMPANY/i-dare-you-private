@@ -17,6 +17,7 @@ export interface Challenge {
     userVote?: boolean;
     status: ChallengeStatus;
     result?: ChallengeResult;
+    commentsCount: number;
     comments?: Comment[];
     commentsChanged?: boolean;
 }
