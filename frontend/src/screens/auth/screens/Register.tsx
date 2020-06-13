@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View, Linking } from 'react-native';
 import { Button, Input } from 'react-native-elements';
 import { AuthNavProps } from '../models/AuthParamList';
 import * as firebase from 'firebase';
@@ -140,7 +140,24 @@ export function Register({ navigation }: AuthNavProps<'Register'>) {
                     onPress={registerWithEmail}
                 />
             </View>
-
+            <View
+                style={{
+                    flex: 1,
+                    justifyContent: 'flex-end',
+                    marginBottom: 36
+                }}
+            >
+                <Text
+                    style={{
+                        color: '#0088cc',
+                        textAlign: 'center',
+                        fontSize: 16
+                    }}
+                    onPress={() => Linking.openURL('https://t.me/AnteOfficial')}
+                >
+                    OUR TELEGRAM CHANELL
+                </Text>
+            </View>
             <View style={styles.signInContainer}>
                 <Text style={styles.signInText}>Already have an account?</Text>
                 <Button

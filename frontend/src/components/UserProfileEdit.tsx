@@ -1,5 +1,11 @@
 import React from 'react';
-import { ActivityIndicator, Alert, StyleSheet } from 'react-native';
+import {
+    ActivityIndicator,
+    Alert,
+    StyleSheet,
+    View,
+    Linking
+} from 'react-native';
 import { Button, Input, Text } from 'react-native-elements';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
@@ -31,15 +37,21 @@ export const UserProfileEdit: React.FC<UserProfileEditProps> = (props) => {
     const [usernameValue, setUsernameValue] = React.useState(user.username);
     const [bioValue, setBioValue] = React.useState(user.bio);
     const [avatarValue, setAvatarValue] = React.useState<string>();
-    const [updateInProgress, setUpdateInProgress] = React.useState<boolean>(false);
+    const [updateInProgress, setUpdateInProgress] = React.useState<boolean>(
+        false
+    );
 
     const onAvatarEditPress = async () => {
         // Get permission to access photos
         if (Constants.platform?.ios) {
-            const { status } = await Permissions.askAsync(Permissions.CAMERA_ROLL);
+            const { status } = await Permissions.askAsync(
+                Permissions.CAMERA_ROLL
+            );
 
             if (status !== 'granted') {
-                Alert.alert('Sorry, we need camera roll permissions to make this work!');
+                Alert.alert(
+                    'Sorry, we need camera roll permissions to make this work!'
+                );
                 return;
             }
         }
@@ -86,7 +98,9 @@ export const UserProfileEdit: React.FC<UserProfileEditProps> = (props) => {
                 await storageRef.child(avatarPath).put(blob);
 
                 // Need to send download url to backend
-                updatedUser.avatar = await storageRef.child(avatarPath).getDownloadURL();
+                updatedUser.avatar = await storageRef
+                    .child(avatarPath)
+                    .getDownloadURL();
 
                 // We also need to store base64 formatted avatar to avoid unnecessary network requests
                 updatedUser.avatarBase64 = await blobToBase64(blob);
@@ -148,6 +162,25 @@ export const UserProfileEdit: React.FC<UserProfileEditProps> = (props) => {
                 onPress={updateProfile}
             />
             {error && <Text style={styles.error}>{error}</Text>}
+            <View
+                style={{
+                    flex: 1,
+                    justifyContent: 'flex-end',
+                    marginTop: 40
+                }}
+            >
+                <Text
+                    style={{
+                        color: '#0088cc',
+                        textAlign: 'center',
+                        fontSize: 16,
+                        marginTop: 'auto'
+                    }}
+                    onPress={() => Linking.openURL('https://t.me/AnteOfficial')}
+                >
+                    OUR TELEGRAM CHANELL
+                </Text>
+            </View>
         </KeyboardAwareScrollView>
     );
 };

@@ -26,23 +26,14 @@ export const Opponents: React.FC<OpponentsProps> = props => {
                         }}
                         onPress={() => props.onOpponentPress && props.onOpponentPress(opponents[index])}
                     >
-                        <View
+                        <Image
                             style={{
                                 width: cell.size,
                                 height: cell.size,
-                                borderRadius: cell.size / 2,
-                                backgroundColor: 'lightgreen'
+                                borderRadius: cell.size / 2
                             }}
-                        >
-                        </View>
-                        {/*<Image*/}
-                        {/*    style={{*/}
-                        {/*        width: cell.size,*/}
-                        {/*        height: cell.size,*/}
-                        {/*        borderRadius: cell.size / 2*/}
-                        {/*    }}*/}
-                        {/*    source={{ uri: opponents[index].avatar }}*/}
-                        {/*/>*/}
+                            source={{ uri: opponents[index].avatar }}
+                        />
                     </TouchableOpacity>
                 ))}
             </View>

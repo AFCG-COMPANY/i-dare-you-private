@@ -30,14 +30,10 @@ export const ChallengeCard: React.FC<ChallengeCardProps> = ({
                             style={styles.participant}
                             onPress={() => onProfilePress && onProfilePress(challenge.createdBy)}
                         >
-                            <View
-                                style={StyleSheet.flatten([styles.avatar, {backgroundColor: 'lightblue'}])}
-                            >
-                            </View>
-                            {/*<Image*/}
-                            {/*    style={styles.avatar}*/}
-                            {/*    source={{ uri: challenge.createdBy.avatar }}*/}
-                            {/*/>*/}
+                            <Image
+                                style={styles.avatar}
+                                source={{ uri: challenge.createdBy.avatar }}
+                            />
 
                             <Text
                                 style={styles.creatorName}

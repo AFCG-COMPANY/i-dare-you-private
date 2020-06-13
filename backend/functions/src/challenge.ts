@@ -38,7 +38,7 @@ interface Challenge {
     result?: ChallengeResult,
     likedByUser?: boolean;
     userVote?: boolean;
-    numOfComments: number;
+    commentsCount: number;
 }
 
 export const setChallenge = functions.https.onRequest(async (request, response) => {
@@ -55,7 +55,7 @@ export const setChallenge = functions.https.onRequest(async (request, response) 
             _opponents: [],
             likedBy: [],
             status: ChallengeStatus.Created,
-            numOfComments: 0,
+            commentsCount: 0,
         } as Challenge)
         .then(() => response.status(200).send())
         .catch(e => {
@@ -292,7 +292,7 @@ export const setComment = functions.https.onRequest(async (request, response) =>
     let challenge = admin.firestore().collection('challenges').doc(request.query.id.toString())
     const increment = admin.firestore.FieldValue.increment(1);
 
-    batch.update(challenge, { numOfComments: increment })
+    batch.update(challenge, { commentsCount: increment })
 
     batch.commit()
         .then(() => response.status(200).send())

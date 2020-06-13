@@ -16,6 +16,7 @@ import {
     setChallengeProgress,
     voteOnChallenge
 } from '../../../../api/challenge';
+import * as firebase from 'firebase';
 import { Comments } from './components/Comments';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
@@ -143,15 +144,16 @@ export const ChallengeInfo: React.FC<ChallengeInfoProps> = ({ route, navigation 
         }
     };
 
-    const onPostCommentPress = async (message: string) => {
+    const onPostCommentPress = async (message: string, image: string) => {
         if (message) {
             const comments = challenge.comments || [];
             comments.push({
                 user: {
                     id: user.id,
-                    username: user.username as string
+                    username: user.username as string,
                 },
-                message
+                message,
+                imageUrl: image
             });
 
             challenge.comments = comments;
@@ -159,11 +161,23 @@ export const ChallengeInfo: React.FC<ChallengeInfoProps> = ({ route, navigation 
             challenge.commentsChanged = true;
             setChallenge({ ...challenge });
 
+            const storageRef = firebase.storage().ref();
+            const avatarPath = 'comments/' + image.split('/').pop();
+
+            // User selected new avatar, need to upload it
+            const res = await fetch(image);
+            const blob = await res.blob();
+            await storageRef.child(avatarPath).put(blob);
+
+            // Need to send download url to backend
+            image = await storageRef.child(avatarPath).getDownloadURL();
+            console.log(image);
             try {
                 await commentOnChallenge(
                     challenge.id,
                     { id: user.id, username: user.username as string },
-                    message
+                    message,
+                    image
                 );
             } catch (e) {
                 console.log(e);
