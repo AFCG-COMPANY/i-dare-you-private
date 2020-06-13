@@ -25,7 +25,7 @@ export interface Challenge {
 export interface Comment {
     user: { username: string, id: string };
     message?: string;
-    imageUrl?: string;
+    imageUrl?: string | null;
 }
 
 export enum ChallengeStatus {

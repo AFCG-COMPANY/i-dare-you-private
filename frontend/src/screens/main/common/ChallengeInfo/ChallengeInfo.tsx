@@ -22,24 +22,30 @@ import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view
 
 type ParentStackParamsList = {
     UserInfo: { user: User };
-    ChallengeInfo: { challenge: Challenge, commentPressed?: boolean };
+    ChallengeInfo: { challenge: Challenge; commentPressed?: boolean };
 };
 type ChallengeInfoRouteProp = RouteProp<ParentStackParamsList, 'ChallengeInfo'>;
-type ChallengeInfoNavigationProp = StackNavigationProp<ParentStackParamsList, 'ChallengeInfo'>;
+type ChallengeInfoNavigationProp = StackNavigationProp<
+    ParentStackParamsList,
+    'ChallengeInfo'
+>;
 
 interface ChallengeInfoProps {
-    route: ChallengeInfoRouteProp,
+    route: ChallengeInfoRouteProp;
     navigation: ChallengeInfoNavigationProp;
 }
-export const ChallengeInfo: React.FC<ChallengeInfoProps> = ({ route, navigation }) => {
+export const ChallengeInfo: React.FC<ChallengeInfoProps> = ({
+    route,
+    navigation
+}) => {
     const { state, dispatch } = React.useContext(AppContext);
     const user = state.user as User;
 
     const { commentPressed } = route.params;
-    const [ challenge, setChallenge ] = React.useState(route.params.challenge);
-    const [ refreshing, setRefreshing ] = React.useState(false);
-    const [ loading, setLoading ] = React.useState<ActionsLoadingType>(null);
-    const [ shouldFocusInput, setShouldFocusInput ] = React.useState<boolean>();
+    const [challenge, setChallenge] = React.useState(route.params.challenge);
+    const [refreshing, setRefreshing] = React.useState(false);
+    const [loading, setLoading] = React.useState<ActionsLoadingType>(null);
+    const [shouldFocusInput, setShouldFocusInput] = React.useState<boolean>();
     const userIsCreator = user.id === challenge.createdBy.id;
 
     const scrollRef = React.useRef<KeyboardAwareScrollView>(null);
@@ -50,13 +56,13 @@ export const ChallengeInfo: React.FC<ChallengeInfoProps> = ({ route, navigation 
 
         try {
             const comments = await getChallengeComments(challenge.id);
-            setChallenge({...challenge, comments});
+            setChallenge({ ...challenge, comments });
         } catch (e) {
             console.log(e);
         } finally {
             setRefreshing(false);
         }
-    }
+    };
 
     React.useEffect(() => {
         return navigation.addListener('focus', () => {
@@ -67,7 +73,7 @@ export const ChallengeInfo: React.FC<ChallengeInfoProps> = ({ route, navigation 
 
     React.useEffect(() => {
         refreshing && fetchData(true);
-    }, [refreshing])
+    }, [refreshing]);
 
     React.useEffect(() => {
         dispatch({ type: AppActionTypes.SetChallenge, payload: challenge });
@@ -136,7 +142,7 @@ export const ChallengeInfo: React.FC<ChallengeInfoProps> = ({ route, navigation 
 
         try {
             await voteOnChallenge(challenge.id, user.id, vote);
-            setChallenge({...challenge, userVote: vote});
+            setChallenge({ ...challenge, userVote: vote });
         } catch (e) {
             console.log(e);
         } finally {
@@ -150,28 +156,31 @@ export const ChallengeInfo: React.FC<ChallengeInfoProps> = ({ route, navigation 
             comments.push({
                 user: {
                     id: user.id,
-                    username: user.username as string,
+                    username: user.username as string
                 },
                 message,
-                imageUrl: image
+                imageUrl: (image || null)
             });
 
             challenge.comments = comments;
-            challenge.commentsCount = challenge.commentsCount ? challenge.commentsCount + 1 : 1;
+            challenge.commentsCount = challenge.commentsCount
+                ? challenge.commentsCount + 1
+                : 1;
             challenge.commentsChanged = true;
             setChallenge({ ...challenge });
+            if (image !== '') {
+                const storageRef = firebase.storage().ref();
+                const avatarPath = 'comments/' + image.split('/').pop();
 
-            const storageRef = firebase.storage().ref();
-            const avatarPath = 'comments/' + image.split('/').pop();
+                // User selected new avatar, need to upload it
+                const res = await fetch(image);
+                const blob = await res.blob();
+                await storageRef.child(avatarPath).put(blob);
 
-            // User selected new avatar, need to upload it
-            const res = await fetch(image);
-            const blob = await res.blob();
-            await storageRef.child(avatarPath).put(blob);
-
-            // Need to send download url to backend
-            image = await storageRef.child(avatarPath).getDownloadURL();
-            console.log(image);
+                // Need to send download url to backend
+                image = await storageRef.child(avatarPath).getDownloadURL();
+                console.log(image);
+            }
             try {
                 await commentOnChallenge(
                     challenge.id,
@@ -191,11 +200,13 @@ export const ChallengeInfo: React.FC<ChallengeInfoProps> = ({ route, navigation 
             style={styles.container}
             keyboardShouldPersistTaps='handled'
             enableOnAndroid={true}
-            refreshControl={<RefreshControl refreshing={refreshing} onRefresh={fetchData} />}
+            refreshControl={
+                <RefreshControl refreshing={refreshing} onRefresh={fetchData} />
+            }
         >
             <ChallengeCard
                 challenge={challenge}
-                onProfilePress={user => navigation.push('UserInfo', { user })}
+                onProfilePress={(user) => navigation.push('UserInfo', { user })}
             >
                 <Divider style={styles.divider} />
 
@@ -222,9 +233,10 @@ export const ChallengeInfo: React.FC<ChallengeInfoProps> = ({ route, navigation 
                 />
             </ChallengeCard>
 
-            <Overlay isVisible={loading != null}
-                     containerStyle={{ backgroundColor: 'transparent' }}
-                     overlayStyle={{ display: 'none' }}
+            <Overlay
+                isVisible={loading != null}
+                containerStyle={{ backgroundColor: 'transparent' }}
+                overlayStyle={{ display: 'none' }}
             >
                 <></>
             </Overlay>
