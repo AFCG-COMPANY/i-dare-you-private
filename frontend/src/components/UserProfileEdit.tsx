@@ -59,7 +59,7 @@ export const UserProfileEdit: React.FC<UserProfileEditProps> = (props) => {
         try {
             const result = await ImagePicker.launchImageLibraryAsync({
                 mediaTypes: ImagePicker.MediaTypeOptions.Images,
-                allowsEditing: true,
+                allowsEditing: false,
                 aspect: [4, 3],
                 quality: 1
             });
@@ -178,7 +178,7 @@ export const UserProfileEdit: React.FC<UserProfileEditProps> = (props) => {
                     }}
                     onPress={() => Linking.openURL('https://t.me/AnteOfficial')}
                 >
-                    OUR TELEGRAM CHANELL
+                    OUR TELEGRAM CHANNEL
                 </Text>
             </View>
         </KeyboardAwareScrollView>

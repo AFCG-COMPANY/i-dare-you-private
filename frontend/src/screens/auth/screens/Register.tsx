@@ -140,13 +140,7 @@ export function Register({ navigation }: AuthNavProps<'Register'>) {
                     onPress={registerWithEmail}
                 />
             </View>
-            <View
-                style={{
-                    flex: 1,
-                    justifyContent: 'flex-end',
-                    marginBottom: 36
-                }}
-            >
+            <View>
                 <Text
                     style={{
                         color: '#0088cc',
@@ -155,7 +149,7 @@ export function Register({ navigation }: AuthNavProps<'Register'>) {
                     }}
                     onPress={() => Linking.openURL('https://t.me/AnteOfficial')}
                 >
-                    OUR TELEGRAM CHANELL
+                    OUR TELEGRAM CHANNEL
                 </Text>
             </View>
             <View style={styles.signInContainer}>
