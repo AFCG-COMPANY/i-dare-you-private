@@ -12,6 +12,8 @@ interface DatePickerModalProps {
 export const DatePickerModal: React.FC<DatePickerModalProps> = (props) => {
     const { date, onClose, onChange } = props;
 
+    const minimumDate = new Date(new Date().setDate(new Date().getDate() + 1));
+
     if (Platform.OS === 'android') {
         return (
             <DateTimePicker
@@ -19,7 +21,7 @@ export const DatePickerModal: React.FC<DatePickerModalProps> = (props) => {
                 timeZoneOffsetInMinutes={0}
                 value={date}
                 mode='date'
-                minimumDate={new Date()}
+                minimumDate={minimumDate}
                 is24Hour={true}
                 display='default'
                 onChange={(event, selectedDate) => {
@@ -57,7 +59,7 @@ export const DatePickerModal: React.FC<DatePickerModalProps> = (props) => {
                             timeZoneOffsetInMinutes={0}
                             value={date}
                             mode='date'
-                            minimumDate={new Date()}
+                            minimumDate={minimumDate}
                             is24Hour={true}
                             display='default'
                             onChange={onChange}
