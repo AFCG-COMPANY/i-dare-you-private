@@ -173,6 +173,9 @@ const extendChallenges = async (challenges: Challenge[], currentUserId: string) 
 }
 
 const getCreatorHealth = (endDate: number, creationDate: number) => {
+    if (Date.now() > endDate) {
+        return 0;
+    }
     const health = (endDate - Date.now()) / (endDate - creationDate) * 100;
     return health < 0 ? 0 : Math.round(health);
 }
@@ -309,8 +312,3 @@ export const getComments = functions.https.onRequest(async (request, response) =
 
     response.status(200).send(commentsSnapshot.docs.map(doc => doc.data()));
 })
-
-exports.scheduledFunction = functions.pubsub.schedule('every 5 minutes').onRun((context) => {
-    console.log('This will be run every 5 minutes!');
-    return null;
-  });
