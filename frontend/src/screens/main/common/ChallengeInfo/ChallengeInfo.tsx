@@ -1,5 +1,5 @@
 import React from 'react';
-import { RefreshControl, StyleSheet } from 'react-native';
+import { RefreshControl, StyleSheet, Text } from 'react-native';
 import { Divider, Overlay } from 'react-native-elements';
 import { RouteProp } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
@@ -18,6 +18,7 @@ import {
 } from '../../../../api/challenge';
 import * as firebase from 'firebase';
 import { Comments } from './components/Comments';
+import { Opponents } from './components/Opponents';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
 type ParentStackParamsList = {
@@ -208,6 +209,7 @@ export const ChallengeInfo: React.FC<ChallengeInfoProps> = ({
                 challenge={challenge}
                 onProfilePress={(user) => navigation.push('UserInfo', { user })}
             >
+                <Opponents opponents={challenge.opponents}/>
                 <Divider style={styles.divider} />
 
                 <Actions
@@ -245,6 +247,9 @@ export const ChallengeInfo: React.FC<ChallengeInfoProps> = ({
 };
 
 const styles = StyleSheet.create({
+    opponents: {
+        marginTop: 10,
+    },
     container: {
         flex: 1
     },

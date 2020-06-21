@@ -1,6 +1,8 @@
 import * as functions from 'firebase-functions';
 import admin from './config';
 
+import { updateStatuses, getChallengeResult } from './utils';
+
 interface User {
     id: string;
     avatar: string;
@@ -14,7 +16,7 @@ enum ChallengeStatus {
     Finished = 'Finished' // All participants voted or voting phase is over (after 3 days)
 }
 
-enum ChallengeResult {
+export enum ChallengeResult {
     Loss,
     Win,
     Draw
@@ -28,6 +30,7 @@ interface Challenge {
     creatorHealth?: number;
     creatorProgress: number;
     createdBy: string;
+    creatorEndChallenge: boolean;
     creatorVote?: boolean; // creator opinion about challenge result, true if goal achieved
     creationDate: number;
     isOpponent?: boolean;
@@ -51,6 +54,7 @@ export const setChallenge = functions.https.onRequest(async (request, response) 
             createdBy: request.body.userId as string,
             creationDate: Date.now(),
             creatorProgress: 0,
+            creatorEndChallenge: false,
             opponents: {},
             _opponents: [],
             likedBy: [],
@@ -85,7 +89,7 @@ export const setVote = functions.https.onRequest(async (request, response) => {
     const challengesCollection = admin.firestore().collection('challenges');
     const challengeDocRef = challengesCollection.doc(challengeId);
     const challenge = await (await challengeDocRef.get()).data();
-
+    console.log(challenge)
     if (challenge!.createdBy === userId) {
         update.creatorVote = vote;
         challenge!.creatorVote = vote;
@@ -111,7 +115,7 @@ export const setChallengeStatusToVoting = functions.https.onRequest(async (reque
     admin.firestore()
         .collection('challenges')
         .doc(request.query.id.toString())
-        .update({ status: ChallengeStatus.Voting })
+        .update({ creatorEndChallenge: true })
         .then(() => response.status(200).send())
         .catch(() => response.status(500).send());
 })
@@ -161,15 +165,27 @@ const extendChallenges = async (challenges: Challenge[], currentUserId: string) 
 
     return challenges.map((challenge: Challenge) => ({
         ...challenge,
-        result: getChallengeResult(challenge),
         status: getChallengeStatus(challenge),
         userVote: getUserVote(challenge, currentUserId),
         creatorHealth: getCreatorHealth(challenge.endDate, challenge.creationDate),
         isOpponent: Object.keys(challenge.opponents).includes(currentUserId),
         likedByUser: challenge.likedBy.includes(currentUserId),
         createdBy: users[challenge.createdBy],
-        opponents: Object.keys(challenge.opponents).map((opponent: string) => users[opponent])
+        opponents: setOpponents(challenge, users)
     }));
+}
+
+const setOpponents = (challenge : any, users: any) => {
+    const result = []
+    for (let [key, value] of Object.entries(challenge.opponents) as any) {
+        console.log(`${key}: ${value}`);
+        const opponentMessage = value.message;
+        result.push({
+            ...users[key],
+            message: opponentMessage
+        })
+      }
+    return result;
 }
 
 const getCreatorHealth = (endDate: number, creationDate: number) => {
@@ -186,24 +202,6 @@ const getChallengeStatus = (challenge: Challenge) => {
         return ChallengeStatus.Finished
     }
     return challenge.status || ChallengeStatus.Created;
-}
-
-const getChallengeResult = (challenge: any) => {
-    if (challenge.creatorVote === true && getOpponentsStatus(challenge.opponents, true)) {
-        return ChallengeResult.Win
-    } else if (challenge.creatorVote === false && getOpponentsStatus(challenge.opponents, false)) {
-        return ChallengeResult.Loss
-    }
-    return null
-}
-
-const getOpponentsStatus = (opponents: any, checkStatus: boolean) => {
-    for (const opponent in opponents) {
-        if (opponents[opponent].vote !== checkStatus) {
-            return false
-        }
-    }
-    return true
 }
 
 const getUserVote = (challenge: any, currentUserId: string) => {
@@ -311,4 +309,22 @@ export const getComments = functions.https.onRequest(async (request, response) =
         .get();
 
     response.status(200).send(commentsSnapshot.docs.map(doc => doc.data()));
+})
+
+
+export const setChallengesStatus = functions.https.onRequest(async (request, response) => {
+    admin.firestore()
+        .collection('challenges').where('status', 'in', ['Created', 'In Progress', 'Voting']).get().then(
+            snapshot => {
+                if (snapshot.empty){
+                    console.log('No matching documents.');
+                    return;
+                }
+                console.log("There are "+snapshot.size+" messages");
+                snapshot.forEach(async (doc) => {
+                    await updateStatuses(doc)
+                })
+            }
+        ).catch();
+    response.status(200).send()
 })

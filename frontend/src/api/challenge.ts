@@ -8,10 +8,10 @@ export async function getChallenges(
     page: number,
     filterBy?: 'participant' | 'likedBy',
     userId?: string
-): Promise<Challenge[]> {
+): Promise<any[]> {
     const params = { page, filterBy, userId, currentUserId };
     const res = await axios.get(`${HOST}challenge-getChallenges`, { params });
-
+    console.log(res.data);
     return res.data;
 }
 
