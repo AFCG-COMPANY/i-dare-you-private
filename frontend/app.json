@@ -1,40 +1,36 @@
 {
-  "expo": {
-    "name": "Ante",
-    "slug": "ante",
-    "platforms": [
-      "ios",
-      "android",
-      "web"
-    ],
-    "version": "1.0.0",
-    "orientation": "portrait",
-    "icon": "./assets/icon-ios.png",
-    "splash": {
-      "image": "./assets/splash.png",
-      "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
-    },
-    "updates": {
-      "fallbackToCacheTimeout": 0
-    },
-    "assetBundlePatterns": [
-      "**/*"
-    ],
-    "ios": {
-      "supportsTablet": true,
-      "bundleIdentifier": "com.ibetyouwill",
-      "buildNumber": "1.0.0"
-    },
-    "android": {
-      "package": "com.i_bet_you_will",
-      "versionCode": 1,
-      "icon": "./assets/icon-android.png",
-      "adaptiveIcon": {
-        "backgroundColor": "#005dfb",
-        "foregroundImage": "./assets/android-foreground.png"
-      }
-    },
-    "description": ""
-  }
+    "expo": {
+        "name": "Ante",
+        "slug": "ante",
+        "platforms": ["ios", "android", "web"],
+        "sdkVersion": "37.0.0",
+        "version": "1.0.0",
+        "orientation": "portrait",
+        "icon": "./assets/icon-ios.png",
+        "splash": {
+            "image": "./assets/splash.png",
+            "resizeMode": "contain",
+            "backgroundColor": "#ffffff"
+        },
+        "updates": {
+            "fallbackToCacheTimeout": 0
+        },
+        "assetBundlePatterns": ["**/*"],
+        "ios": {
+            "supportsTablet": true,
+            "bundleIdentifier": "com.ibetyouwill",
+            "buildNumber": "1.0.0"
+        },
+        "android": {
+            "googleServicesFile": "./google-services.json",
+            "package": "com.i_bet_you_will",
+            "versionCode": 1,
+            "icon": "./assets/icon-android.png",
+            "adaptiveIcon": {
+                "backgroundColor": "#005dfb",
+                "foregroundImage": "./assets/android-foreground.png"
+            }
+        },
+        "description": ""
+    }
 }

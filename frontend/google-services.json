@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "106861285226",
+    "firebase_url": "https://i-dare-you-142ea.firebaseio.com",
+    "project_id": "i-dare-you-142ea",
+    "storage_bucket": "i-dare-you-142ea.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:106861285226:android:88b73427f2f8071c9e5f13",
+        "android_client_info": {
+          "package_name": "com.i_bet_you_will"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "106861285226-cq6b6ig6qu6lnrm65msna2hacgcni400.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBlfU_WU9HT2kKC3Ls7wHcFP9hYWL-IA4U"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "106861285226-cq6b6ig6qu6lnrm65msna2hacgcni400.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
