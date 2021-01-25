@@ -6,7 +6,7 @@ const DEFAULT_USER_AVATAR = 'https://firebasestorage.googleapis.com/v0/b/i-dare-
 
 export const getUser = functions.https.onRequest(async (request, response) => {
     const usersCollection = admin.firestore().collection('users');
-    const docRef = usersCollection.doc(request.query.id.toString());
+    const docRef = usersCollection.doc(request.query.id!.toString());
 
     try {
         let userDoc = await docRef.get();
@@ -31,10 +31,12 @@ export const getUser = functions.https.onRequest(async (request, response) => {
 });
 
 export const setUser = functions.https.onRequest((request, response) => {
-    admin.firestore().collection('users').doc(request.query.id.toString()).set({
+    admin.firestore().collection('users').doc(request.query.id!.toString()).set({
         username: request.body.username,
         avatar: request.body.avatar,
-        bio: request.body.bio
+        bio: request.body.bio,
+        pushToken: request.body.token,
+        allowPushes: request.body.allowPushes,
     })
         .then(doc => {
             response.status(200).send()
@@ -79,4 +81,4 @@ export const getUsers = functions.https.onRequest((request, response) => {
         console.log(e);
         response.status(500).send();
     });
-}) 
+})

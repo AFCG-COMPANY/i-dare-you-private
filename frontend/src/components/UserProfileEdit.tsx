@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import {
     ActivityIndicator,
     Alert,
@@ -26,6 +26,17 @@ interface UserProfileEditProps {
 }
 
 export const UserProfileEdit: React.FC<UserProfileEditProps> = (props) => {
+    useEffect(() => {
+        notification();
+    }, []);
+
+    const notification = async () => {
+        if (!user?.username){
+            console.log(123);
+            console.log(user?.id)
+        }
+    }
+
     const { state, dispatch } = React.useContext(AppContext);
     const { user } = state;
 
@@ -40,6 +51,9 @@ export const UserProfileEdit: React.FC<UserProfileEditProps> = (props) => {
     const [updateInProgress, setUpdateInProgress] = React.useState<boolean>(
         false
     );
+    if (!user.username){
+        console.log("place for push logic");
+    }
 
     const onAvatarEditPress = async () => {
         // Get permission to access photos

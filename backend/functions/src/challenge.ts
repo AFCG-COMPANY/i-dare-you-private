@@ -1,7 +1,7 @@
 import * as functions from 'firebase-functions';
 import admin from './config';
 
-import { updateStatuses, getChallengeResult } from './utils';
+import { updateStatuses, getChallengeResult, sendPushes } from './utils';
 
 interface User {
     id: string;
@@ -75,14 +75,14 @@ export const setOpponent = functions.https.onRequest(async (request, response) =
     update['status'] = ChallengeStatus.InProgress;
     admin.firestore()
         .collection('challenges')
-        .doc(request.query.id.toString())
+        .doc(request.query.id!.toString())
         .update(update)
-        .then(() => response.status(200).send())
+        .then(() => {response.status(200).send(); sendPushes()})
         .catch(() => response.status(500).send());
 })
 
 export const setVote = functions.https.onRequest(async (request, response) => {
-    const challengeId: string = request.query.id.toString();
+    const challengeId: string = request.query.id!.toString();
     const { userId, vote } = request.body;
     const update: { [id: string]: string } = {};
 
@@ -105,7 +105,7 @@ export const setVote = functions.https.onRequest(async (request, response) => {
 export const setCreatorProgress = functions.https.onRequest(async (request, response) => {
     admin.firestore()
         .collection('challenges')
-        .doc(request.query.id.toString())
+        .doc(request.query.id!.toString())
         .update({ creatorProgress: parseInt(request.body.creatorProgress) })
         .then(() => response.status(200).send())
         .catch(() => response.status(500).send());
@@ -114,7 +114,7 @@ export const setCreatorProgress = functions.https.onRequest(async (request, resp
 export const setChallengeStatusToVoting = functions.https.onRequest(async (request, response) => {
     admin.firestore()
         .collection('challenges')
-        .doc(request.query.id.toString())
+        .doc(request.query.id!.toString())
         .update({ creatorEndChallenge: true })
         .then(() => response.status(200).send())
         .catch(() => response.status(500).send());
@@ -130,7 +130,7 @@ export const setLiked = functions.https.onRequest(async (request, response) => {
 
     admin.firestore()
         .collection('challenges')
-        .doc(request.query.id.toString())
+        .doc(request.query.id!.toString())
         .update({ likedBy: databaseAction })
         .then(() => response.status(200).send())
         .catch(err => {
@@ -280,7 +280,7 @@ export const getChallenges = functions.https.onRequest(async (request, response)
 
 export const setComment = functions.https.onRequest(async (request, response) => {
     let batch = admin.firestore().batch();
-    let newComment = admin.firestore().collection('challenges').doc(request.query.id.toString())
+    let newComment = admin.firestore().collection('challenges').doc(request.query.id!.toString())
         .collection('comments').doc();
 
     batch.set(newComment, {
@@ -290,7 +290,7 @@ export const setComment = functions.https.onRequest(async (request, response) =>
         timestamp: admin.firestore.FieldValue.serverTimestamp()
     });
 
-    let challenge = admin.firestore().collection('challenges').doc(request.query.id.toString())
+    let challenge = admin.firestore().collection('challenges').doc(request.query.id!.toString())
     const increment = admin.firestore.FieldValue.increment(1);
 
     batch.update(challenge, { commentsCount: increment })
@@ -303,7 +303,7 @@ export const setComment = functions.https.onRequest(async (request, response) =>
 export const getComments = functions.https.onRequest(async (request, response) => {
     const commentsSnapshot = await admin.firestore()
         .collection('challenges')
-        .doc(request.query.id.toString())
+        .doc(request.query.id!.toString())
         .collection('comments')
         .orderBy('timestamp', 'asc')
         .get();

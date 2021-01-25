@@ -1,5 +1,6 @@
 import { ChallengeResult } from './challenge'
 import admin from './config';
+import axios from 'axios';
 
 
 /*
@@ -77,4 +78,25 @@ const getOpponentsStatus = (opponents: any, checkStatus: boolean) => {
         }
     }
     return true
+}
+
+export const sendPushes = () => {
+    let data = JSON.stringify({"to":"ExponentPushToken[Ay5F-dIG6uyiItJPIDT0P0]","title":"hello","body":"world"});
+
+    let config : any = {
+      method: 'post',
+      url: 'https://exp.host/--/api/v2/push/send',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      data : data
+    };
+
+    axios(config)
+    .then(function (response) {
+      console.log(JSON.stringify(response.data));
+    })
+    .catch(function (error) {
+      console.log(error);
+    });
 }
