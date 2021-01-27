@@ -49,7 +49,7 @@ export async function blobToBase64(blob: Blob): Promise<string> {
     });
 }
 
-export function updateUser(user: User): Promise<void> {
+export function updateUser(user: User, userStatus: string, userToken: string): Promise<void> {
     const { username, bio, id, avatar } = user;
-    return axios.post(`${HOST}user-setUser?id=${id}`, { bio, username, avatar });
+    return axios.post(`${HOST}user-setUser?id=${id}`, { bio, username, avatar, userStatus, userToken });
 }

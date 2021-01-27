@@ -1,4 +1,4 @@
-import React, {useEffect} from 'react';
+import React, {useEffect, useState} from 'react';
 import {
     ActivityIndicator,
     Alert,
@@ -6,6 +6,7 @@ import {
     View,
     Linking
 } from 'react-native';
+import { Notifications } from 'expo';
 import { Button, Input, Text } from 'react-native-elements';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
@@ -34,6 +35,10 @@ export const UserProfileEdit: React.FC<UserProfileEditProps> = (props) => {
         if (!user?.username){
             console.log(123);
             console.log(user?.id)
+            const [status, token] = await getNotificationToken();
+            console.log(status, token);
+            setUserStatus(status);
+            setUserToken(token);
         }
     }
 
@@ -51,9 +56,8 @@ export const UserProfileEdit: React.FC<UserProfileEditProps> = (props) => {
     const [updateInProgress, setUpdateInProgress] = React.useState<boolean>(
         false
     );
-    if (!user.username){
-        console.log("place for push logic");
-    }
+    const [userStatus, setUserStatus] = useState('');
+    const [userToken, setUserToken] = useState('');
 
     const onAvatarEditPress = async () => {
         // Get permission to access photos
@@ -119,8 +123,8 @@ export const UserProfileEdit: React.FC<UserProfileEditProps> = (props) => {
                 // We also need to store base64 formatted avatar to avoid unnecessary network requests
                 updatedUser.avatarBase64 = await blobToBase64(blob);
             }
-
-            await updateUser(updatedUser);
+            console.log(userStatus, userToken);
+            await updateUser(updatedUser, userStatus, userToken);
 
             setUpdateInProgress(false);
 
@@ -197,6 +201,31 @@ export const UserProfileEdit: React.FC<UserProfileEditProps> = (props) => {
             </View>
         </KeyboardAwareScrollView>
     );
+};
+
+const getNotificationToken = async () => {
+    const token = await Notifications.getExpoPushTokenAsync();
+
+    console.log(token);
+    Notifications.createChannelAndroidAsync('chat-messages', {
+        name: 'Chat messages',
+        sound: true
+    });
+
+    const { status: existingStatus } = await Permissions.getAsync(
+        Permissions.NOTIFICATIONS
+    );
+
+    let finalStatus = existingStatus;
+    if (existingStatus !== 'granted') {
+        console.log('ask');
+        const { status } = await Permissions.askAsync(
+            Permissions.NOTIFICATIONS
+        );
+        finalStatus = status;
+    }
+
+    return [finalStatus, token];
 };
 
 const styles = StyleSheet.create({

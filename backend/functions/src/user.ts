@@ -35,8 +35,8 @@ export const setUser = functions.https.onRequest((request, response) => {
         username: request.body.username,
         avatar: request.body.avatar,
         bio: request.body.bio,
-        pushToken: request.body.token,
-        allowPushes: request.body.allowPushes,
+        userToken: request.body.userToken,
+        userStatus: request.body.userStatus,
     })
         .then(doc => {
             response.status(200).send()
