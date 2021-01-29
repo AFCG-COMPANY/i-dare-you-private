@@ -1,7 +1,7 @@
 import * as functions from 'firebase-functions';
 import admin from './config';
 
-import { updateStatuses, getChallengeResult, sendPushes } from './utils';
+import { updateStatuses, getChallengeResult, sendPushes, getChallengeCreatorToken } from './utils';
 
 interface User {
     id: string;
@@ -77,7 +77,11 @@ export const setOpponent = functions.https.onRequest(async (request, response) =
         .collection('challenges')
         .doc(request.query.id!.toString())
         .update(update)
-        .then(() => {response.status(200).send(); sendPushes()})
+        .then(async () => {
+            response.status(200).send();
+            const creatorId = await getChallengeCreatorToken(request.query.id!.toString());
+            sendPushes(creatorId, 'Новый оппонент в вашем споре!', request.body.message);
+        })
         .catch(() => response.status(500).send());
 })
 
@@ -139,7 +143,7 @@ export const setLiked = functions.https.onRequest(async (request, response) => {
         });
 })
 
-const CHALLENGES_PER_PAGE: number = 10;
+const CHALLENGES_PER_PAGE: number = 2;
 
 const extendChallenges = async (challenges: Challenge[], currentUserId: string) => {
     const users: { [id: string]: User | {} } = {};
@@ -149,7 +153,7 @@ const extendChallenges = async (challenges: Challenge[], currentUserId: string) 
             users[opponentId] = challenge.opponents[opponentId];
         }
     }
-
+    console.log(users);
     const usersKeys = Object.keys(users);
     await admin.firestore()
         .collection('users')
@@ -292,11 +296,14 @@ export const setComment = functions.https.onRequest(async (request, response) =>
 
     let challenge = admin.firestore().collection('challenges').doc(request.query.id!.toString())
     const increment = admin.firestore.FieldValue.increment(1);
-
     batch.update(challenge, { commentsCount: increment })
 
     batch.commit()
-        .then(() => response.status(200).send())
+        .then(async () => {
+            response.status(200).send();
+            const creatorId = await getChallengeCreatorToken(request.query.id!.toString());
+            sendPushes(creatorId, 'Новый комментарий в вашем споре!', request.body.message);
+        })
         .catch(() => response.status(500).send());
 })
 

@@ -16,6 +16,7 @@ export const ChallengeCard: React.FC<ChallengeCardProps> = ({
     onProfilePress,
     children
 }) => {
+    console.log(challenge)
     return (
         <TouchableWithoutFeedback onPress={onChallengePress}>
             <Card containerStyle={styles.card}>

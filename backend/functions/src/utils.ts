@@ -20,6 +20,8 @@ export const updateStatuses = async (doc: any) => {
         if (now > data.endDate || data.creatorEndChallenge) {
             // voting
             newChallengeStatus = 'Voting'
+            const creatorId = await getChallengeCreatorToken(doc.id);
+            sendPushes(creatorId, 'Спор перешел в статус голосования!', 'Проверьте последние события!');
         } else if (data._opponents.length > 0) {
             // in progress
             newChallengeStatus = 'In Progress'
@@ -28,11 +30,19 @@ export const updateStatuses = async (doc: any) => {
     } else if (data.status === 'In Progress') {
         if (now > data.endDate || data.creatorEndChallenge) {
             // voting
+            const creatorId = await getChallengeCreatorToken(doc.id);
+            sendPushes(creatorId, 'Спор перешел в статус голосования!', 'Проверьте последние события!');
             newChallengeStatus = 'Voting'
+        }
+        if (now === data.endDate - 24*60*60){ // check
+            const creatorId = await getChallengeCreatorToken(doc.id);
+            sendPushes(creatorId, 'Спор перешел в статус голосования!', 'Проверьте последние события!');
         }
     } else { // Voting
         if (now > endVotingDate) {
             // finished
+            const creatorId = await getChallengeCreatorToken(doc.id);
+            sendPushes(creatorId, 'Ваш спор завершен!', 'Узнайте как завершился ваш спор');
             newChallengeStatus = 'Finished'
         }
     }
@@ -80,8 +90,20 @@ const getOpponentsStatus = (opponents: any, checkStatus: boolean) => {
     return true
 }
 
-export const sendPushes = () => {
-    let data = JSON.stringify({"to":"ExponentPushToken[Ay5F-dIG6uyiItJPIDT0P0]","title":"hello","body":"world"});
+export const getChallengeCreatorToken = async (challengeId: any) => {
+    const challenge =  await admin.firestore()
+    .collection('challenges')
+    .doc(challengeId)
+    .get();
+    const challengeData = challenge.data()
+    const challengeCreator = challengeData?.createdBy;
+    const user = await admin.firestore().collection('users').doc(challengeCreator).get()
+    const userData = user.data();
+    return userData?.userToken;
+}
+
+export const sendPushes = (userToken: string, title: string, text: string) => {
+    let data = JSON.stringify({"to":userToken,"title":title,"body":text});
 
     let config : any = {
       method: 'post',
