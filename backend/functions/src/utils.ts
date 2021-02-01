@@ -97,17 +97,43 @@ export const getChallengeCreatorToken = async (challengeId: any) => {
     .get();
     const challengeData = challenge.data()
     const challengeCreator = challengeData?.createdBy;
-    const user = await admin.firestore().collection('users').doc(challengeCreator).get()
+    let user = await admin.firestore().collection('users').doc(challengeCreator).get()
     const userData = user.data();
     return userData?.userToken;
 }
 
-export const sendPushes = (userToken: string, title: string, text: string) => {
+export const getChallengeParticipantsToken = async (challengeId: any) => {
+    // return opponents and users who liked tokens
+    const challenge =  await admin.firestore()
+    .collection('challenges')
+    .doc(challengeId)
+    .get();
+    const challengeData = challenge.data()
+    const users: any = [];
+    for (const opponentId of Object.keys(challengeData?.opponents)) {
+        users.push(opponentId);
+    }
+    for (const likedBy of challengeData?.likedBy) {
+        console.log(likedBy);
+        users.push(likedBy);
+    }
+    console.log(users)
+    return users;
+}
+
+export const getUserToken = async (userId: string) => {
+    let user = await admin.firestore().collection('users').doc(userId).get()
+    const userData = user.data();
+    return userData?.userToken;
+}
+
+export const sendPushes = (userToken: any | any[], title: string, text: string) => {
     let data = JSON.stringify({"to":userToken,"title":title,"body":text});
 
     let config : any = {
       method: 'post',
       url: 'https://exp.host/--/api/v2/push/send',
+      channelId: 'chat-messages',
       headers: {
         'Content-Type': 'application/json'
       },

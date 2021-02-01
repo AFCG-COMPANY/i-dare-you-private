@@ -151,7 +151,7 @@ export const ChallengeInfo: React.FC<ChallengeInfoProps> = ({
         }
     };
 
-    const onPostCommentPress = async (message: string, image: string) => {
+    const onPostCommentPress = async (message: string, image: string, replyId: string) => {
         if (message) {
             const comments = challenge.comments || [];
             comments.push({
@@ -187,7 +187,8 @@ export const ChallengeInfo: React.FC<ChallengeInfoProps> = ({
                     challenge.id,
                     { id: user.id, username: user.username as string },
                     message,
-                    image
+                    image,
+                    replyId
                 );
             } catch (e) {
                 console.log(e);

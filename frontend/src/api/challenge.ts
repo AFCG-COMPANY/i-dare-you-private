@@ -69,11 +69,12 @@ export function commentOnChallenge(
     challengeId: string,
     user: { username: string, id: string },
     message?: string,
-    imageUrl?: string
+    imageUrl?: string,
+    replyId?: string,
 ): Promise<void> {
     return axios.post(
         HOST + 'challenge-setComment',
-        { user, message, imageUrl },
+        { user, message, imageUrl, replyId },
         { params: { id: challengeId } }
     );
 }

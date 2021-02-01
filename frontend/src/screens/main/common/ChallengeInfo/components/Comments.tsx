@@ -20,7 +20,7 @@ import { CommentComponent } from './Comment';
 interface CommentsProps {
     loading: boolean;
     comments: Comment[];
-    onPost: (message: string, imageUrl: string) => void;
+    onPost: (message: string, imageUrl: string, replayToUserId: string) => void;
     shouldFocusInput?: boolean;
 }
 export const Comments: React.FC<CommentsProps> = ({
@@ -31,6 +31,8 @@ export const Comments: React.FC<CommentsProps> = ({
 }) => {
     const [message, setMessage] = React.useState<string>('');
     const [imageUrl, setImageUrl] = React.useState<string>('');
+    const [replayToUserName, setReplayToUserName] = React.useState<string>('');
+    const [replayToUserId, setReplayToUserId] = React.useState<string>('');
     const [isModelVisible, setIsModelVisible] = React.useState<boolean>(false);
     const inputRef = React.useRef<Input>(null);
 
@@ -70,6 +72,12 @@ export const Comments: React.FC<CommentsProps> = ({
         }
     };
 
+    const setReplayToUser = async (replayToUserNameFromComment: string, replayToUserIdFromComment: string) => {
+        setReplayToUserId(replayToUserIdFromComment);
+        setReplayToUserName(replayToUserNameFromComment);
+        setMessage(`@${replayToUserNameFromComment}, `);
+    }
+
     return (
         <>
             {loading ? (
@@ -78,8 +86,10 @@ export const Comments: React.FC<CommentsProps> = ({
                 comments.map((comment, id) => (
                     <CommentComponent
                         user={comment.user.username}
+                        userId={comment.user.id}
                         message={comment.message}
                         imageUrl={comment.imageUrl}
+                        setReplayToUser={setReplayToUser}
                         id={id}
                     />
                 ))
@@ -116,9 +126,11 @@ export const Comments: React.FC<CommentsProps> = ({
                         color: '#007ef5'
                     }}
                     onPress={() => {
-                        onPost(message, imageUrl);
+                        onPost(message, imageUrl, replayToUserId);
                         setMessage('');
                         setImageUrl('');
+                        setReplayToUserName('');
+                        setReplayToUserId('');
                     }}
                 />
             </View>

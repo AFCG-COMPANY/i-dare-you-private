@@ -209,7 +209,9 @@ const getNotificationToken = async () => {
     console.log(token);
     Notifications.createChannelAndroidAsync('chat-messages', {
         name: 'Chat messages',
-        sound: true
+        sound: true,
+        priority: "max",
+        vibrate: [0, 250, 250, 250],
     });
 
     const { status: existingStatus } = await Permissions.getAsync(

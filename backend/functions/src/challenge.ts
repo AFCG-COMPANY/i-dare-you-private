@@ -1,9 +1,10 @@
 import * as functions from 'firebase-functions';
 import admin from './config';
 
-import { updateStatuses, getChallengeResult, sendPushes, getChallengeCreatorToken } from './utils';
+import { updateStatuses, getChallengeResult,
+    sendPushes, getChallengeCreatorToken, getUserToken, getChallengeParticipantsToken } from './utils';
 
-interface User {
+export interface User {
     id: string;
     avatar: string;
     username: string;
@@ -111,7 +112,30 @@ export const setCreatorProgress = functions.https.onRequest(async (request, resp
         .collection('challenges')
         .doc(request.query.id!.toString())
         .update({ creatorProgress: parseInt(request.body.creatorProgress) })
-        .then(() => response.status(200).send())
+        .then(async () => {
+            response.status(200).send();
+            let users = await getChallengeParticipantsToken(request.query.id!.toString());
+            const usersTokens: any[] = [];
+            console.log(users);
+            admin.firestore()
+            .collection('users').where(admin.firestore.FieldPath.documentId(), 'in', users).get().then(
+                snapshot => {
+                    if (snapshot.empty){
+                        console.log('No matching documents.');
+                        return;
+                    }
+                    console.log("There are "+snapshot.size+" messages");
+                    snapshot.forEach(async (doc) => {
+                        const userData = doc.data();
+                        console.log(userData);
+                        console.log(userData.userToken);
+                        usersTokens.push(userData.userToken);
+                    })
+                    console.log(usersTokens);
+                    sendPushes(usersTokens, 'Спор перешел в статус голосования', 'Заходите в приложение и проголосуйте!');
+                }
+            ).catch((err) => {console.log(err)});
+        })
         .catch(() => response.status(500).send());
 })
 
@@ -120,7 +144,10 @@ export const setChallengeStatusToVoting = functions.https.onRequest(async (reque
         .collection('challenges')
         .doc(request.query.id!.toString())
         .update({ creatorEndChallenge: true })
-        .then(() => response.status(200).send())
+        .then(() => {
+            response.status(200).send();
+
+        })
         .catch(() => response.status(500).send());
 })
 
@@ -291,8 +318,14 @@ export const setComment = functions.https.onRequest(async (request, response) =>
         message: request.body.message || null,
         imageUrl: request.body.imageUrl || null,
         user: request.body.user,
-        timestamp: admin.firestore.FieldValue.serverTimestamp()
+        timestamp: admin.firestore.FieldValue.serverTimestamp(),
+        replyId: request.body.replyId,
     });
+
+    if(request.body.replyId !== ''){
+        const userToken = await getUserToken(request.body.replyId);
+        sendPushes(userToken, 'На ваш комментарий ответили!', request.body.message);
+    }
 
     let challenge = admin.firestore().collection('challenges').doc(request.query.id!.toString())
     const increment = admin.firestore.FieldValue.increment(1);
