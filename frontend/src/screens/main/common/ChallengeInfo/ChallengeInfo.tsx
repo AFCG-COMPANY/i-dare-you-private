@@ -152,47 +152,45 @@ export const ChallengeInfo: React.FC<ChallengeInfoProps> = ({
     };
 
     const onPostCommentPress = async (message: string, image: string, replyId: string) => {
-        if (message) {
-            const comments = challenge.comments || [];
-            comments.push({
-                user: {
-                    id: user.id,
-                    username: user.username as string
-                },
+        const comments = challenge.comments || [];
+        comments.push({
+            user: {
+                id: user.id,
+                username: user.username as string
+            },
+            message,
+            imageUrl: (image || null)
+        });
+
+        challenge.comments = comments;
+        challenge.commentsCount = challenge.commentsCount
+            ? challenge.commentsCount + 1
+            : 1;
+        challenge.commentsChanged = true;
+        setChallenge({ ...challenge });
+        if (image !== '') {
+            const storageRef = firebase.storage().ref();
+            const avatarPath = 'comments/' + image.split('/').pop();
+
+            // User selected new avatar, need to upload it
+            const res = await fetch(image);
+            const blob = await res.blob();
+            await storageRef.child(avatarPath).put(blob);
+
+            // Need to send download url to backend
+            image = await storageRef.child(avatarPath).getDownloadURL();
+            console.log(image);
+        }
+        try {
+            await commentOnChallenge(
+                challenge.id,
+                { id: user.id, username: user.username as string },
                 message,
-                imageUrl: (image || null)
-            });
-
-            challenge.comments = comments;
-            challenge.commentsCount = challenge.commentsCount
-                ? challenge.commentsCount + 1
-                : 1;
-            challenge.commentsChanged = true;
-            setChallenge({ ...challenge });
-            if (image !== '') {
-                const storageRef = firebase.storage().ref();
-                const avatarPath = 'comments/' + image.split('/').pop();
-
-                // User selected new avatar, need to upload it
-                const res = await fetch(image);
-                const blob = await res.blob();
-                await storageRef.child(avatarPath).put(blob);
-
-                // Need to send download url to backend
-                image = await storageRef.child(avatarPath).getDownloadURL();
-                console.log(image);
-            }
-            try {
-                await commentOnChallenge(
-                    challenge.id,
-                    { id: user.id, username: user.username as string },
-                    message,
-                    image,
-                    replyId
-                );
-            } catch (e) {
-                console.log(e);
-            }
+                image,
+                replyId
+            );
+        } catch (e) {
+            console.log(e);
         }
     };
 
