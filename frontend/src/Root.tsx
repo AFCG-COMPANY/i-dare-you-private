@@ -27,6 +27,11 @@ function reducer(
     }
 }
 
+async function passOnboarding(setIntro: any) {
+    setIntro('true');
+    await AsyncStorage.setItem('@SKIP_INTRO', 'true');
+}
+
 export default function Root() {
     const [state, dispatch] = React.useReducer(reducer, INITIAL_STATE);
     const [loading, setLoading] = React.useState<boolean>(true);
@@ -105,116 +110,116 @@ export default function Root() {
         });
     }, []);
 
-    // if (intro !== null || intro !== 'true') {
-    //     console.log(intro, 'intro');
-    //     return (
-    //         <Onboarding
-    //         showDone={false}
-    //         onSkip={() => {setIntro('true')}}
-    //         pages={[
-    //           {
-    //             title: title,
-    //             subtitle: subtitle,
-    //             backgroundColor: '#1565c0',
-    //             image: (
-    //               <Icon name="rocket" type="font-awesome" size={100} color="white" />
-    //             ),
-    //           },
-    //           {
-    //             title: 'screen1',
-    //             subtitle: 'You can reach everybody with us',
-    //             backgroundColor: '#5e92f3',
-    //             image: (
-    //               <Image
-    //                 source={{ uri: screen1 }}
-    //                 style={{ width: 400, height: '100%' }}
-    //                 resizeMode="contain"
-    //               />
-    //             ),
-    //           },
-    //           {
-    //             title: 'screen2',
-    //             subtitle: 'You can reach everybody with us',
-    //             backgroundColor: '#5e92f3',
-    //             image: (
-    //               <Image
-    //                 source={{ uri: screen2 }}
-    //                 style={{ width: 400, height: '100%' }}
-    //                 resizeMode="contain"
-    //               />
-    //             ),
-    //           },
-    //           {
-    //             title: 'screen3',
-    //             subtitle: 'Welcome to $App!',
-    //             backgroundColor: '#003c8f',
-    //             image: (
-    //               <Image
-    //                 source={{ uri: screen3 }}
-    //                 style={{ width: 400, height: '100%' }}
-    //                 resizeMode="contain"
-    //               />
-    //             ),
-    //           },
-    //           {
-    //             title: 'screen4',
-    //             subtitle: 'Welcome to $App!',
-    //             backgroundColor: '#003c8f',
-    //             image: (
-    //               <Image
-    //                 source={{ uri: screen4 }}
-    //                 style={{ width: 400, height: '100%' }}
-    //                 resizeMode="contain"
-    //               />
-    //             ),
-    //           },
-    //           {
-    //             title: 'screen5',
-    //             subtitle: 'Welcome to $App!',
-    //             backgroundColor: '#003c8f',
-    //             image: (
-    //               <Image
-    //                 source={{ uri: screen5 }}
-    //                 style={{ width: 400, height: '100%' }}
-    //                 resizeMode="contain"
-    //               />
-    //             ),
-    //           },
-    //           {
-    //             title: 'screen6',
-    //             subtitle: 'Welcome to $App!',
-    //             backgroundColor: '#003c8f',
-    //             image: (
-    //               <Image
-    //                 source={{ uri: screen6 }}
-    //                 style={{ width: 400, height: '100%' }}
-    //                 resizeMode="contain"
-    //               />
-    //             ),
-    //           },
-    //           {
-    //             title: "Отлично! Можете начинать",
-    //             subtitle: (
-    //               <Button
-    //                 title={'Начать'}
-    //                 containerViewStyle={{ marginTop: 20 }}
-    //                 backgroundColor={'white'}
-    //                 borderRadius={5}
-    //                 textStyle={{ color: '#003c8f' }}
-    //                 onPress={() => {
-    //                   Alert.alert('done');
-    //                 }}
-    //               />
-    //             ),
-    //             backgroundColor: '#003c8f',
-    //             image: (
-    //               <Icon name="rocket" type="font-awesome" size={100} color="white" />
-    //             ),
-    //           },
-    //         ]}
-    //       />
-    //     );
-    //  }
+    if (intro === null || intro !== 'true') {
+        console.log(intro);
+        return (
+            <Onboarding
+            showDone={false}
+            onSkip={() => {passOnboarding(setIntro)}}
+            pages={[
+              {
+                title: title,
+                subtitle: subtitle,
+                backgroundColor: '#1565c0',
+                image: (
+                  <Icon name="rocket" type="font-awesome" size={100} color="white" />
+                ),
+              },
+              {
+                title: 'screen1',
+                subtitle: 'You can reach everybody with us',
+                backgroundColor: '#5e92f3',
+                image: (
+                  <Image
+                    source={{ uri: screen1 }}
+                    style={{ width: 400, height: '100%' }}
+                    resizeMode="contain"
+                  />
+                ),
+              },
+              {
+                title: 'screen2',
+                subtitle: 'You can reach everybody with us',
+                backgroundColor: '#5e92f3',
+                image: (
+                  <Image
+                    source={{ uri: screen2 }}
+                    style={{ width: 400, height: '100%' }}
+                    resizeMode="contain"
+                  />
+                ),
+              },
+              {
+                title: 'screen3',
+                subtitle: 'Welcome to $App!',
+                backgroundColor: '#003c8f',
+                image: (
+                  <Image
+                    source={{ uri: screen3 }}
+                    style={{ width: 400, height: '100%' }}
+                    resizeMode="contain"
+                  />
+                ),
+              },
+              {
+                title: 'screen4',
+                subtitle: 'Welcome to $App!',
+                backgroundColor: '#003c8f',
+                image: (
+                  <Image
+                    source={{ uri: screen4 }}
+                    style={{ width: 400, height: '100%' }}
+                    resizeMode="contain"
+                  />
+                ),
+              },
+              {
+                title: 'screen5',
+                subtitle: 'Welcome to $App!',
+                backgroundColor: '#003c8f',
+                image: (
+                  <Image
+                    source={{ uri: screen5 }}
+                    style={{ width: 400, height: '100%' }}
+                    resizeMode="contain"
+                  />
+                ),
+              },
+              {
+                title: 'screen6',
+                subtitle: 'Welcome to $App!',
+                backgroundColor: '#003c8f',
+                image: (
+                  <Image
+                    source={{ uri: screen6 }}
+                    style={{ width: 400, height: '100%' }}
+                    resizeMode="contain"
+                  />
+                ),
+              },
+              {
+                title: "Отлично! Можете начинать",
+                subtitle: (
+                  <Button
+                    title={'Начать'}
+                    containerViewStyle={{ marginTop: 20 }}
+                    backgroundColor={'white'}
+                    borderRadius={5}
+                    textStyle={{ color: '#003c8f' }}
+                    onPress={() => {
+                        passOnboarding(setIntro);
+                    }}
+                  />
+                ),
+                backgroundColor: '#003c8f',
+                image: (
+                  <Icon name="rocket" type="font-awesome" size={100} color="white" />
+                ),
+              },
+            ]}
+          />
+        );
+      }
     if (loading) {
         return (
             <SafeAreaView style={{ flex: 1 }}>
